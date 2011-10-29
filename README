@@ -1,0 +1,17 @@
+bacon
+---------
+
+Use this command line tool to download CyanogenMod ROMs for any CM-supported
+Android device.
+
+Bacon will probably currently only build and run properly on Linux machines,
+but aims to be cross-platform very soon.
+
+Building:
+---------
+git clone git://github.com/natediddy/bacon.git bacon
+cd bacon
+make && sudo make install
+
+Use `bacon --help' for instructions on how to use.
+Contact me at me@nathanforbes.com
