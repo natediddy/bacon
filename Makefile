@@ -2,7 +2,7 @@ CXX = g++
 CXXFLAGS += -Wall -Wno-switch
 LIBS = -lcurl
 
-VERSION = 0.05
+VERSION = 0.06
 TARGET = bacon
 
 CXXFLAGS += -DBACON_VERSION=\"$(VERSION)\" \
@@ -49,7 +49,7 @@ prefix = /usr/local
 all: $(TARGET)
 
 $(TARGET): $(OBJECTS)
-	$(CXX) $(CXXFLAGS) -o $(TARGET) $(OBJECTS) $(LIBS)
+	$(CXX) $(CXXFLAGS) $(LIBS) -o $(TARGET) $(OBJECTS)
 
 .cpp.o:
 	$(CXX) $(CXXFLAGS) -c -o $@ $<

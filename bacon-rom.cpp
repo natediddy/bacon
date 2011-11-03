@@ -77,15 +77,16 @@ namespace bacon
       return false;
     }
 
-    Net::pStatus = curl_easy_setopt(Net::pCurl, CURLOPT_NOPROGRESS, 0L);
+    Net::pStatus = curl_easy_setopt(Net::pCurl, CURLOPT_NOPROGRESS, false);
     if (Net::pStatus != CURLE_OK) {
       return false;
     }
 
-    //Net::pStatus = curl_easy_setopt(Net::pCurl, CURLOPT_PROGRESSFUNCTION, );
-    //if (Net::pStatus != CURLE_OK) {
-      //return false;
-    //}
+    Net::pStatus = curl_easy_setopt(Net::pCurl, CURLOPT_PROGRESSFUNCTION,
+        progressBar);
+    if (Net::pStatus != CURLE_OK) {
+      return false;
+    }
 
     //Net::pStatus = curl_easy_setopt(Net::pCurl, CURLOPT_PROGRESSDATA, );
     return Net::pStatus == CURLE_OK;

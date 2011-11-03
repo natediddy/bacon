@@ -20,7 +20,7 @@
 
 namespace bacon
 {
-  /* TODO: create a progress bar for use with libcurl */
+  int progressBar(void *, double, double, double, double);
 }
 
 #endif /* !BACON_PROGRESS_H_INCLUDED */

@@ -86,7 +86,7 @@ namespace
           string romPath = env::pathJoin(p);
           Rom *rom = new Rom(romName, romPath);
           if (rom->fetch()) {
-            fprintf(stdout, "New ROM located at:\n\t%s\n", romPath.c_str());
+            fprintf(stdout, "\nNew ROM located at:\n\t%s\n", romPath.c_str());
           } else {
             fprintf(stderr, "%s: error: failed to fetch %s\n",
                 gProgramName.c_str(), romName.c_str());
