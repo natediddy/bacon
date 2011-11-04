@@ -148,19 +148,20 @@ namespace bacon
       pBar = new ProgressBar;
     } else {
       pBar->count++;
+      pBar->updateWidth();
     }
 
-    pBar->updateWidth();
-    pos = roundFraction(fractionDownloaded * pBar->width);
     pBar->add(percentString(fractionDownloaded));
     pBar->add(PROGRESSBAR_START_CHAR, false);
 
+    barPosStopPoint =
+      pBar->width - (dlSoFarString.size() + totalToDlString.size() + 20);
+    pos = roundFraction(fractionDownloaded * barPosStopPoint);
+    
     for (i = 0; i < pos; ++i) {
       pBar->add(PROGRESSBAR_HAS_CHAR, false);
     }
-
-    barPosStopPoint =
-      pBar->width - (dlSoFarString.size() + totalToDlString.size() + 16);
+    
     for (; i < barPosStopPoint; ++i) {
       pBar->add(PROGRESSBAR_NOT_CHAR, false);
     }
