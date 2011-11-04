@@ -26,37 +26,84 @@
 #endif
 
 #include "bacon-progress.h"
+#include "bacon-util.h"
 
 #define DEFAULT_PROGRESSBAR_WIDTH 40
-#define PROGRESSBAR_START_CHAR '['
-#define PROGRESSBAR_END_CHAR   ']'
-#define PROGRESSBAR_HAS_CHAR   '#'
-#define PROGRESSBAR_NOT_CHAR   '-'
+
+#define PROGRESSBAR_START_CHAR    '['
+#define PROGRESSBAR_END_CHAR      ']'
+#define PROGRESSBAR_HAS_CHAR      '#'
+#define PROGRESSBAR_NOT_CHAR      '-'
+
+using std::string;
 
 namespace
 {
-  int consoleWidth()
-  {
-    int width = 0;
-#ifdef _WIN32
-    CONSOLE_SCREEN_BUFFER_INFO cb;
-
-    if (GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &cb)) {
-      width = cb.dwSize.X;
+  class ProgressBar {
+  public:
+    ProgressBar()
+      : count(0)
+      , width(0)
+      , mBuffer("")
+    {
+      updateWidth();
     }
+
+    ~ProgressBar()
+    {}
+
+    void updateWidth()
+    {
+#ifdef _WIN32
+      CONSOLE_SCREEN_BUFFER_INFO cb;
+
+      if (GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &cb)) {
+        width = cb.dwSize.X;
+      }
 #else
-    struct winsize ws;
+      struct winsize ws;
 
-    ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws);
-    width = ws.ws_col;
+      ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws);
+      width = ws.ws_col;
 #endif
-    return width;
-  }
 
-  char * humanReadableSize(const double &size)
-  {
-    return NULL;
-  }
+      if (width <= 0) {
+        width = DEFAULT_PROGRESSBAR_WIDTH;
+      }
+    }
+
+    void add(const char & c, const bool space = true)
+    {
+      mBuffer += c;
+      if (space) {
+        mBuffer += ' ';
+      }
+    }
+
+    void add(const string & s, const bool space = true)
+    {
+      mBuffer += s;
+      if (space) {
+        mBuffer += ' ';
+      }
+    }
+
+    void display(FILE * stream = stdout)
+    {
+      if (mBuffer.empty()) {
+        return;
+      }
+      fprintf(stream, "%s", mBuffer.c_str());
+      fflush(stream);
+      mBuffer = "";
+    }
+
+    unsigned int count;
+    int width;
+
+  private:
+    string mBuffer;
+  } *pBar = 0;
 
   int roundFraction(const double & fraction)
   {
@@ -69,6 +116,16 @@ namespace
     }
     return ret;
   }
+
+  string percentString(const double & d)
+  {
+    string result;
+    char buf[6];
+
+    sprintf(buf, "%3.0f%%", d * 100);
+    result = buf;
+    return result;
+  }
 }
 
 namespace bacon
@@ -79,29 +136,46 @@ namespace bacon
                   double totalToUpload,
                   double uploadedSoFar)
   {
-    int size = consoleWidth() - 20;
+    /* TODO: add an ETA string to end of progress bar */
+    string dlSoFarString = util::bytesToReadable(6, (long)downloadedSoFar);
+    string totalToDlString = util::bytesToReadable(6, (long)totalToDownload);
     double fractionDownloaded = downloadedSoFar / totalToDownload;
-    double percent = fractionDownloaded * 100;
-    int pos = roundFraction(fractionDownloaded * size);
+    int barPosStopPoint;
+    int pos;
     int i;
 
-    if (size <= 0) {
-      size = DEFAULT_PROGRESSBAR_WIDTH;
+    if (!pBar) {
+      pBar = new ProgressBar;
+    } else {
+      pBar->count++;
     }
 
-    fprintf(stdout, "%3.0f%% %c", percent, PROGRESSBAR_START_CHAR);
+    pBar->updateWidth();
+    pos = roundFraction(fractionDownloaded * pBar->width);
+    pBar->add(percentString(fractionDownloaded));
+    pBar->add(PROGRESSBAR_START_CHAR, false);
 
-    for (i = 0; i < pos; i++) {
-      fputc(PROGRESSBAR_HAS_CHAR, stdout);
+    for (i = 0; i < pos; ++i) {
+      pBar->add(PROGRESSBAR_HAS_CHAR, false);
     }
 
-    for (; i < size; i++) {
-      fputc(PROGRESSBAR_NOT_CHAR, stdout);
+    barPosStopPoint =
+      pBar->width - (dlSoFarString.size() + totalToDlString.size() + 16);
+    for (; i < barPosStopPoint; ++i) {
+      pBar->add(PROGRESSBAR_NOT_CHAR, false);
     }
 
-    fputc(PROGRESSBAR_END_CHAR, stdout);
-    fputs("\r", stdout);
-    fflush(stdout);
+    pBar->add(PROGRESSBAR_END_CHAR);
+    pBar->add(dlSoFarString);
+    pBar->add('/');
+    pBar->add(totalToDlString);
+    pBar->add('\r', false);
+    pBar->display();
+
+    if (downloadedSoFar >= totalToDownload) {
+      delete pBar;
+      pBar = 0;
+    }
     return 0;
   }
 }

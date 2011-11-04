@@ -22,6 +22,7 @@
 #include <sys/stat.h>
 
 #include "bacon-file.h"
+#include "bacon-util.h"
 
 #define REFRESH_FILE_PROPS                   \
   do {                                       \
@@ -33,16 +34,6 @@
   } while (0)
 
 #define PATH_SEPARATORS "/\\"
-
-#define KB_FACTOR 1024L
-#define MB_FACTOR (KB_FACTOR * KB_FACTOR)
-#define GB_FACTOR (KB_FACTOR * MB_FACTOR)
-#define TB_FACTOR (KB_FACTOR * GB_FACTOR)
-
-#define DIVDBL(x) (((double)bytes) / ((double)(x)))
-#define DIVLNG(x) (bytes / ((long)(x)))
-
-#define SIZE_STR_BUF_MAX 12
 
 using std::string;
 
@@ -201,43 +192,7 @@ namespace bacon
 
   string File::sizeString() const
   {
-    string result;
-    string abbr;
-    char buf[SIZE_STR_BUF_MAX];
-    double final;
-    long bytes = 0L;
-
-    if (mProp) {
-      bytes = (long)mProp->sizeInBytes();
-    }
-
-    if (!bytes) {
-      result += "0 bytes";
-      return result;
-    }
-
-    if (DIVLNG(TB_FACTOR)) {
-      final = DIVDBL(TB_FACTOR);
-      abbr = "TB";
-    } else if (DIVLNG(GB_FACTOR)) {
-      final = DIVDBL(GB_FACTOR);
-      abbr = "GB";
-    } else if (DIVLNG(MB_FACTOR)) {
-      final = DIVDBL(MB_FACTOR);
-      abbr = "MB";
-    } else if (DIVLNG(KB_FACTOR)) {
-      final = DIVDBL(KB_FACTOR);
-      abbr = "KB";
-    } else {
-      final = (double)bytes;
-      abbr = "bytes";
-    }
-
-    snprintf(buf, SIZE_STR_BUF_MAX, "%.1f", final);
-    result = buf;
-    result += " ";
-    result += abbr;
-    return result;
+    return util::bytesToReadable(12, mProp->sizeInBytes(), true);
   }
 }
 

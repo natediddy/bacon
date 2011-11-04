@@ -84,11 +84,6 @@ namespace bacon
 
     Net::pStatus = curl_easy_setopt(Net::pCurl, CURLOPT_PROGRESSFUNCTION,
         progressBar);
-    if (Net::pStatus != CURLE_OK) {
-      return false;
-    }
-
-    //Net::pStatus = curl_easy_setopt(Net::pCurl, CURLOPT_PROGRESSDATA, );
     return Net::pStatus == CURLE_OK;
   }
 

@@ -15,7 +15,17 @@
  * along with bacon.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <cstdio>
+
 #include "bacon-util.h"
+
+#define KB_FACTOR 1024L
+#define MB_FACTOR (KB_FACTOR * KB_FACTOR)
+#define GB_FACTOR (KB_FACTOR * MB_FACTOR)
+#define TB_FACTOR (KB_FACTOR * GB_FACTOR)
+
+#define DIVDBL(x) (((double)bytes) / ((double)(x)))
+#define DIVLNG(x) (bytes / ((long)(x)))
 
 using std::string;
 
@@ -36,6 +46,48 @@ namespace bacon
         ret += c;
       }
       return ret;
+    }
+
+    string bytesToReadable(const size_t & maxSize,
+                           const long & bytes,
+                           const bool precision)
+    {
+      string result;
+      string abbr;
+      char buf[maxSize];
+      double final;
+
+      if (!bytes) {
+        result += "0B";
+        return result;
+      }
+
+      if (DIVLNG(TB_FACTOR)) {
+        final = DIVDBL(TB_FACTOR);
+        abbr = "TB";
+      } else if (DIVLNG(GB_FACTOR)) {
+        final = DIVDBL(GB_FACTOR);
+        abbr = "GB";
+      } else if (DIVLNG(MB_FACTOR)) {
+        final = DIVDBL(MB_FACTOR);
+        abbr = "MB";
+      } else if (DIVLNG(KB_FACTOR)) {
+        final = DIVDBL(KB_FACTOR);
+        abbr = "KB";
+      } else {
+        final = (double)bytes;
+        abbr = "B";
+      }
+
+      if (precision) {
+        snprintf(buf, maxSize, "%.1f", final);
+      } else {
+        snprintf(buf, maxSize, "%.0f", final);
+      }
+      result = buf;
+      result += " ";
+      result += abbr;
+      return result;
     }
   }
 }

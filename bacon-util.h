@@ -25,6 +25,9 @@ namespace bacon
   namespace util
   {
     std::string toUpperCase(const std::string &);
+    std::string bytesToReadable(const size_t &,
+                                const long &,
+                                const bool precision = false);
   }
 }
 
