@@ -137,8 +137,10 @@ namespace bacon
                   double uploadedSoFar)
   {
     /* TODO: add an ETA string to end of progress bar */
-    string dlSoFarString = util::bytesToReadable(6, (long)downloadedSoFar);
-    string totalToDlString = util::bytesToReadable(6, (long)totalToDownload);
+    string dlSoFarString =
+      util::bytesToReadable(6, (long)downloadedSoFar, true);
+    string totalToDlString =
+      util::bytesToReadable(6, (long)totalToDownload, true);
     double fractionDownloaded = downloadedSoFar / totalToDownload;
     int barPosStopPoint;
     int pos;

@@ -149,6 +149,8 @@ namespace
             gProgramName.c_str(),
             util::toUpperCase(devices[i]->id()).c_str());
         continue;
+      } else {
+        devices[i]->createRomDir();
       }
       if (action == SHOWONLY) {
         fputs("Showing ", stdout);

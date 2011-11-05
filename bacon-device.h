@@ -29,6 +29,7 @@ namespace bacon
 
     std::string id() const;
     std::string romDir() const;
+    void createRomDir() const;
 
   private:
     std::string mId;

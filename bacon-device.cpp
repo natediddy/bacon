@@ -25,10 +25,7 @@ namespace bacon
 {
   Device::Device(const string & device_id)
     : mId(device_id)
-  {
-    File myDir(romDir());
-    myDir.makeDir();
-  }
+  {}
 
   Device::~Device()
   {}
@@ -44,6 +41,12 @@ namespace bacon
       env::appDir(), mId, ""
     };
     return env::pathJoin(p);
+  }
+
+  void Device::createRomDir() const
+  {
+    File myDir(romDir());
+    myDir.makeDir();
   }
 }
 
