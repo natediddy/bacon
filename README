@@ -13,5 +13,20 @@ git clone git://github.com/natediddy/bacon.git bacon
 cd bacon
 make && sudo make install
 
-Use `bacon --help' for instructions on how to use.
+Usage:
+---------
+bacon [-S|-s|-n|-r|-d|-h|-v] DEVICE ...
+
+Options:
+  -S, --show               show latest builds for DEVICE(s), do not download
+  -s, --stable             download latest stable build for DEVICE(s)
+  -n, --nightly            download latest nightly build for DEVICE(s)
+  -r, --release-candidate  download latest release candidate for DEVICE(s)
+  -d, --devices            display all available DEVICEs and exit
+  -u, --update-devices     update the current DEVICE list and exit
+  -h, -?, --help           display this message and exit
+  -v, --version            display version information and exit
+
+More than 1 DEVICE can be given: but only 1 option per DEVICE-list
+
 Contact me at me@nathanforbes.com
