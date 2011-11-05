@@ -25,6 +25,7 @@
 #include "bacon-env.h"
 #include "bacon-htmldoc.h"
 #include "bacon-htmlparser.h"
+#include "bacon-md5.h"
 #include "bacon-rom.h"
 #include "bacon-util.h"
 
@@ -86,13 +87,31 @@ namespace
           string romPath = env::pathJoin(p);
           Rom *rom = new Rom(romName, romPath);
           if (rom->fetch()) {
-            fprintf(stdout, "\nNew ROM located at:\n\t%s\n", romPath.c_str());
+            fputs("\nVerifying file integrity...", stdout);
+            Md5 *md5 = new Md5(romPath, device->id(), type);
+            if (!md5->verify()) {
+              fputs(" FAILED\n", stdout);
+              fprintf(stderr, "%s: file integrity check failed, "
+                  "`%s' may be corrupt!\n",
+                  romPath.c_str(), gProgramName.c_str());
+            } else {
+              fputs(" PASS\n", stdout);
+              fprintf(stdout, "New ROM located at:\n\t%s\n", romPath.c_str());
+            }
+            if (md5) {
+              delete md5;
+              md5 = 0;
+            }
           } else {
-            fprintf(stderr, "%s: error: failed to fetch %s\n",
+            fprintf(stderr, "\n%s: error: failed to fetch %s\n",
                 gProgramName.c_str(), romName.c_str());
             if (!*hasError) {
               *hasError = true;
             }
+          }
+          if (rom) {
+            delete rom;
+            rom = 0;
           }
         }
       }

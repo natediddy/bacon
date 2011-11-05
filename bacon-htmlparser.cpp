@@ -35,8 +35,25 @@
   s[i] == '/' && s[i+1] == 'g' && s[i+2] == 'e' && s[i+3] == 't' \
   && s[i+4] == '/'
 
+#define MD5_CLASS(s, i) \
+  s[i]      == 'm' && s[i+1] == 'd' && s[i+2] == '5' && s[i+3] == 's' \
+  && s[i+4] == 'u' && s[i+5] == 'm' && s[i+6] == ':' && s[i+7] == ' '
+
 using std::string;
 using std::vector;
+
+namespace
+{
+  bool filename_match(const string & s, const string & n, const size_t i)
+  {
+    for (size_t j = 0, k = i; j < n.size(); ++j, ++k) {
+      if (s[k] != n[j]) {
+        return false;
+      }
+    }
+    return true;
+  }
+}
 
 namespace bacon
 {
@@ -64,6 +81,29 @@ namespace bacon
         tmp = "";
       }
     }
+  }
+
+  string HtmlParser::checksumStringForFile(const string & filename) const
+  {
+    string hash = "";
+    string sub = mContent;
+
+    for (size_t i = 0; i < sub.size(); ++i) {
+      if (filename_match(sub, filename, i)) {
+        i += filename.size();
+        while (true) {
+          if (MD5_CLASS(sub, i)) {
+            i += 8;
+            while (sub[i] != '<') {
+              hash += sub[i++];
+            }
+            break;
+          }
+          i++;
+        }
+      }
+    }
+    return hash;
   }
 
   string HtmlParser::latestRomForDevice(const string & device) const

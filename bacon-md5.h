@@ -15,22 +15,22 @@
  * along with bacon.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef BACON_UTIL_H_INCLUDED
-#define BACON_UTIL_H_INCLUDED
-
-#include <string>
+#ifndef BACON_MD5_H_INCLUDED
+#define BACON_MD5_H_INCLUDED
 
 namespace bacon
 {
-  namespace util
-  {
-    std::string toUpperCase(const std::string &);
-    std::string toLowerCase(const std::string &);
-    std::string bytesToReadable(const size_t &,
-                                const long &,
-                                const bool precision = false);
-  }
+  class Md5 {
+  public:
+    Md5(const std::string &, const std::string &, const std::string &);
+
+    bool verify() const;
+
+  private:
+    std::string mLocalHash;
+    std::string mRemoteHash;
+  };
 }
 
-#endif /* !BACON_UTIL_H_INCLUDED */
+#endif /* !BACON_MD5_H_INCLUDED */
 

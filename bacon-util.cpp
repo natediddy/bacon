@@ -48,6 +48,21 @@ namespace bacon
       return ret;
     }
 
+    string toLowerCase(const string & str)
+    {
+      char c;
+      string ret = "";
+
+      for (string::size_type i = 0; i < str.size(); i++) {
+        c = str[i];
+        if (str[i] >= 'A' && str[i] <= 'Z') {
+          c = (str[i] - 'A' + 'a');
+        }
+        ret += c;
+      }
+      return ret;
+    }
+
     string bytesToReadable(const size_t & maxSize,
                            const long & bytes,
                            const bool precision)

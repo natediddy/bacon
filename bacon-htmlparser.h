@@ -29,6 +29,7 @@ namespace bacon
     ~HtmlParser();
 
     void allDeviceIds(std::vector<std::string> &) const;
+    std::string checksumStringForFile(const std::string &) const;
     std::string latestRomForDevice(const std::string &) const;
     std::string currentContent() const;
 

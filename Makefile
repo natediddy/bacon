@@ -1,8 +1,8 @@
 CXX = g++
-CXXFLAGS += -Wall -Wno-switch
-LIBS = -lcurl
+CXXFLAGS = -Wall
+LIBS = -lcurl -lcryptopp
 
-VERSION = 0.08
+VERSION = 0.09
 TARGET = bacon
 
 CXXFLAGS += -DBACON_VERSION=\"$(VERSION)\" \
@@ -24,6 +24,7 @@ SOURCES = \
 	bacon-htmldoc.cpp \
 	bacon-htmlparser.cpp \
 	bacon-main.cpp \
+	bacon-md5.cpp \
 	bacon-net.cpp \
 	bacon-progress.cpp \
 	bacon-rom.cpp \
@@ -39,6 +40,7 @@ OBJECTS = \
 	bacon-htmldoc.o \
 	bacon-htmlparser.o \
 	bacon-main.o \
+	bacon-md5.o \
 	bacon-net.o \
 	bacon-progress.o \
 	bacon-rom.o \
