@@ -67,31 +67,29 @@ namespace bacon
                            const long & bytes,
                            const bool precision)
     {
-      string result;
-      string abbr;
+      char abbr;
       char buf[maxSize];
       double final;
 
       if (!bytes) {
-        result += "0B";
-        return result;
+        return string("0b");
       }
 
       if (DIVLNG(TB_FACTOR)) {
         final = DIVDBL(TB_FACTOR);
-        abbr = "TB";
+        abbr = 'T';
       } else if (DIVLNG(GB_FACTOR)) {
         final = DIVDBL(GB_FACTOR);
-        abbr = "GB";
+        abbr = 'G';
       } else if (DIVLNG(MB_FACTOR)) {
         final = DIVDBL(MB_FACTOR);
-        abbr = "MB";
+        abbr = 'M';
       } else if (DIVLNG(KB_FACTOR)) {
         final = DIVDBL(KB_FACTOR);
-        abbr = "KB";
+        abbr = 'K';
       } else {
         final = (double)bytes;
-        abbr = "B";
+        abbr = 'B';
       }
 
       if (precision) {
@@ -99,8 +97,8 @@ namespace bacon
       } else {
         snprintf(buf, maxSize, "%.0f", final);
       }
-      result = buf;
-      result += " ";
+
+      string result(buf);
       result += abbr;
       return result;
     }

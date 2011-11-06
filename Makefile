@@ -2,7 +2,7 @@ CXX = g++
 CXXFLAGS = -Wall
 LIBS = -lcurl -lcryptopp
 
-VERSION = 0.09
+VERSION = 0.10
 TARGET = bacon
 
 CXXFLAGS += -DBACON_VERSION=\"$(VERSION)\" \

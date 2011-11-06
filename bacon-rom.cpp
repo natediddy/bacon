@@ -15,12 +15,16 @@
  * along with bacon.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <time.h>
+
 #include "bacon-env.h"
 #include "bacon-file.h"
 #include "bacon-progress.h"
 #include "bacon-rom.h"
 
 using std::string;
+
+long gStartEpoch = 0;
 
 namespace
 {
@@ -89,6 +93,7 @@ namespace bacon
 
   bool Rom::fetch()
   {
+    gStartEpoch = time(0);
     Net::pStatus = curl_easy_perform(Net::pCurl);
     close();
     return Net::pStatus == CURLE_OK;

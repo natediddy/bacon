@@ -16,6 +16,7 @@
  */
 
 #include <cstdio>
+#include <ctime>
 #include <string>
 
 #ifdef _WIN32
@@ -37,6 +38,8 @@
 
 using std::string;
 
+extern int gStartEpoch;
+
 namespace
 {
   class ProgressBar {
@@ -47,6 +50,7 @@ namespace
       , mBuffer("")
     {
       updateWidth();
+      spaceTilEnd = width;
     }
 
     ~ProgressBar()
@@ -75,16 +79,20 @@ namespace
     void add(const char & c, const bool space = true)
     {
       mBuffer += c;
+      spaceTilEnd--;
       if (space) {
         mBuffer += ' ';
+        spaceTilEnd--;
       }
     }
 
     void add(const string & s, const bool space = true)
     {
       mBuffer += s;
+      spaceTilEnd -= s.size();
       if (space) {
         mBuffer += ' ';
+        spaceTilEnd--;
       }
     }
 
@@ -93,15 +101,21 @@ namespace
       if (mBuffer.empty()) {
         return;
       }
+      for (int i = 0; i < (spaceTilEnd - 2); i++) {
+        mBuffer += ' ';
+      }
+      mBuffer += '\r';
       fprintf(stream, "%s", mBuffer.c_str());
       fflush(stream);
       mBuffer = "";
+      spaceTilEnd = width;
     }
 
     unsigned int count;
     int width;
 
   private:
+    int spaceTilEnd;
     string mBuffer;
   } *pBar = 0;
 
@@ -126,6 +140,23 @@ namespace
     result = buf;
     return result;
   }
+
+  string etaString(const int & bytesRemaining, const int & speed)
+  {
+    int timeLeft = bytesRemaining / speed;
+    int mins = timeLeft / 60;
+    int secs = timeLeft % 60;
+    string result("");
+
+    if (mins || secs) {
+      char buf[20];
+      snprintf(buf, 20, "(eta %02d:%02d)", mins, secs);
+      result += buf;
+    } else if (!mins && !secs) {
+      result += "(eta --:--)";
+    }
+    return result;
+  }
 }
 
 namespace bacon
@@ -142,6 +173,9 @@ namespace bacon
     string totalToDlString =
       util::bytesToReadable(6, (long)totalToDownload, true);
     double fractionDownloaded = downloadedSoFar / totalToDownload;
+    string speed("");
+    string eta("");
+    int dlSpeed;
     int barPosStopPoint;
     int pos;
     int i;
@@ -153,11 +187,25 @@ namespace bacon
       pBar->updateWidth();
     }
 
+    if (downloadedSoFar) {
+      dlSpeed = downloadedSoFar / (gStartEpoch - time(0));
+      if (dlSpeed < 0) {
+        dlSpeed = -dlSpeed;
+      }
+      speed = util::bytesToReadable(6, dlSpeed);
+      speed += "/s";
+      eta = etaString(totalToDownload - downloadedSoFar, dlSpeed);
+    }
+
     pBar->add(percentString(fractionDownloaded));
+    pBar->add(dlSoFarString, false);
+    pBar->add('/', false);
+    pBar->add(totalToDlString);
     pBar->add(PROGRESSBAR_START_CHAR, false);
 
-    barPosStopPoint =
-      pBar->width - (dlSoFarString.size() + totalToDlString.size() + 20);
+    barPosStopPoint = pBar->width -
+      (dlSoFarString.size() + totalToDlString.size() +
+       speed.size() + eta.size() + 18);
     pos = roundFraction(fractionDownloaded * barPosStopPoint);
     
     for (i = 0; i < pos; ++i) {
@@ -169,10 +217,8 @@ namespace bacon
     }
 
     pBar->add(PROGRESSBAR_END_CHAR);
-    pBar->add(dlSoFarString);
-    pBar->add('/');
-    pBar->add(totalToDlString);
-    pBar->add('\r', false);
+    pBar->add(speed);
+    pBar->add(eta);
     pBar->display();
 
     if (downloadedSoFar >= totalToDownload) {
