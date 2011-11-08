@@ -21,6 +21,10 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
 #include "bacon-file.h"
 #include "bacon-util.h"
 
@@ -164,7 +168,13 @@ namespace bacon
     bool ret = true;
 
     if (!exists()) {
-      ret = !mkdir(mName.c_str(), S_IRWXU);
+      ret =
+#ifdef _WIN32
+        CreateDirectory(mName.c_str(), NULL);
+#else
+        !mkdir(mName.c_str(), S_IRWXU);
+#endif
+      ;
     }
     REFRESH_FILE_PROPS;
     return ret;

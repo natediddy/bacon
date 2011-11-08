@@ -129,7 +129,7 @@ namespace bacon
         mFun = showDevices;
       } else if (basic == "-u" || basic == "--update-devices"
 #ifdef _WIN32
-          basic == "/u"
+          || basic == "/u"
 #endif
          )
       {
