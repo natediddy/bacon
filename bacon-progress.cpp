@@ -38,7 +38,7 @@
 
 using std::string;
 
-extern int gStartEpoch;
+extern long gStartEpoch;
 
 namespace
 {
