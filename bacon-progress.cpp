@@ -34,7 +34,7 @@
 #define PROGRESSBAR_START_CHAR    '['
 #define PROGRESSBAR_END_CHAR      ']'
 #define PROGRESSBAR_HAS_CHAR      '#'
-#define PROGRESSBAR_NOT_CHAR      '-'
+#define PROGRESSBAR_NOT_CHAR      '.'
 
 using std::string;
 
@@ -161,10 +161,10 @@ namespace
     string result("");
 
     if (speed) {
-      int mins = ((bytesRemaining / speed) / 60);
-      int secs = ((bytesRemaining / speed) % 60);
       char buf[20];
-      snprintf(buf, 20, "(eta %02d:%02d)", mins, secs);
+      snprintf(buf, 20, "(eta %02d:%02d)",
+          ((bytesRemaining / speed) / 60),
+          ((bytesRemaining / speed) % 60));
       result += buf;
     } else {
       result += "(eta --:--)";
@@ -181,7 +181,6 @@ namespace bacon
                   double totalToUpload,
                   double uploadedSoFar)
   {
-    /* TODO: add an ETA string to end of progress bar */
     string dlSoFarString =
       util::bytesToReadable(6, (long)downloadedSoFar, true);
     string totalToDlString =
@@ -224,7 +223,7 @@ namespace bacon
     for (i = 0; i < pos; ++i) {
       pBar->add(PROGRESSBAR_HAS_CHAR, false);
     }
-    
+
     for (; i < barPosStopPoint; ++i) {
       pBar->add(PROGRESSBAR_NOT_CHAR, false);
     }
