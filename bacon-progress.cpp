@@ -158,16 +158,15 @@ namespace
 
   string etaString(const int bytesRemaining, const int speed)
   {
-    int timeLeft = bytesRemaining / speed;
-    int mins = timeLeft / 60;
-    int secs = timeLeft % 60;
     string result("");
 
-    if (mins || secs) {
+    if (speed) {
+      int mins = ((bytesRemaining / speed) / 60);
+      int secs = ((bytesRemaining / speed) % 60);
       char buf[20];
       snprintf(buf, 20, "(eta %02d:%02d)", mins, secs);
       result += buf;
-    } else if (!mins && !secs) {
+    } else {
       result += "(eta --:--)";
     }
     return result;
