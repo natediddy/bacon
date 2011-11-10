@@ -50,7 +50,7 @@ namespace
       , mBuffer("")
     {
       updateWidth();
-      spaceTilEnd = width;
+      mSpaceTilEnd = width;
     }
 
     ~ProgressBar()
@@ -79,20 +79,27 @@ namespace
     void add(const char & c, const bool space = true)
     {
       mBuffer += c;
-      spaceTilEnd--;
+      --mSpaceTilEnd;
       if (space) {
         mBuffer += ' ';
-        spaceTilEnd--;
+        --mSpaceTilEnd;
       }
     }
 
-    void add(const string & s, const bool space = true)
+    void add(const string & s,
+             const bool space = true,
+             const bool last = false)
     {
+      if (last) {
+        for (int i = 0; i < (mSpaceTilEnd - 4); ++i) {
+          mBuffer += ' ';
+        }
+      }
       mBuffer += s;
-      spaceTilEnd -= s.size();
+      mSpaceTilEnd -= s.size();
       if (space) {
         mBuffer += ' ';
-        spaceTilEnd--;
+        --mSpaceTilEnd;
       }
     }
 
@@ -101,23 +108,20 @@ namespace
       if (mBuffer.empty()) {
         return;
       }
-      for (int i = 0; i < (spaceTilEnd - 2); i++) {
-        mBuffer += ' ';
-      }
       mBuffer += '\r';
       fprintf(stream, "%s", mBuffer.c_str());
       fflush(stream);
       mBuffer = "";
-      spaceTilEnd = width;
+      mSpaceTilEnd = width;
     }
 
     unsigned int count;
     int width;
 
   private:
-    int spaceTilEnd;
+    int mSpaceTilEnd;
     string mBuffer;
-  } *pBar = 0;
+  } * pBar = 0;
 
   int roundFraction(const double & fraction)
   {
@@ -133,12 +137,14 @@ namespace
 
   string percentString(const double & d)
   {
-    string result;
     char buf[6];
+    volatile double NaNcheck = d;
 
+    if (NaNcheck != NaNcheck) {
+      return string("0%");
+    }
     sprintf(buf, "%3.0f%%", d * 100);
-    result = buf;
-    return result;
+    return string(buf);
   }
 
   string etaString(const int & bytesRemaining, const int & speed)
@@ -197,7 +203,6 @@ namespace bacon
       eta = etaString(totalToDownload - downloadedSoFar, dlSpeed);
     }
 
-    pBar->add(percentString(fractionDownloaded));
     pBar->add(dlSoFarString, false);
     pBar->add('/', false);
     pBar->add(totalToDlString);
@@ -207,7 +212,7 @@ namespace bacon
       (dlSoFarString.size() + totalToDlString.size() +
        speed.size() + eta.size() + 18);
     pos = roundFraction(fractionDownloaded * barPosStopPoint);
-    
+
     for (i = 0; i < pos; ++i) {
       pBar->add(PROGRESSBAR_HAS_CHAR, false);
     }
@@ -219,6 +224,7 @@ namespace bacon
     pBar->add(PROGRESSBAR_END_CHAR);
     pBar->add(speed);
     pBar->add(eta);
+    pBar->add(percentString(fractionDownloaded), false, true);
     pBar->display();
 
     if (downloadedSoFar >= totalToDownload) {

@@ -94,6 +94,7 @@ namespace bacon
   bool Rom::fetch()
   {
     gStartEpoch = time(0);
+    fprintf(stdout, "\n=> %s\n", baseName().c_str());
     Net::pStatus = curl_easy_perform(Net::pCurl);
     close();
     return Net::pStatus == CURLE_OK;
