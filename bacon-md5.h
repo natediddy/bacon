@@ -18,9 +18,11 @@
 #ifndef BACON_MD5_H_INCLUDED
 #define BACON_MD5_H_INCLUDED
 
+#include "bacon-file.h"
+
 namespace bacon
 {
-  class Md5 {
+  class Md5 : public File {
   public:
     Md5(const std::string &, const std::string &, const std::string &);
 
