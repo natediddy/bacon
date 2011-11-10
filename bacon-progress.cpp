@@ -135,19 +135,28 @@ namespace
     return ret;
   }
 
-  string percentString(const double & d)
+  bool isNaN(const double d)
   {
-    char buf[6];
-    volatile double NaNcheck = d;
+    volatile double check = d;
 
-    if (NaNcheck != NaNcheck) {
+    if (check != check) {
+      return true;
+    }
+    return false;
+  }
+
+  string percentString(const double d)
+  {
+    if (isNaN(d)) {
       return string("0%");
     }
+
+    char buf[6];
     sprintf(buf, "%3.0f%%", d * 100);
     return string(buf);
   }
 
-  string etaString(const int & bytesRemaining, const int & speed)
+  string etaString(const int bytesRemaining, const int speed)
   {
     int timeLeft = bytesRemaining / speed;
     int mins = timeLeft / 60;
@@ -210,7 +219,7 @@ namespace bacon
 
     barPosStopPoint = pBar->width -
       (dlSoFarString.size() + totalToDlString.size() +
-       speed.size() + eta.size() + 18);
+       speed.size() + eta.size() + 11);
     pos = roundFraction(fractionDownloaded * barPosStopPoint);
 
     for (i = 0; i < pos; ++i) {
