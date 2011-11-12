@@ -9,9 +9,31 @@ but aims to be cross-platform very soon.
 
 Building:
 ---------
-git clone git://github.com/natediddy/bacon.git bacon
-cd bacon
-make && sudo make install
+At the moment, bacon includes 2 methods of compiling: Autotools and CMake.
+
+First, obtain the latest source with Git:
+    git clone git://github.com/natediddy/bacon.git bacon
+Change to the source directory:
+    cd bacon
+Build using Autotools:
+    ./configure
+    make
+    # Or optionally to install on your system:
+    sudo make install
+Build using CMake (ensure CMake is installed on your system first!):
+    mkdir build
+    cd build
+    cmake ..
+    make
+    # Or optionally to install on your system:
+    sudo make install
+
+Two separate scripts are also provided to automate both of the methods above.
+They are 'buildauto' and 'buildcmake'. You can run these from the source
+directory and (optionally) provide 'make' with options when invoking either
+one, like so:
+    ./buildauto prefix=$HOME install
+    sudo ./buildcmake install
 
 Usage:
 ---------
