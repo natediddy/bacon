@@ -15,11 +15,17 @@
  * along with bacon.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <cerrno>
+#include "config.h"
+
 #include <cstring>
 
+#if HAVE_SYS_TYPES_H
 #include <sys/types.h>
+#endif
+
+#if HAVE_SYS_STAT_H
 #include <sys/stat.h>
+#endif
 
 #ifdef _WIN32
 #include <windows.h>
@@ -52,6 +58,7 @@ namespace bacon
     {
       memset(&mStatBuf, 0, sizeof (struct stat));
 
+#if HAVE_SYS_STAT_H
       if (!stat(name, &mStatBuf)) {
         if (S_ISDIR(mStatBuf.st_mode))
           mIsDir = true;
@@ -60,6 +67,7 @@ namespace bacon
         if (mIsDir || mIsFile)
           mSizeInBytes = mStatBuf.st_size;
       }
+#endif
     }
 
     ~FilePropImpl()
@@ -88,7 +96,9 @@ namespace bacon
     }
 
   private:
+#if HAVE_SYS_STAT_H
     struct stat mStatBuf;
+#endif
     bool mIsDir;
     bool mIsFile;
     size_t mSizeInBytes;
@@ -169,10 +179,12 @@ namespace bacon
 
     if (!exists()) {
       ret =
+#if HAVE_MKDIR
+        !mkdir(mName.c_str(), S_IRWXU);
+#else
 #ifdef _WIN32
         CreateDirectory(mName.c_str(), NULL);
-#else
-        !mkdir(mName.c_str(), S_IRWXU);
+#endif
 #endif
       ;
     }

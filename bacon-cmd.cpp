@@ -15,6 +15,8 @@
  * along with bacon.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "config.h"
+
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -74,7 +76,7 @@ namespace
     char * lastSlash = 0;
 
     if (!execName) {
-      gProgramName = DEFAULT_PROGRAM_NAME;
+      gProgramName = PACKAGE_NAME;
       return;
     }
 

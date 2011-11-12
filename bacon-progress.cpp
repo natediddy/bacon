@@ -15,15 +15,22 @@
  * along with bacon.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "config.h"
+
 #include <cstdio>
 #include <ctime>
 #include <string>
 
-#ifdef _WIN32
-#include <windows.h>
-#else
+#if HAVE_SYS_IOCTL_H
 #include <sys/ioctl.h>
+#endif
+
+#if HAVE_UNISTD_H
 #include <unistd.h>
+#endif
+
+#if defined(_WIN32) && (!HAVE_SYS_IOCTL_H && !HAVE_UNISTD_H)
+#include <windows.h>
 #endif
 
 #include "bacon-progress.h"
@@ -65,10 +72,14 @@ namespace
         width = cb.dwSize.X;
       }
 #else
+#if HAVE_SYS_IOCTL_H && HAVE_UNISTD_H
       struct winsize ws;
 
       ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws);
       width = ws.ws_col;
+#else
+      width = 0;
+#endif
 #endif
 
       if (width <= 0) {

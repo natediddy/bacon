@@ -1,0 +1,30 @@
+0.13:
+  - improved NaN check
+  - remove unneeded space from progress bar
+  - fixed potential division by zero
+  - slightly changed style of progress bar (dots instead of dashes)
+  - added Autotools build system
+
+0.12:
+  - show the ROM's filename while downloading
+  - added check for NaN's in progress bar percent string
+
+0.11:
+  - removed unneeded dependency on Crypto++ library for MD5 checks and adapted
+    a C++ translation of the MD5 algorithm
+
+0.10:
+  - added download speed and ETA to progress bar
+
+0.09:
+  - added MD5 hash sum checks after downloads using Crypto++ library
+
+0.08:
+  - fixed progress bar bug to improve accuracy
+
+0.07:
+  - progress bar enhancements: displays total-downloaded out of
+    total-to-download
+
+0.06:
+  - functioning progress bar

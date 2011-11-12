@@ -15,6 +15,8 @@
  * along with bacon.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "config.h"
+
 #include <cstdio>
 #include <cstdlib>
 #include <string>
@@ -211,20 +213,14 @@ namespace bacon
 
   int showVersion()
   {
-    string verStr =
-#ifdef BACON_VERSION
-      BACON_VERSION
-#else
-      "0.00-test"
-#endif
-      ;
+    string verStr = PACKAGE_VERSION;
 
     fprintf(stdout, "%s %s\n"
        "Copyright (C) 2011 Nathan Forbes\n"
        "This is free software; see the source for copying conditions.\n"
        "There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A\n"
        "PARTICULAR PURPOSE.\n",
-       DEFAULT_PROGRAM_NAME, verStr.c_str());
+       PACKAGE_NAME, verStr.c_str());
     return EXIT_SUCCESS;
   }
 
