@@ -52,6 +52,22 @@ namespace
     return deviceList.hasMatch(id);
   }
 
+  bool romExists(const string & path,
+                 const string & deviceId,
+                 const string & deviceType)
+  {
+    File fp(path);
+    bool ret = false;
+
+    if (fp.isFile()) {
+      Md5 md5(path, deviceId, deviceType);
+      if (md5.verify()) {
+        ret = true;
+      }
+    }
+    return ret;
+  }
+
   enum Action {
     SHOWONLY,
     DOWNLOAD_ST,
@@ -87,33 +103,38 @@ namespace
             device->romDir(), romName, ""
           };
           string romPath = env::pathJoin(p);
-          Rom *rom = new Rom(romName, romPath);
-          if (rom->fetch()) {
-            fputs("\nVerifying file integrity...", stdout);
-            Md5 *md5 = new Md5(romPath, device->id(), type);
-            if (!md5->verify()) {
-              fputs(" FAILED\n", stdout);
-              fprintf(stderr, "%s: file integrity check failed, "
-                  "`%s' may be corrupt!\n",
-                  romPath.c_str(), gProgramName.c_str());
+          if (!romExists(romPath, device->id(), type)) {
+            Rom *rom = new Rom(romName, romPath);
+            if (rom->fetch()) {
+              fputs("\nVerifying file integrity...", stdout);
+              Md5 *md5 = new Md5(romPath, device->id(), type);
+              if (!md5->verify()) {
+                fputs(" FAIL\n", stdout);
+                fprintf(stderr, "%s: `%s' may be corrupt!\n",
+                    romPath.c_str(), gProgramName.c_str());
+              } else {
+                fputs(" PASS\n", stdout);
+                fprintf(stdout, "New ROM located at:\n\t%s\n",
+                    romPath.c_str());
+              }
+              if (md5) {
+                delete md5;
+                md5 = 0;
+              }
             } else {
-              fputs(" PASS\n", stdout);
-              fprintf(stdout, "New ROM located at:\n\t%s\n", romPath.c_str());
+              fprintf(stderr, "\n%s: error: failed to fetch %s\n",
+                  gProgramName.c_str(), romName.c_str());
+              if (!*hasError) {
+                *hasError = true;
+              }
             }
-            if (md5) {
-              delete md5;
-              md5 = 0;
+            if (rom) {
+              delete rom;
+              rom = 0;
             }
           } else {
-            fprintf(stderr, "\n%s: error: failed to fetch %s\n",
-                gProgramName.c_str(), romName.c_str());
-            if (!*hasError) {
-              *hasError = true;
-            }
-          }
-          if (rom) {
-            delete rom;
-            rom = 0;
+            fprintf(stdout, "%s: `%s' exists and has already been "
+                "downloaded\n", gProgramName.c_str(), romName.c_str());
           }
         }
       }

@@ -99,5 +99,7 @@ namespace bacon
     close();
     return Net::pStatus == CURLE_OK;
   }
+
+
 }
 

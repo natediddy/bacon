@@ -33,6 +33,7 @@ namespace bacon
     ~Rom();
 
     bool fetch();
+    bool exists() const;
 
   protected:
     bool setup();
