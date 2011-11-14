@@ -68,6 +68,10 @@ CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 CXXLD = $(CXX)
 CXXLINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
 	-o $@
+COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
+	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+CCLD = $(CC)
+LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
 SOURCES = $(bacon_SOURCES)
 DIST_SOURCES = $(bacon_SOURCES)
 ETAGS = etags
@@ -186,7 +190,20 @@ bacon_SOURCES = bacon-actions.cpp \
 			  bacon-net.cpp \
 			  bacon-progress.cpp \
 			  bacon-rom.cpp \
-			  bacon-util.cpp
+			  bacon-util.cpp \
+			  bacon-actions.h \
+			  bacon-cmd.h \
+			  bacon-device.h \
+			  bacon-devicelist.h \
+			  bacon-env.h \
+			  bacon-file.h \
+			  bacon-htmldoc.h \
+			  bacon-htmlparser.h \
+			  bacon-md5.h \
+			  bacon-net.h \
+			  bacon-progress.h \
+			  bacon-rom.h \
+			  bacon-util.h
 
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-am

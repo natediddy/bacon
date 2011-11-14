@@ -1,4 +1,5 @@
 bin_PROGRAMS=bacon
+
 bacon_SOURCES=bacon-actions.cpp \
 			  bacon-cmd.cpp \
 			  bacon-device.cpp \
@@ -12,5 +13,17 @@ bacon_SOURCES=bacon-actions.cpp \
 			  bacon-net.cpp \
 			  bacon-progress.cpp \
 			  bacon-rom.cpp \
-			  bacon-util.cpp
-
+			  bacon-util.cpp \
+			  bacon-actions.h \
+			  bacon-cmd.h \
+			  bacon-device.h \
+			  bacon-devicelist.h \
+			  bacon-env.h \
+			  bacon-file.h \
+			  bacon-htmldoc.h \
+			  bacon-htmlparser.h \
+			  bacon-md5.h \
+			  bacon-net.h \
+			  bacon-progress.h \
+			  bacon-rom.h \
+			  bacon-util.h
