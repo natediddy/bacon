@@ -17,8 +17,8 @@
 
 #include "bacon-net.h"
 
-#ifdef BACON_VERSION
-#define BACON_AGENT "Bacon/"BACON_VERSION
+#ifdef PACKAGE_VERSION
+#define BACON_AGENT "Bacon/"PACKAGE_VERSION
 #else
 #define BACON_AGENT "Bacon/0.00-test"
 #endif
