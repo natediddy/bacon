@@ -16,6 +16,7 @@
  */
 
 #include <cstdio>
+#include <ctime>
 
 #include "bacon-util.h"
 
@@ -28,6 +29,11 @@
 #define DIVLNG(x) (bytes / ((long)(x)))
 
 using std::string;
+
+namespace
+{
+  unsigned int rSeed;
+}
 
 namespace bacon
 {
@@ -101,6 +107,22 @@ namespace bacon
       string result(buf);
       result += abbr;
       return result;
+    }
+
+    void randomSeed()
+    {
+      rSeed = (unsigned int)time(0);
+      random();
+      random();
+      random();
+    }
+
+    unsigned int random()
+    {
+      unsigned int i;
+
+      i = rSeed = rSeed * 1765301923 + 12345;
+      return (i << 16) | ((i >> 16) & 0xffff);
     }
   }
 }

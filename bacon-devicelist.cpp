@@ -26,46 +26,35 @@
 #include "bacon-htmlparser.h"
 
 #define LIST_CONFIG_FILENAME "device_list"
+#define APPEND_RANDOM_ID \
+  mDeviceIds.push_back(string(PSEUDO_RANDOM_DEVICE_ID))
 
 using std::string;
 using std::vector;
 
 namespace
 {
-  string realName()
-  {
-    string name;
-
-#ifdef _WIN32
-    name = LIST_CONFIG_FILENAME;
-    name += ".txt";
-#else
-    name = LIST_CONFIG_FILENAME;
-#endif
-    return name;
-  }
-
-  void makeHidden(string * path)
-  {
-#ifdef _WIN32
-    SetFileAttributes((*path).c_str(), FILE_ATTRIBUTE_HIDDEN);
-#else
-    string _path = ".";
-
-    _path += (*path);
-    (*path) = _path;
-#endif
-  }
-
   string prepareListFile()
   {
-    string name = realName();
+    string name(LIST_CONFIG_FILENAME);
 
-    makeHidden(&name);
+#ifndef _WIN32
+    string _name(".");
+    _name += name;
+    name = _name;
+#else
+    name += ".txt";
+#endif
+
     string p[] = {
       bacon::env::appDir(), name, ""
     };
-    return bacon::env::pathJoin(p);
+    string path(bacon::env::pathJoin(p));
+
+#ifdef _WIN32
+    SetFileAttributes(path.c_str(), FILE_ATTRIBUTE_HIDDEN);
+#endif
+    return path;
   }
 }
 
@@ -97,7 +86,13 @@ namespace bacon
           }
           if (open("w+")) {
             writeDateLine();
-            for (vector<string>::size_type i=0; i < mDeviceIds.size(); i++) {
+            for (vector<string>::size_type i = 0;
+                 i < mDeviceIds.size();
+                 i++)
+            {
+              if (mDeviceIds[i] == PSEUDO_RANDOM_DEVICE_ID) {
+                continue;
+              }
               writeLine(mDeviceIds[i]);
             }
             close();
@@ -105,6 +100,7 @@ namespace bacon
         }
         delete parser;
         parser = 0;
+        APPEND_RANDOM_ID;
         return true;
       }
     }
@@ -119,6 +115,7 @@ namespace bacon
       }
       close();
     }
+    APPEND_RANDOM_ID;
   }
 
   size_t DeviceList::size() const

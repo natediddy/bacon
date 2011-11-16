@@ -23,6 +23,8 @@
 
 #include "bacon-file.h"
 
+#define PSEUDO_RANDOM_DEVICE_ID "random"
+
 namespace bacon
 {
   class DeviceList : public File {

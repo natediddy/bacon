@@ -263,7 +263,9 @@ namespace bacon
     total = deviceList.size();
     fprintf(stdout, "There are currently %zu supported devices:\n", total);
 
-    for (size_t i = 0; i < total; i++) {
+    size_t i;
+
+    for (i = 0; i < total; i++) {
       if ((i + 1) < 10) {
         fprintf(stdout, "   ");
       } else if ((i + 1) < 100) {
@@ -271,7 +273,11 @@ namespace bacon
       } else if ((i + 1) < 1000) {
         fprintf(stdout, " ");
       }
-      fprintf(stdout, "%zu)  %s\n", i + 1, deviceList[i].c_str());
+      fprintf(stdout, "%zu)  %s", i + 1, deviceList[i].c_str());
+      if (deviceList[i] == PSEUDO_RANDOM_DEVICE_ID) {
+        fputs("  (chooses a device at random)", stdout);
+      }
+      fputc('\n', stdout);
     }
     return EXIT_SUCCESS;
   }

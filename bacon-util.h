@@ -29,6 +29,8 @@ namespace bacon
     std::string bytesToReadable(const size_t &,
                                 const long &,
                                 const bool precision = false);
+    void randomSeed();
+    unsigned int random();
   }
 }
 

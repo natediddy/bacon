@@ -1,0 +1,17 @@
+#!/bin/sh
+#
+# Updates Bacon's version string across autotools and cmake
+#
+
+if [ $# != 3 ]; then
+  echo "usage: $0 \$1 \$2 \$3"
+  echo "  where:"
+  echo "    '\$1' = major release integer,"
+  echo "    '\$2' = minor release integer,"
+  echo "    '\$3' = build version integer"
+  exit
+fi
+
+sed -i "s/\[bacon\], \[[0-9].[0-9][0-9].[0-9]\]/\[bacon\], \[$1.$2.$3\]/" \
+  configure.ac
+sed -i "s/[0-9].[0-9][0-9].[0-9]/$1.$2.$3/" config.cmake

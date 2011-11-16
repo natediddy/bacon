@@ -16,16 +16,47 @@
  */
 
 #include "bacon-device.h"
+#include "bacon-devicelist.h"
 #include "bacon-env.h"
 #include "bacon-file.h"
+#include "bacon-util.h"
 
 using std::string;
+
+namespace
+{
+  string getRandomDeviceIndex()
+  {
+    bacon::DeviceList list;
+    unsigned int index;
+
+    list.getLocal();
+    bacon::util::randomSeed();
+    index = bacon::util::random();
+    while (index >= (list.size() - 1)) {
+      index = bacon::util::random() / 10000;
+    }
+    return list[index];
+  }
+}
 
 namespace bacon
 {
   Device::Device(const string & device_id)
     : mId(device_id)
-  {}
+  {
+    if (mId == PSEUDO_RANDOM_DEVICE_ID) {
+      DeviceList deviceList;
+      unsigned int index;
+      deviceList.getLocal();
+      util::randomSeed();
+      index = util::random();
+      while (index >= (deviceList.size() - 1)) {
+        index = util::random() % 100;
+      }
+      mId = deviceList[index];
+    }
+  }
 
   Device::~Device()
   {}
