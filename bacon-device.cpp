@@ -46,15 +46,7 @@ namespace bacon
     : mId(device_id)
   {
     if (mId == PSEUDO_RANDOM_DEVICE_ID) {
-      DeviceList deviceList;
-      unsigned int index;
-      deviceList.getLocal();
-      util::randomSeed();
-      index = util::random();
-      while (index >= (deviceList.size() - 1)) {
-        index = util::random() % 100;
-      }
-      mId = deviceList[index];
+      mId = getRandomDeviceIndex();
     }
   }
 
