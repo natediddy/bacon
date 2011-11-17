@@ -15,5 +15,5 @@ fi
 sed -i "s/\[bacon\], \[[0-9].[0-9][0-9].[0-9]\]/\[bacon\], \[$1.$2.$3\]/" \
   configure.ac
 sed -i "s/[0-9].[0-9][0-9].[0-9]/$1.$2.$3/" config.cmake
-sed -i "s/pkgver=[0-9].[0-9][0-9].[0-9]/pkgver=$1.$2.$3/" PKGBUILD
-sed -i 's/pkgrel=[0-9]/pkgrel=1/' PKGBUILD
+sed -i "s/pkgver=[0-9].[0-9][0-9].[0-9]/pkgver=$1.$2.$3/" linux/arch/PKGBUILD
+sed -i "s/version [0-9].[0-9][0-9].[0-9]/version $1.$2.$3/" bacon.1
