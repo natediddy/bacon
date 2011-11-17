@@ -1,5 +1,6 @@
 bin_PROGRAMS=bacon
 
+dist_man_MANS=bacon.1
 bacon_SOURCES=bacon-actions.cpp \
 			  bacon-cmd.cpp \
 			  bacon-device.cpp \

@@ -18,4 +18,4 @@
 #cmakedefine realloc
 #cmakedefine size_t
 #define PACKAGE_NAME "bacon"
-#define PACKAGE_VERSION "0.14.1"
+#define PACKAGE_VERSION "0.14.2"

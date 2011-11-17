@@ -1,0 +1,61 @@
+.TH BACON 1 "November 16, 2011" "version 0.14.1" "USER COMMANDS"
+.SH NAME
+bacon \- Download CyanogenMod ROMs for Android devices
+.SH SYNOPSIS
+.B bacon
+[\fI-d\fR|\fI-u\fR] [\fI-S\fR|\fI-s\fR|\fI-n\fR|\fI-r\fR \fIDEVICE_ID\fR ...]
+.SH DESCRIPTION
+.B bacon
+can be used to download installable CyanogenMod ROMs for supported Google Android mobile devices.  To discover if an Android device is supported by the CyanogenMod project, you must first learn its \fIDEVICE_ID\fR.
+This information can usually be found within the file '/system/build.prop' on the device's filesystem in a 'key=value' pair.
+The 'key' is usually one of 'ro.product.device', 'ro.product.board', and/or 'ro.build.product'.
+The 'value' part of the pair is the \fIDEVICE_ID\fR.
+.PP
+If your device is supported by the CyanogenMod project, its \fIDEVICE_ID\fR should be listed in the ID-list produced by running 'bacon -d'.
+.SH OPTIONS
+.TP
+\fB\-d\fR, \fB\-\-devices\fR
+display a list of all Android devices currently supported by CyanogenMod
+.TP
+\fB\-u\fR, \fB\-\-update\-devicelist\fR
+update the local database with the latest, currently supported Android devices
+.TP
+\fB\-S\fR, \fB\-\-show\fR \fIDEVICE_ID\fR
+show the latest available ROMs for \fIDEVICE_ID\fR without actually downloading them
+.TP
+\fB\-s\fR, \fB\-\-stable\fR
+download the latest available stable CyanogenMod release for \fIDEVICE_ID\fR
+.TP
+\fB\-n\fR, \fB\-\-nightly\fR
+download the latest available nightly CyanogenMod build for \fIDEVICE_ID\fR
+.TP
+\fB\-r\fR, \fB\-\-release\-candidate\fR
+download the latest available CyanogenMod release candidate for \fIDEVICE_ID\fR
+.TP
+\fB\-h\fR, \fB\-?\fR, \fB\-\-help\fR
+display usage information and exit
+.TP
+\fB\-v\fR, \fB\-\-version\fR
+display version information and exit
+.SH EXAMPLES
+.TP
+Show the latest stable, nightly, and release candidate ROMs for the Motorola Droid:
+bacon -S sholes
+.TP
+Download the latest stable ROM for the Nexus One and latest nightly ROM for the HTC Evo:
+bacon \-s passion \-n espresso
+.TP
+Ensure we have the latest available device list and then download the latest release candidate ROM for a randomly chosen device:
+bacon \-u && bacon\-r random
+.PP
+.SH "EXIT STATUS"
+Returns zero on success and non-zero if an error occurred.
+.SH AUTHOR
+Nathan Forbes
+.SH "REPORTING BUGS"
+Report bugs to me@nathanforbes.com
+.SH COPYRIGHT
+Copyright \(co 2011 Nathan Forbes.
+License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>.
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.
