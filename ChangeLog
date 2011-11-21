@@ -1,3 +1,14 @@
+0.20.0:
+  - remove CMake
+  - better organized
+  - small system for handling/overriding default settings through config
+    files and command line options
+  - minor optimization and readability improvements throughout code
+
+0.14.2:
+  - man page
+  - PKGBUILD for ArchLinux
+
 0.14:
   - added CMake build system
 
