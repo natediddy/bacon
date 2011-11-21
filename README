@@ -1,19 +1,22 @@
-bacon
----------
-
+Bacon
+==========
 Use this command line tool to download CyanogenMod ROMs for any CM-supported
 Android device.
 
 Bacon will probably currently only build and run properly on Linux machines,
 but aims to be cross-platform very soon.
 
-Note about Arch Linux:
-----------------------
+
+
+Note about Arch Linux
+=====================
 If you are an Arch Linux user, the latest version of bacon can be always be
 found in the Arch User Repository (AUR).
 
-Building:
----------
+
+
+Building
+============
 First, obtain the latest source with Git:
     git clone git://github.com/natediddy/bacon.git bacon
 
@@ -26,6 +29,16 @@ Build and install:
     # And optionally to install on your system:
     sudo make install
 
+To build for installation with `pacman' (Arch Linux only):
+    git clone git://github.com/natediddy/bacon.git bacon
+    cd bacon/linux/arch
+    makepkg
+    sudo pacman -U bacon-${pkgver}-${pkgrel}-${arch}.pkg.tar.xz
+
+
+
+Usage
+===========
 Usage: bacon [option] [DEVICE] ...
 Options:
   -S, --show               show latest builds for DEVICE(s), don't download
@@ -45,4 +58,7 @@ Options:
 
 More than one DEVICE can be given, but only ONE option per DEVICE list.
 
-Contact me at <me@nathanforbes.com>
+More usage information can be found in its man pages with the command:
+    man bacon
+
+Contact me, and report bugs to <me@nathanforbes.com>
