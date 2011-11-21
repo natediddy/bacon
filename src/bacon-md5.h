@@ -24,10 +24,11 @@ namespace bacon
 {
   class Md5 : public File {
   public:
-    Md5(const std::string &path);
+    Md5(const std::string &path,
+        const std::string &deviceId,
+        const std::string &deviceType);
 
-    bool verify(const std::string &deviceId,
-                const std::string &deviceType);
+    bool verify();
 
   private:
     std::string mLocalHash;

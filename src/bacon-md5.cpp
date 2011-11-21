@@ -417,7 +417,9 @@ namespace
 
 namespace bacon
 {
-  Md5::Md5(const string &path)
+  Md5::Md5(const string &path,
+           const string &deviceId,
+           const string &deviceType)
     : File(path)
     , mLocalHash("")
     , mRemoteHash("")
@@ -428,16 +430,17 @@ namespace bacon
     } else {
       LOGW("could not read `%s' to generate MD5 hash!", name().c_str());
     }
-  }
 
-  bool Md5::verify(const string &deviceId, const string &deviceType)
-  {
     HtmlDoc doc(deviceId, deviceType);
 
     if (doc.fetch()) {
       HtmlParser parser(doc.content());
       mRemoteHash = parser.checksumStringForFile(baseName());
     }
+  }
+
+  bool Md5::verify()
+  {
     return mLocalHash == mRemoteHash;
   }
 }

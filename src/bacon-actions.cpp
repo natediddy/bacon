@@ -59,8 +59,8 @@ namespace
     bool ret = false;
 
     if (fp.isFile()) {
-      bacon::Md5 md5(path);
-      if (md5.verify(deviceId, deviceType)) {
+      bacon::Md5 md5(path, deviceId, deviceType);
+      if (md5.verify()) {
         ret = true;
       }
     } else if (fp.isDir()) {
@@ -116,12 +116,12 @@ namespace
             if (rom->fetch()) {
               fputs("\nVerifying file integrity...", stdout);
 
-              bacon::Md5 *md5 = new bacon::Md5(romPath);
+              bacon::Md5 *md5 = new bacon::Md5(romPath, device->id(), type);
 
-              if (!md5->verify(device->id(), type)) {
+              if (!md5->verify()) {
                 fputs(" FAIL\n", stdout);
                 fprintf(stderr, "%s: `%s' may be corrupt!\n",
-                    romPath.c_str(), gProgramName.c_str());
+                    gProgramName.c_str(), romPath.c_str());
               } else {
                 fputs(" PASS\n", stdout);
                 fprintf(stdout, "New ROM located at:\n\t%s\n",
@@ -167,7 +167,13 @@ namespace
           bacon::HtmlParser parser(doc->content());
           string romName = parser.latestRomForDevice(device->id());
 
-          fprintf(stdout, "  %s: %s\n", types[i].c_str(),
+          fprintf(stdout, "  %s:", types[i].c_str());
+
+          for (size_t j = 0; j < (7 - types[i].size() + 2); ++j) {
+            fputc(' ', stdout);
+          }
+
+          fprintf(stdout, "%s\n",
               romName.empty() ? "(not found)" : romName.c_str());
         }
       }

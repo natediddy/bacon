@@ -44,6 +44,19 @@
 using std::string;
 using std::vector;
 
+namespace
+{
+  bool filenameMatch(const string &s, const string &n, const size_t i)
+  {
+    for (size_t j = 0, k = i; j < n.size(); ++j, ++k) {
+      if (s[k] != n[j]) {
+        return false;
+      }
+    }
+    return true;
+  }
+}
+
 namespace bacon
 {
   HtmlParser::HtmlParser(const string &content)
@@ -76,7 +89,7 @@ namespace bacon
     string hash("");
 
     for (size_t i = 0; i < mContent.size(); ++i) {
-      if (mContent.substr(i, i + filename.size()) == filename) {
+      if (filenameMatch(mContent, filename, i)) {
         i += filename.size();
         while (true) {
           if (MD5_CLASS(mContent, i)) {
