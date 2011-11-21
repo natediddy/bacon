@@ -7,6 +7,11 @@ Android device.
 Bacon will probably currently only build and run properly on Linux machines,
 but aims to be cross-platform very soon.
 
+Note about Arch Linux:
+----------------------
+If you are an Arch Linux user, the latest version of bacon can be always be
+found in the Arch User Repository (AUR).
+
 Building:
 ---------
 First, obtain the latest source with Git:
