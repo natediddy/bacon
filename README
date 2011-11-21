@@ -9,38 +9,21 @@ but aims to be cross-platform very soon.
 
 Building:
 ---------
-At the moment, bacon includes 2 methods of compiling: Autotools and CMake.
-
 First, obtain the latest source with Git:
     git clone git://github.com/natediddy/bacon.git bacon
+
 Change to the source directory:
     cd bacon
-Build using Autotools:
-    ./configure
+
+Build and install:
+    ./configure --prefix=/usr --sysconfdir=/etc
     make
-    # Or optionally to install on your system:
-    sudo make install
-Build using CMake (ensure CMake is installed on your system first!):
-    mkdir build
-    cd build
-    cmake ..
-    make
-    # Or optionally to install on your system:
+    # And optionally to install on your system:
     sudo make install
 
-Two separate scripts are also provided to automate both of the methods above.
-They are 'buildauto' and 'buildcmake'. You can run these from the source
-directory and (optionally) provide 'make' with options when invoking either
-one, like so:
-    ./buildauto prefix=$HOME install
-    sudo ./buildcmake install
-
-Usage:
----------
-bacon [-S|-s|-n|-r|-d|-h|-v] DEVICE ...
-
+Usage: bacon [option] [DEVICE] ...
 Options:
-  -S, --show               show latest builds for DEVICE(s), do not download
+  -S, --show               show latest builds for DEVICE(s), don't download
   -s, --stable             download latest stable build for DEVICE(s)
   -n, --nightly            download latest nightly build for DEVICE(s)
   -r, --release-candidate  download latest release candidate for DEVICE(s)
@@ -48,7 +31,13 @@ Options:
   -u, --update-devices     update the current DEVICE list and exit
   -h, -?, --help           display this message and exit
   -v, --version            display version information and exit
+  -b BASEDIR, --basedir=BASEDIR
+                           set alternate base directory
+  -l LOGPATH, --logpath=LOGPATH
+                           write log to alternate location
+  -c ROOTURL, --cmserver=ROOTURL
+                           use alternate root url to connect with
 
-More than 1 DEVICE can be given: but only 1 option per DEVICE-list
+More than one DEVICE can be given, but only ONE option per DEVICE list.
 
-Contact me at me@nathanforbes.com
+Contact me at <me@nathanforbes.com>
