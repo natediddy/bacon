@@ -30,7 +30,7 @@ namespace bacon
 
     void allDeviceIds(std::vector<std::string> &vec) const;
     std::string checksumStringForFile(const std::string &filename) const;
-    std::string latestRomForDevice(const std::string &deviceId) const;
+    std::string latestRomForDevice() const;
     std::string currentContent() const;
 
   private:

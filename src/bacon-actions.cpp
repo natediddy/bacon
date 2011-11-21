@@ -99,7 +99,7 @@ namespace
 
       if (doc->fetch()) {
         bacon::HtmlParser parser(doc->content());
-        string romName = parser.latestRomForDevice(device->id());
+        string romName = parser.latestRomForDevice();
 
         delete doc;
         doc = NULL;
@@ -165,7 +165,7 @@ namespace
 
         if (doc->fetch()) {
           bacon::HtmlParser parser(doc->content());
-          string romName = parser.latestRomForDevice(device->id());
+          string romName = parser.latestRomForDevice();
 
           fprintf(stdout, "  %s:", types[i].c_str());
 

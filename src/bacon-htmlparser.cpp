@@ -107,7 +107,7 @@ namespace bacon
     return hash;
   }
 
-  string HtmlParser::latestRomForDevice(const string &device) const
+  string HtmlParser::latestRomForDevice() const
   {
     string name("");
 
