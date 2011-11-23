@@ -41,9 +41,8 @@ namespace bacon
       string result("");
       const char *val = getenv(key.c_str());
 
-      if (val) {
+      if (val)
         result += val;
-      }
       return result;
     }
 
@@ -52,9 +51,8 @@ namespace bacon
       string result("");
       const char *val = getenv(key);
 
-      if (val) {
+      if (val)
         result += val;
-      }
       return val;
     }
 
@@ -67,11 +65,11 @@ namespace bacon
     {
       string result;
 
-      for (int i = 0; !arr[i].empty(); i++) {
+      for (int i = 0; !arr[i].empty(); i++)
+      {
         result += arr[i];
-        if (!arr[i + 1].empty()) {
+        if (!arr[i + 1].empty())
           result += PATH_SEP_CHAR;
-        }
       }
       return result;
     }

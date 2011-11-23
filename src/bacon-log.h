@@ -31,8 +31,10 @@ namespace bacon
 }
 
 #define LOG_MSG__(tag, msg, ...) \
-  do { \
-    if (bacon::log::_isActive()) { \
+  do \
+  { \
+    if (bacon::log::_isActive()) \
+    { \
       bacon::log::_write( \
           bacon::log::_prefix(tag, __FILE__, __LINE__), \
           msg, __VA_ARGS__); \

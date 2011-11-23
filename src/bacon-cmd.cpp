@@ -64,30 +64,30 @@ namespace
 
   bool isConfigCmd(const string &arg)
   {
-    for (size_t i = 0; !configOptions[i].empty(); ++i) {
-      if (arg.find(configOptions[i]) != string::npos) {
+    for (size_t i = 0; !configOptions[i].empty(); ++i)
+    {
+      if (arg.find(configOptions[i]) != string::npos)
         return true;
-      }
     }
     return false;
   }
 
   bool isBasicCmd(const string &arg)
   {
-    for (size_t i = 0; !basicOptions[i].empty(); i++) {
-      if (arg == basicOptions[i]) {
+    for (size_t i = 0; !basicOptions[i].empty(); i++)
+    {
+      if (arg == basicOptions[i])
         return true;
-      }
     }
     return false;
   }
 
   bool isActionCmd(const string &arg)
   {
-    for (size_t i = 0; !actionOptions[i].empty(); i++) {
-      if (arg == actionOptions[i]) {
+    for (size_t i = 0; !actionOptions[i].empty(); i++)
+    {
+      if (arg == actionOptions[i])
         return true;
-      }
     }
     return false;
   }
@@ -96,17 +96,20 @@ namespace
   {
     char *lastSlash = NULL;
 
-    if (!execName) {
+    if (!execName)
+    {
       gProgramName = PACKAGE_NAME;
       return;
     }
 
     lastSlash = strrchr(execName, bacon::env::dirSeparator());
 
-    if (!lastSlash) {
+    if (!lastSlash)
+    {
 #ifdef _WIN32
       lastSlash = strrchr(execName, '/');
-      if (!lastSlash) {
+      if (!lastSlash)
+      {
 #endif
         gProgramName = execName;
         return;
@@ -126,9 +129,8 @@ namespace bacon
   public:
     ConfigCmdUtilImpl()
     {
-      for (prefs::Key key = 0; key < KEY_TOTAL; ++key) {
+      for (prefs::Key key = 0; key < KEY_TOTAL; ++key)
         mVals[key] = "";
-      }
     }
 
     void addNew(const string &arg, const string &val)
@@ -138,31 +140,27 @@ namespace bacon
           || arg == "/b"
 #endif
          )
-      {
         mVals[KEY_BASE_DIR] = val;
-      } else if (arg == "-l" || arg == "--logpath"
+      else if (arg == "-l" || arg == "--logpath"
 #ifdef _WIN32
           || arg == "/l"
 #endif
          )
-      {
         mVals[KEY_LOG_PATH] = val;
-      } else if (arg == "-c" || arg == "--cmserver"
+      else if (arg == "-c" || arg == "--cmserver"
 #ifdef _WIN32
           || arg == "/c"
 #endif
          )
-      {
         mVals[KEY_CM_ROOT_SERVER] = val;
-      }
     }
 
     void set()
     {
-      for (prefs::Key key = 0; key < KEY_TOTAL; ++key) {
-        if (!mVals[key].empty()) {
+      for (prefs::Key key = 0; key < KEY_TOTAL; ++key)
+      {
+        if (!mVals[key].empty())
           prefs::override(key, mVals[key]);
-        }
       }
     }
 
@@ -183,30 +181,25 @@ namespace bacon
           || basic == "/h"
 #endif
          )
-      {
         mFun = showHelp;
-      } else if (basic == "-v" || basic == "--version"
+      else if (basic == "-v" || basic == "--version"
 #ifdef _WIN32
           || basic == "/v"
 #endif
          )
-      {
         mFun = showVersion;
-      } else if (basic == "-d" || basic == "--devices"
+      else if (basic == "-d" || basic == "--devices"
 #ifdef _WIN32
           || basic == "/d"
 #endif
          )
-      {
         mFun = showDevices;
-      } else if (basic == "-u" || basic == "--update-devices"
+      else if (basic == "-u" || basic == "--update-devices"
 #ifdef _WIN32
           || basic == "/u"
 #endif
          )
-      {
         mFun = updateDeviceList;
-      }
     }
 
     int perform() const
@@ -228,36 +221,33 @@ namespace bacon
           || action == "/S"
 #endif
          )
-      {
         mFun = showAllRoms;
-      } else if (action == "-s" || action == "--stable"
+      else if (action == "-s" || action == "--stable"
 #ifdef _WIN32
           || action == "/s"
 #endif
          )
-      {
         mFun = downloadLatestStableRom;
-      } else if (action == "-n" || action == "--nightly"
+      else if (action == "-n" || action == "--nightly"
 #ifdef _WIN32
           || action == "/n"
 #endif
          )
-      {
         mFun = downloadLatestNightlyRom;
-      } else if (action == "-r" || action == "--release-candidate"
+      else if (action == "-r" || action == "--release-candidate"
 #ifdef _WIN32
           || action == "/r"
 #endif
          )
-      {
         mFun = downloadLatestRcRom;
-      }
     }
 
     ~ActionCmdUtilImpl()
     {
-      for (size_t i = 0; i < mDevices.size(); i++) {
-        if (mDevices[i]) {
+      for (size_t i = 0; i < mDevices.size(); i++)
+      {
+        if (mDevices[i])
+        {
           delete mDevices[i];
           mDevices[i] = NULL;
         }
@@ -279,12 +269,12 @@ namespace bacon
     , mBasic(NULL)
   {
     properProgramName(**argv);
-
     (void)*++(*argv);
-    do {
-      if (!**argv) {
+
+    do
+    {
+      if (!**argv)
         break;
-      }
       mArgs.push_back(string(**argv));
     } while (*(*argv)++);
 
@@ -293,14 +283,18 @@ namespace bacon
 
   Cmd::~Cmd()
   {
-    if (mBasic) {
+    if (mBasic)
+    {
       delete mBasic;
       mBasic = NULL;
     }
 
-    if (mActions.size()) {
-      for (size_t i = 0; i < mActions.size(); i++) {
-        if (mActions[i]) {
+    if (mActions.size())
+    {
+      for (size_t i = 0; i < mActions.size(); i++)
+      {
+        if (mActions[i])
+        {
           delete mActions[i];
           mActions[i] = NULL;
         }
@@ -312,39 +306,45 @@ namespace bacon
   {
     size_t argCount = mArgs.size();
 
-    if (!argCount) {
+    if (!argCount)
+    {
       mBasic = new BasicCmdUtilImpl;
       return;
     }
 
-    for (size_t i = 0; i < argCount; ++i) {
-
-      if (isConfigCmd(mArgs[i])) {
-        if (!mConf) {
+    for (size_t i = 0; i < argCount; ++i)
+    {
+      if (isConfigCmd(mArgs[i]))
+      {
+        if (!mConf)
           mConf = new ConfigCmdUtilImpl;
-        }
-
-        if (mArgs[i][0] == '-' && mArgs[i][1] == '-') {
+        if (mArgs[i][0] == '-' && mArgs[i][1] == '-')
           mConf->addNew(mArgs[i].substr(0, mArgs[i].find_first_of('=')),
                         util::convertShellSymbols(mArgs[i].substr(
                             mArgs[i].find_first_of('=') + 1,
                             mArgs[i].size())));
-        } else {
+        else
+        {
           if ((i + 1) < argCount) {
             mConf->addNew(mArgs[i], util::convertShellSymbols(mArgs[i + 1]));
           }
           ++i;
         }
 
-      } else if (isBasicCmd(mArgs[i])) {
+      }
+      else if (isBasicCmd(mArgs[i]))
+      {
         mBasic = new BasicCmdUtilImpl(mArgs[i]);
         break;
-
-      } else if (isActionCmd(mArgs[i])) {
+      }
+      else if (isActionCmd(mArgs[i]))
+      {
         vector<Device *> devices;
         size_t i_save = i;
-        for (size_t j = i + 1; j < argCount; ++j) {
-          if (mArgs[j][0] != '-') {
+        for (size_t j = i + 1; j < argCount; ++j)
+        {
+          if (mArgs[j][0] != '-')
+          {
             devices.push_back(new Device(mArgs[j]));
             ++i;
             continue;
@@ -355,9 +355,8 @@ namespace bacon
       }
     }
 
-    if (mConf) {
+    if (mConf)
       mConf->set();
-    }
   }
 
   int Cmd::exec() const
@@ -365,19 +364,20 @@ namespace bacon
     int retval = EXIT_SUCCESS;
     bool error = false;
 
-    if (mBasic) {
+    if (mBasic)
       retval = mBasic->perform();
-    } else if (mActions.size()) {
-      for(size_t i = 0; i < mActions.size(); i++) {
-        if (mActions[i]->perform() == EXIT_FAILURE) {
-          if (!error) {
+    else if (mActions.size())
+    {
+      for(size_t i = 0; i < mActions.size(); i++)
+      {
+        if (mActions[i]->perform() == EXIT_FAILURE)
+        {
+          if (!error)
             error = true;
-          }
         }
       }
-      if (error) {
+      if (error)
         retval = EXIT_FAILURE;
-      }
     }
     return retval;
   }

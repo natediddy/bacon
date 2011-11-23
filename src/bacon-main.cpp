@@ -28,7 +28,8 @@ int main(int argc, char **argv)
   prefs::init();
   Cmd cmd(&argv);
 
-  if (prefs::check()) {
+  if (prefs::check())
+  {
     atexit(log::deactivate);
     log::activate();
     exit(cmd.exec());

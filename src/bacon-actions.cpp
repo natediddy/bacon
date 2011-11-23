@@ -43,11 +43,10 @@ namespace
   {
     bacon::DeviceList deviceList;
 
-    if (!deviceList.exists()) {
+    if (!deviceList.exists())
       deviceList.update();
-    } else {
+    else
       deviceList.getLocal();
-    }
     return deviceList.hasMatch(id);
   }
 
@@ -58,14 +57,14 @@ namespace
     bacon::File fp(path);
     bool ret = false;
 
-    if (fp.isFile()) {
+    if (fp.isFile())
+    {
       bacon::Md5 md5(path, deviceId, deviceType);
-      if (md5.verify()) {
+      if (md5.verify())
         ret = true;
-      }
-    } else if (fp.isDir()) {
-      LOGW("`%s' is a directory, not a file!", fp.name().c_str());
     }
+    else if (fp.isDir())
+      LOGW("`%s' is a directory, not a file!", fp.name().c_str());
     return ret;
   }
 
@@ -80,10 +79,11 @@ namespace
                       const Action &action,
                       const bacon::Device *device)
   {
-    if (action != SHOWONLY) {
+    if (action != SHOWONLY)
+    {
       string type;
-
-      switch (action) {
+      switch (action)
+      {
       case DOWNLOAD_ST:
         type = "stable";
         break;
@@ -94,87 +94,81 @@ namespace
         type = "rc";
         break;
       }
-
       bacon::HtmlDoc *doc = new bacon::HtmlDoc(device->id(), type);
-
-      if (doc->fetch()) {
+      if (doc->fetch())
+      {
         bacon::HtmlParser parser(doc->content());
         string romName = parser.latestRomForDevice();
-
         delete doc;
         doc = NULL;
-
-        if (!romName.empty()) {
+        if (!romName.empty())
+        {
           string p[] = {
             device->romDir(), romName, ""
           };
           string romPath = bacon::env::pathJoin(p);
-
-          if (!romExists(romPath, device->id(), type)) {
+          if (!romExists(romPath, device->id(), type))
+          {
             bacon::Rom *rom = new bacon::Rom(romName, romPath);
-
-            if (rom->fetch()) {
+            if (rom->fetch())
+            {
               fputs("\nVerifying file integrity...", stdout);
-
               bacon::Md5 *md5 = new bacon::Md5(romPath, device->id(), type);
-
-              if (!md5->verify()) {
+              if (!md5->verify())
+              {
                 fputs(" FAIL\n", stdout);
                 fprintf(stderr, "%s: `%s' may be corrupt!\n",
                     gProgramName.c_str(), romPath.c_str());
-              } else {
+              }
+              else
+              {
                 fputs(" PASS\n", stdout);
                 fprintf(stdout, "New ROM located at:\n\t%s\n",
                     romPath.c_str());
               }
-
-              if (md5) {
+              if (md5)
+              {
                 delete md5;
                 md5 = NULL;
               }
-
-            } else {
+            }
+            else
+            {
               fprintf(stderr, "\n%s: error: failed to fetch %s\n",
                   gProgramName.c_str(), romName.c_str());
- 
-              if (!*hasError) {
+              if (!*hasError)
                 *hasError = true;
-              }
             }
-
-            if (rom) {
+            if (rom)
+            {
               delete rom;
               rom = NULL;
             }
-
-          } else {
+          }
+          else
             fprintf(stdout, "%s: `%s' exists and has already been "
                 "downloaded\n", gProgramName.c_str(), romName.c_str());
-          }
         }
       }
-    } else {
+    }
+    else
+    {
       string types[3] = {
         "stable", "nightly", "rc"
       };
-
       fprintf(stdout, "%s:\n", device->id().c_str());
-
-      for (size_t i = 0; i < 3; i++) {
+      for (size_t i = 0; i < 3; i++)
+      {
         bacon::HtmlDoc *doc = new bacon::HtmlDoc(device->id(), types[i]);
-
-        if (doc->fetch()) {
+        if (doc->fetch())
+        {
           bacon::HtmlParser parser(doc->content());
           string romName = parser.latestRomForDevice();
-
           fprintf(stdout, "  %s:", types[i].c_str());
-
-          for (size_t j = 0; j < (7 - types[i].size() + 2); ++j) {
+          for (size_t j = 0; j < (7 - types[i].size() + 2); ++j)
             fputc(' ', stdout);
-          }
-
-          fprintf(stdout, "%s\n",
-              romName.empty() ? "(not found)" : romName.c_str());
+          fprintf(stdout, "%s\n", romName.empty() ?
+              "(not found)" : romName.c_str());
         }
       }
     }
@@ -185,49 +179,43 @@ namespace
   {
     bool hasError = false;
 
-    if (!devices.size()) {
+    if (!devices.size())
+    {
       fprintf(stderr, "%s: error: no device(s) given\n",
           gProgramName.c_str());
       return EXIT_FAILURE;
     }
 
-    for (vector<bacon::Device *>::size_type i = 0; i < devices.size(); i++) {
-
-      if (!validDevice(devices[i]->id())) {
+    for (vector<bacon::Device *>::size_type i = 0; i < devices.size(); i++)
+    {
+      if (!validDevice(devices[i]->id()))
+      {
         fprintf(stderr, "%s: warning: unknown device `%s', skipping...\n",
             gProgramName.c_str(),
             bacon::util::toUpperCase(devices[i]->id()).c_str());
         continue;
-      } else if (action != SHOWONLY) {
+      }
+      else if (action != SHOWONLY)
         devices[i]->createRomDir();
-      }
-
-      if (action == SHOWONLY) {
+      if (action == SHOWONLY)
         fputs("Showing ", stdout);
-      } else {
+      else
         fputs("Downloading ", stdout);
-      }
-
       fputs("latest ", stdout);
-
-      if (action == DOWNLOAD_ST) {
+      if (action == DOWNLOAD_ST)
         fputs("Stable ", stdout);
-      } else if (action == DOWNLOAD_NI) {
+      else if (action == DOWNLOAD_NI)
         fputs("Nightly ", stdout);
-      } else if (action == DOWNLOAD_RC) {
+      else if (action == DOWNLOAD_RC)
         fputs("Release Candidate ", stdout);
-      }
-
       fprintf(stdout, "%s for %s...\n",
           (action == SHOWONLY) ? "ROMs" : "ROM",
           bacon::util::toUpperCase(devices[i]->id()).c_str());
-
       downloadAction(&hasError, action, devices[i]);
     }
 
-    if (hasError) {
+    if (hasError)
       return EXIT_FAILURE;
-    }
     return EXIT_SUCCESS;
   }
 }
@@ -287,35 +275,33 @@ namespace bacon
   {
     DeviceList deviceList;
 
-    if (!deviceList.exists()) {
-      if (!deviceList.update()) {
+    if (!deviceList.exists())
+    {
+      if (!deviceList.update())
+      {
         fprintf(stderr, "%s: error: could not retrieve device list, "
             "do you have an internet connection?\n", gProgramName.c_str());
         return EXIT_FAILURE;
       }
-    } else {
-      deviceList.getLocal();
     }
+    else
+      deviceList.getLocal();
 
     size_t total = deviceList.size();
 
     fprintf(stdout, "There are currently %zu supported devices:\n", total);
 
-    for (size_t i = 0; i < total; ++i) {
-
-      if ((i + 1) < 10) {
+    for (size_t i = 0; i < total; ++i)
+    {
+      if ((i + 1) < 10)
         fprintf(stdout, "   ");
-      } else if ((i + 1) < 100) {
+      else if ((i + 1) < 100)
         fprintf(stdout, "  ");
-      } else if ((i + 1) < 1000) {
+      else if ((i + 1) < 1000)
         fprintf(stdout, " ");
-      }
-
       fprintf(stdout, "%zu)  %s", i + 1, deviceList[i].c_str());
-
-      if (deviceList[i] == PSEUDO_RANDOM_DEVICE_ID) {
+      if (deviceList[i] == PSEUDO_RANDOM_DEVICE_ID)
         fputs("  (chooses a device at random)", stdout);
-      }
       fputc('\n', stdout);
     }
     return EXIT_SUCCESS;
@@ -326,7 +312,8 @@ namespace bacon
     DeviceList deviceList;
     vector<string> oldList;
 
-    if (deviceList.exists()) {
+    if (deviceList.exists())
+    {
       deviceList.getLocal();
       oldList = deviceList.rawList();
     }
@@ -335,13 +322,13 @@ namespace bacon
 
     fputs("Updating device list...", stdout);
 
-    if (!lastUpdated.empty()) {
+    if (!lastUpdated.empty())
       fprintf(stdout, " (last updated %s)", lastUpdated.c_str());
-    }
 
     fputc('\n', stdout);
 
-    if (!deviceList.update()) {
+    if (!deviceList.update())
+    {
       fprintf(stderr, "%s: error: could not retrieve devices list, "
           "do you have an internet connection?\n", gProgramName.c_str());
       return EXIT_FAILURE;
@@ -350,30 +337,29 @@ namespace bacon
     vector<string> newList = deviceList.rawList();
     int newCount = (int)newList.size() - (int)oldList.size();
 
-    if (newCount) {
-
+    if (newCount)
+    {
       fprintf(stdout, "There %s %i new %s:\n",
           (newCount > 1) ? "are" : "is", newCount,
           (newCount > 1) ? "devices" : "device");
-
-      for (vector<string>::size_type i = 0; i < newList.size(); i++) {
+      for (vector<string>::size_type i = 0; i < newList.size(); i++)
+      {
         bool noMatch = true;
-
-        for (vector<string>::size_type j = 0; j < oldList.size(); j++) {
-          if (newList[i] == oldList[j]) {
+        for (vector<string>::size_type j = 0; j < oldList.size(); j++)
+        {
+          if (newList[i] == oldList[j])
+          {
             noMatch = false;
             break;
           }
         }
-
-        if (noMatch) {
+        if (noMatch)
           fprintf(stdout, "%s\n", newList[i].c_str());
-        }
       }
 
-    } else {
-      fputs("No new devices since last update\n", stdout);
     }
+    else
+      fputs("No new devices since last update\n", stdout);
 
     fputs("Finished\n", stdout);
     return EXIT_SUCCESS;

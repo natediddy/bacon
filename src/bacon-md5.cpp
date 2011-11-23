@@ -171,9 +171,8 @@ namespace
                   unsigned char value,
                   unsigned int len)
   {
-    for (unsigned int i = 0; i < len; i++) {
+    for (unsigned int i = 0; i < len; i++)
       output[i] = value;
-    }
   }
 
   class Md5Impl {
@@ -196,15 +195,13 @@ namespace
 
     string toString() const
     {
-      if (!mFinalized) {
+      if (!mFinalized)
         return string("");
-      }
 
       char buf[33];
 
-      for (int i = 0; i < 16; i++) {
+      for (int i = 0; i < 16; i++)
         sprintf(buf + i * 2, "%02x", mDigest[i]);
-      }
 
       buf[32] = '\0';
       return string(buf);
@@ -215,7 +212,8 @@ namespace
                 unsigned int *input,
                 unsigned int len)
     {
-      for (unsigned int i = 0, j = 0; j < len; i++, j += 4) {
+      for (unsigned int i = 0, j = 0; j < len; i++, j += 4)
+      {
         output[j]   = (unsigned char)(input[i] & 0xff);
         output[j+1] = (unsigned char)((input[i] >> 8) & 0xff);
         output[j+2] = (unsigned char)((input[i] >> 16) & 0xff);
@@ -227,12 +225,11 @@ namespace
                 unsigned char *input,
                 unsigned int len)
     {
-      for (unsigned int i = 0, j = 0; j < len; i++, j += 4) {
+      for (unsigned int i = 0, j = 0; j < len; i++, j += 4)
         output[i] = ((unsigned int)input[j]) |
           (((unsigned int)input[j+1]) << 8) |
           (((unsigned int)input[j+2]) << 16) |
           (((unsigned int)input[j+3]) << 24);
-      }
     }
 
     void transform(unsigned char block[64])
@@ -323,9 +320,8 @@ namespace
 
     void update(unsigned char *buffer, unsigned int len)
     {
-      if (mFinalized) {
+      if (mFinalized)
         return;
-      }
 
       unsigned int inputIndex;
       unsigned int bufferIndex;
@@ -334,29 +330,22 @@ namespace
       bufferIndex = (unsigned int)((mCount[0] >> 3) & 0x3f);
       if ((mCount[0] += ((unsigned int)len << 3)) <
           ((unsigned int)len << 3))
-      {
         mCount[1]++;
-      }
 
       mCount[1] += ((unsigned int)len >> 29);
       bufferSpace = 64 - bufferIndex;
 
-      if (len >= bufferSpace) {
+      if (len >= bufferSpace)
+      {
         md5_memcpy(mBuffer + bufferIndex, buffer, bufferSpace);
         transform(mBuffer);
-
         for (inputIndex = bufferSpace;
              inputIndex + 63 < len;
              inputIndex += 64)
-        {
           transform(buffer + inputIndex);
-        }
-
         bufferIndex = 0;
-
-      } else {
+      } else
         inputIndex = 0;
-      }
 
       md5_memcpy(mBuffer + bufferIndex,
           buffer + inputIndex, len - inputIndex);
@@ -367,9 +356,8 @@ namespace
       unsigned char buffer[1024];
       int len;
 
-      while ((len = fread(buffer, 1, 1024, mStream))) {
+      while ((len = fread(buffer, 1, 1024, mStream)))
         update(buffer, len);
-      }
     }
 
     void finalize()
@@ -385,9 +373,8 @@ namespace
         0, 0, 0, 0, 0
       };
 
-      if (mFinalized) {
+      if (mFinalized)
         return;
-      }
 
       unsigned char bits[8];
       unsigned int index;
@@ -424,16 +411,18 @@ namespace bacon
     , mLocalHash("")
     , mRemoteHash("")
   {
-    if (open("rb")) {
+    if (open("rb"))
+    {
       Md5Impl impl(File::mStream);
       mLocalHash = impl.toString();
-    } else {
-      LOGW("could not read `%s' to generate MD5 hash!", name().c_str());
     }
+    else
+      LOGW("could not read `%s' to generate MD5 hash!", name().c_str());
 
     HtmlDoc doc(deviceId, deviceType);
 
-    if (doc.fetch()) {
+    if (doc.fetch())
+    {
       HtmlParser parser(doc.content());
       mRemoteHash = parser.checksumStringForFile(baseName());
     }

@@ -48,12 +48,12 @@ namespace bacon
     {
       string ret("");
 
-      for (size_t i = 0; i < str.size(); i++) {
-        if (str[i] >= 'a' && str[i] <= 'z') {
+      for (size_t i = 0; i < str.size(); ++i)
+      {
+        if (str[i] >= 'a' && str[i] <= 'z')
           ret += (str[i] - 'a' + 'A');
-        } else {
+        else
           ret += str[i];
-        }
       }
       return ret;
     }
@@ -62,12 +62,12 @@ namespace bacon
     {
       string ret("");
 
-      for (size_t i = 0; i < str.size(); i++) {
-        if (str[i] >= 'A' && str[i] <= 'Z') {
+      for (size_t i = 0; i < str.size(); ++i)
+      {
+        if (str[i] >= 'A' && str[i] <= 'Z')
           ret += (str[i] - 'A' + 'a');
-        } else {
+        else
           ret += str[i];
-        }
       }
       return ret;
     }
@@ -76,37 +76,43 @@ namespace bacon
                            const long &bytes,
                            const bool precision)
     {
-      if (!bytes) {
+      if (!bytes)
         return string("0B");
-      }
 
       char abbr;
       char buf[maxSize];
       double final;
 
-      if (DIVLNG(TB_FACTOR)) {
+      if (DIVLNG(TB_FACTOR))
+      {
         final = DIVDBL(TB_FACTOR);
         abbr = 'T';
-      } else if (DIVLNG(GB_FACTOR)) {
+      }
+      else if (DIVLNG(GB_FACTOR))
+      {
         final = DIVDBL(GB_FACTOR);
         abbr = 'G';
-      } else if (DIVLNG(MB_FACTOR)) {
+      }
+      else if (DIVLNG(MB_FACTOR))
+      {
         final = DIVDBL(MB_FACTOR);
         abbr = 'M';
-      } else if (DIVLNG(KB_FACTOR)) {
+      }
+      else if (DIVLNG(KB_FACTOR))
+      {
         final = DIVDBL(KB_FACTOR);
         abbr = 'K';
-      } else {
+      }
+      else
+      {
         final = (double)bytes;
         abbr = 'B';
       }
 
-      if (precision) {
+      if (precision)
         snprintf(buf, maxSize, "%.1f%c", final, abbr);
-      } else {
+      else
         snprintf(buf, maxSize, "%.0f%c", final, abbr);
-      }
-
       return string(buf);
     }
 
@@ -141,18 +147,16 @@ namespace bacon
     {
       if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') ||
           (c >= '0' && c <= '9'))
-      {
         return true;
-      }
       return false;
     }
 
     void strip(string &str)
     {
-      for (size_t i = 0; i < str.size(); ++i) {
-        if (str[i] == ' ') {
+      for (size_t i = 0; i < str.size(); ++i)
+      {
+        if (str[i] == ' ')
           str.erase(i, 1);
-        }
       }
     }
 
@@ -162,14 +166,13 @@ namespace bacon
 
       strip(url);
 
-      if (url[url.size() - 1] != '/') {
+      if (url[url.size() - 1] != '/')
         url += '/';
-      }
 
-      for (size_t i = 0; !urlPrefixes[i].empty(); ++i) {
-        if (url.substr(0, urlPrefixes[i].size()) == urlPrefixes[i]) {
+      for (size_t i = 0; !urlPrefixes[i].empty(); ++i)
+      {
+        if (url.substr(0, urlPrefixes[i].size()) == urlPrefixes[i])
           return true;
-        }
       }
       return false;
     }
@@ -178,23 +181,22 @@ namespace bacon
     {
       int totalVars = 0;
 
-      for (size_t i = 0; i < val.size(); ++i) {
-        if (val[i] == env::variableSymbol()) {
+      for (size_t i = 0; i < val.size(); ++i)
+      {
+        if (val[i] == env::variableSymbol())
           ++totalVars;
-        }
 #ifndef _WIN32
-        else if (val[i] == '~') {
+        else if (val[i] == '~')
           ++totalVars;
-        }
 #endif
       }
 
-      if (!totalVars) {
+      if (!totalVars)
         return string(val);
-      }
 
 #ifdef _WIN32
-      if (totalVars % 2 != 0) {
+      if (totalVars % 2 != 0)
+      {
         LOGW("syntax error shell string `%s'", val.c_str());
         return string(val);
       }
@@ -205,42 +207,43 @@ namespace bacon
       string var("");
       bool inVar = false;
 
-      for (size_t i = 0; i < val.size(); ++i) {
-        if (val[i] == env::variableSymbol()) {
-          if (!inVar) {
+      for (size_t i = 0; i < val.size(); ++i)
+      {
+        if (val[i] == env::variableSymbol())
+        {
+          if (!inVar)
             inVar = true;
-          }
 #ifdef _WIN32
-          else {
+          else
             inVar = false;
-          }
 #endif
           continue;
         }
-        else if (val[i] == '~') {
+        else if (val[i] == '~')
+        {
           conv += env::userHomeDir();
           continue;
         }
-
-        if (inVar) {
-          if (isAlphaNumeric(val[i]) || val[i] == '_') {
+        if (inVar)
+        {
+          if (isAlphaNumeric(val[i]) || val[i] == '_')
+          {
             var += val[i];
             continue;
-          } else {
+          }
+          else
+          {
             inVar = false;
             conv += env::variableValue(var);
             var = "";
           }
         }
-
-        if (!inVar) {
+        if (!inVar)
           conv += val[i];
-        }
       }
 
-      if (conv.empty()) {
+      if (conv.empty())
         return string(val);
-      }
       return conv;
     }
   }

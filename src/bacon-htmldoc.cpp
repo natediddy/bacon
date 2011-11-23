@@ -32,18 +32,19 @@ namespace
   {
     string result("");
 
-    if (!deviceId.empty()) {
+    if (!deviceId.empty())
+    {
       result += "?";
       result += DEVICE_PARAM;
       result += deviceId;
     }
 
-    if (!deviceType.empty()) {
-      if (result.empty()) {
+    if (!deviceType.empty())
+    {
+      if (result.empty())
         result += "?";
-      } else {
+      else
         result += "&";
-      }
       result += TYPE_PARAM;
       result += deviceType;
     }
@@ -61,9 +62,8 @@ namespace bacon
 
     mem->mem = (char *)realloc(mem->mem, mem->size + real + 1);
 
-    if (!mem->mem) {
+    if (!mem->mem)
       return 0;
-    }
 
     memcpy(&(mem->mem[mem->size]), buf, real);
     mem->size += real;
@@ -83,7 +83,8 @@ namespace bacon
 
   HtmlDoc::~HtmlDoc()
   {
-    if (mMemoryChunk.mem) {
+    if (mMemoryChunk.mem)
+    {
       free((void *)mMemoryChunk.mem);
       mMemoryChunk.mem = NULL;
     }
@@ -92,14 +93,14 @@ namespace bacon
 
   bool HtmlDoc::setup()
   {
-    if (!Net::setup()) {
+    if (!Net::setup())
       return false;
-    }
 
     Net::pStatus = curl_easy_setopt(Net::pCurl, CURLOPT_WRITEDATA,
         (void *)&mMemoryChunk);
 
-    if (Net::pStatus != CURLE_OK) {
+    if (Net::pStatus != CURLE_OK)
+    {
       LOGE("curl_easy_setopt: %s", curl_easy_strerror(Net::pStatus));
       return false;
     }
@@ -107,10 +108,8 @@ namespace bacon
     Net::pStatus = curl_easy_setopt(Net::pCurl, CURLOPT_WRITEFUNCTION,
         write_CB);
 
-    if (Net::pStatus != CURLE_OK) {
+    if (Net::pStatus != CURLE_OK)
       LOGE("curl_easy_setopt: %s", curl_easy_strerror(Net::pStatus));
-    }
-
     return Net::pStatus == CURLE_OK;
   }
 
@@ -118,14 +117,11 @@ namespace bacon
   {
     Net::pStatus = curl_easy_perform(Net::pCurl);
 
-    if (mMemoryChunk.mem) {
+    if (mMemoryChunk.mem)
       mContent = mMemoryChunk.mem;
-    }
 
-    if (Net::pStatus != CURLE_OK) {
+    if (Net::pStatus != CURLE_OK)
       LOGE("curl_easy_perform: %s", curl_easy_strerror(Net::pStatus));
-    }
-
     return Net::pStatus == CURLE_OK;
   }
 

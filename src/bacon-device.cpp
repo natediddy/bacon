@@ -35,10 +35,8 @@ namespace
 
     unsigned int index = bacon::util::random();
 
-    while (index >= (list.size() - 1)) {
+    while (index >= (list.size() - 1))
       index = bacon::util::random() / 10000;
-    }
-
     return list[index];
   }
 }
@@ -48,9 +46,8 @@ namespace bacon
   Device::Device(const string &deviceId)
     : mId(deviceId)
   {
-    if (mId == PSEUDO_RANDOM_DEVICE_ID) {
+    if (mId == PSEUDO_RANDOM_DEVICE_ID)
       mId = getRandomDeviceIndex();
-    }
   }
 
   Device::~Device()

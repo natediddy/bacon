@@ -44,8 +44,10 @@
 #include "bacon-util.h"
 
 #define REFRESH_FILE_PROPS                   \
-  do {                                       \
-    if (mProp) {                             \
+  do                                         \
+  {                                          \
+    if (mProp)                               \
+    {                                        \
       delete mProp;                          \
       mProp = NULL;                          \
     }                                        \
@@ -65,26 +67,22 @@ namespace bacon
       , mIsFile(false)
       , mSizeInBytes(0)
     {
+#if HAVE_SYS_STAT_H
       memset(&mStatBuf, 0, sizeof (struct stat));
 
-#if HAVE_SYS_STAT_H
-      if (!stat(name, &mStatBuf)) {
-
-        if (S_ISDIR(mStatBuf.st_mode)) {
+      if (!stat(name, &mStatBuf))
+      {
+        if (S_ISDIR(mStatBuf.st_mode))
           mIsDir = true;
-        } else if (S_ISREG(mStatBuf.st_mode)) {
+        else if (S_ISREG(mStatBuf.st_mode))
           mIsFile = true;
-        } else {
+        else
           LOGW("`%s' is neither a file nor directory", name);
-        }
-
-        if (mIsDir || mIsFile) {
+        if (mIsDir || mIsFile)
           mSizeInBytes = mStatBuf.st_size;
-        }
-
-      } else {
-        LOGW("stat: `%s': %s", name, strerror(errno));
       }
+      else
+        LOGW("stat: `%s': %s", name, strerror(errno));
 #endif
     }
 
@@ -132,7 +130,8 @@ namespace bacon
   {
     close();
 
-    if (mProp) {
+    if (mProp)
+    {
       delete mProp;
       mProp = NULL;
     }
@@ -162,9 +161,8 @@ namespace bacon
   {
     mStream = fopen(mName.c_str(), mode);
 
-    if (!mStream) {
+    if (!mStream)
       return false;
-    }
 
     REFRESH_FILE_PROPS;
     return true;
@@ -174,10 +172,8 @@ namespace bacon
   {
     bool ret = true;
 
-    if (mStream && (ret = !fclose(mStream))) {
+    if (mStream && (ret = !fclose(mStream)))
       mStream = NULL;
-    }
-
     REFRESH_FILE_PROPS;
     return ret;
   }
@@ -186,10 +182,8 @@ namespace bacon
   {
     bool ret = false;
 
-    if (exists()) {
+    if (exists())
       ret = !remove(mName.c_str());
-    }
-
     REFRESH_FILE_PROPS;
     return ret;
   }
@@ -198,7 +192,7 @@ namespace bacon
   {
     bool ret = true;
 
-    if (!exists()) {
+    if (!exists())
       ret =
 #if HAVE_MKDIR
         !mkdir(mName.c_str(), S_IRWXU);
@@ -208,8 +202,6 @@ namespace bacon
 #endif
 #endif
       ;
-    }
-
     REFRESH_FILE_PROPS;
     return ret;
   }
@@ -224,26 +216,24 @@ namespace bacon
     strcpy(path, dirName().c_str());
     pn = strchr(path, env::dirSeparator());
 
-    if (pn++) {
-
-      while ((p = strchr(pn, env::dirSeparator()))) {
+    if (pn++)
+    {
+      while ((p = strchr(pn, env::dirSeparator())))
+      {
         *p = '\0';
         File f(path);
-
-        if (!f.makeDir()) {
+        if (!f.makeDir())
+        {
           ret = false;
           break;
         }
-
         *p = env::dirSeparator();
         pn = p + 1;
       }
     }
 
-    if (ret && !makeDir()) {
+    if (ret && !makeDir())
       ret = false;
-    }
-
     REFRESH_FILE_PROPS;
     return ret;
   }
@@ -282,9 +272,8 @@ namespace bacon
 
   void File::writeLine(const string &line)
   {
-    if (isOpen()) {
+    if (isOpen())
       fprintf(mStream, "%s\n", line.c_str());
-    }
   }
 
   string File::readLine()
@@ -292,34 +281,31 @@ namespace bacon
     string line("");
     bool comment = false;
 
-    if (isOpen()) {
+    if (isOpen())
+    {
       int ch;
-
-      while ((ch = fgetc(mStream)) != EOF) {
-
-        if (ch == (int)'#') {
-          if (!comment) {
+      while ((ch = fgetc(mStream)) != EOF)
+      {
+        if (ch == (int)'#')
+        {
+          if (!comment)
             comment = true;
-          }
         }
-
-        if (ch == (int)'\n') {
-          if (comment) {
+        if (ch == (int)'\n')
+        {
+          if (comment)
+          {
             comment = false;
             continue;
           }
-          if (line.empty()) {
+          if (line.empty())
             continue;
-          }
           break;
         }
-
-        if (!comment) {
+        if (!comment)
           line += (char)ch;
-        }
       }
     }
-
     return line;
   }
 }

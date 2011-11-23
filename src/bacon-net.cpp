@@ -40,9 +40,8 @@ namespace bacon
 
   Net::~Net()
   {
-    if (pCurl && pStatus == CURLE_OK) {
+    if (pCurl && pStatus == CURLE_OK)
       curl_easy_cleanup(pCurl);
-    }
   }
 
   bool Net::fetch()
@@ -54,15 +53,15 @@ namespace bacon
   bool Net::setup()
   {
     pStatus = curl_easy_setopt(pCurl, CURLOPT_URL, mUrl.c_str());
-    if (pStatus != CURLE_OK) {
+    if (pStatus != CURLE_OK)
+    {
       LOGE("curl_easy_setopt: %s", curl_easy_strerror(pStatus));
       return false;
     }
 
     pStatus = curl_easy_setopt(pCurl, CURLOPT_USERAGENT, BACON_AGENT);
-    if (pStatus != CURLE_OK) {
+    if (pStatus != CURLE_OK)
       LOGE("curl_easy_setopt: %s", curl_easy_strerror(pStatus));
-    }
     return pStatus == CURLE_OK;
   }
 }

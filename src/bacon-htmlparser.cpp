@@ -48,10 +48,10 @@ namespace
 {
   bool filenameMatch(const string &s, const string &n, const size_t i)
   {
-    for (size_t j = 0, k = i; j < n.size(); ++j, ++k) {
-      if (s[k] != n[j]) {
+    for (size_t j = 0, k = i; j < n.size(); ++j, ++k)
+    {
+      if (s[k] != n[j])
         return false;
-      }
     }
     return true;
   }
@@ -68,18 +68,16 @@ namespace bacon
 
   void HtmlParser::allDeviceIds(vector<string> &vec) const
   {
-    for (size_t i = 0; i < mContent.size(); i++) {
-      if (DEVICE_BULLET(mContent, i)) {
+    for (size_t i = 0; i < mContent.size(); i++)
+    {
+      if (DEVICE_BULLET(mContent, i))
+      {
         string tmp("");
-
         i += 37;
-        while (mContent[i] != '"') {
+        while (mContent[i] != '"')
           tmp += mContent[i++];
-        }
-
-        if (!tmp.empty()) {
+        if (!tmp.empty())
           vec.push_back(tmp);
-        }
       }
     }
   }
@@ -88,15 +86,18 @@ namespace bacon
   {
     string hash("");
 
-    for (size_t i = 0; i < mContent.size(); ++i) {
-      if (filenameMatch(mContent, filename, i)) {
+    for (size_t i = 0; i < mContent.size(); ++i)
+    {
+      if (filenameMatch(mContent, filename, i))
+      {
         i += filename.size();
-        while (true) {
-          if (MD5_CLASS(mContent, i)) {
+        while (true)
+        {
+          if (MD5_CLASS(mContent, i))
+          {
             i += 8;
-            while (mContent[i] != '<') {
+            while (mContent[i] != '<')
               hash += mContent[i++];
-            }
             break;
           }
           i++;
@@ -111,12 +112,13 @@ namespace bacon
   {
     string name("");
 
-    for (size_t i = 0; i < mContent.size(); i++) {
-      if (GET_URL(mContent, i)) {
+    for (size_t i = 0; i < mContent.size(); i++)
+    {
+      if (GET_URL(mContent, i))
+      {
         i += 5;
-        while (mContent[i] != '"') {
+        while (mContent[i] != '"')
           name += mContent[i++];
-        }
         break;
       }
     }

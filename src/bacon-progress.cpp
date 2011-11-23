@@ -69,9 +69,8 @@ namespace
 #ifdef _WIN32
       CONSOLE_SCREEN_BUFFER_INFO cb;
 
-      if (GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &cb)) {
+      if (GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &cb))
         width = cb.dwSize.X;
-      }
 #else
 #if HAVE_SYS_IOCTL_H && HAVE_UNISTD_H
       struct winsize ws;
@@ -83,9 +82,8 @@ namespace
 #endif
 #endif
 
-      if (width <= 0) {
+      if (width <= 0)
         width = DEFAULT_PROGRESSBAR_WIDTH;
-      }
     }
 
     void add(const char c, const bool space = true)
@@ -93,7 +91,8 @@ namespace
       mBuffer += c;
       --mSpaceTilEnd;
 
-      if (space) {
+      if (space)
+      {
         mBuffer += ' ';
         --mSpaceTilEnd;
       }
@@ -103,16 +102,17 @@ namespace
              const bool space = true,
              const bool last = false)
     {
-      if (last) {
-        for (int i = 0; i < (mSpaceTilEnd - 4); ++i) {
+      if (last)
+      {
+        for (int i = 0; i < (mSpaceTilEnd - 4); ++i)
           mBuffer += ' ';
-        }
       }
 
       mBuffer += s;
       mSpaceTilEnd -= s.size();
 
-      if (space) {
+      if (space)
+      {
         mBuffer += ' ';
         --mSpaceTilEnd;
       }
@@ -120,9 +120,8 @@ namespace
 
     void display(FILE *stream = stdout)
     {
-      if (mBuffer.empty()) {
+      if (mBuffer.empty())
         return;
-      }
 
       mBuffer += '\r';
       fprintf(stream, "%s", mBuffer.c_str());
@@ -143,12 +142,10 @@ namespace
   {
     int ret;
 
-    if (fraction >= 0) {
+    if (fraction >= 0)
       ret = (int)(fraction + 0.5);
-    } else {
+    else
       ret = (int)(fraction - 0.5);
-    }
-
     return ret;
   }
 
@@ -156,7 +153,8 @@ namespace
   {
     volatile double check = d;
 
-    if (check != check) {
+    if (check != check)
+    {
       LOGW("NaN value detected", NULL);
       return true;
     }
@@ -166,13 +164,11 @@ namespace
 
   string percentString(const double d)
   {
-    if (isNaN(d) || isNaN(d * 100)) {
+    if (isNaN(d) || isNaN(d * 100))
       return string("0%");
-    }
 
     char buf[6];
     sprintf(buf, "%3.0f%%", d * 100);
-
     return string(buf);
   }
 
@@ -180,16 +176,16 @@ namespace
   {
     string result("");
 
-    if (speed) {
+    if (speed)
+    {
       char buf[20];
       snprintf(buf, 20, "(eta %02d:%02d)",
           ((bytesRemaining / speed) / 60),
           ((bytesRemaining / speed) % 60));
       result += buf;
-    } else {
-      result += "(eta --:--)";
     }
-
+    else
+      result += "(eta --:--)";
     return result;
   }
 }
@@ -214,18 +210,19 @@ namespace bacon
     int pos;
     int i;
 
-    if (!pBar) {
+    if (!pBar)
       pBar = new ProgressBar;
-    } else {
+    else
+    {
       pBar->count++;
       pBar->updateWidth();
     }
 
-    if (downloadedSoFar) {
+    if (downloadedSoFar)
+    {
       dlSpeed = downloadedSoFar / (gStartEpoch - time(0));
-      if (dlSpeed < 0) {
+      if (dlSpeed < 0)
         dlSpeed = -dlSpeed;
-      }
       speed = util::bytesToReadable(6, dlSpeed);
       speed += "/s";
       eta = etaString(totalToDownload - downloadedSoFar, dlSpeed);
@@ -241,13 +238,11 @@ namespace bacon
        speed.size() + eta.size() + 11);
     pos = roundFraction(fractionDownloaded * barPosStopPoint);
 
-    for (i = 0; i < pos; ++i) {
+    for (i = 0; i < pos; ++i)
       pBar->add(PROGRESSBAR_HAS_CHAR, false);
-    }
 
-    for (; i < barPosStopPoint; ++i) {
+    for (; i < barPosStopPoint; ++i)
       pBar->add(PROGRESSBAR_NOT_CHAR, false);
-    }
 
     pBar->add(PROGRESSBAR_END_CHAR);
     pBar->add(speed);
@@ -255,7 +250,8 @@ namespace bacon
     pBar->add(percentString(fractionDownloaded), false, true);
     pBar->display();
 
-    if (downloadedSoFar >= totalToDownload) {
+    if (downloadedSoFar >= totalToDownload)
+    {
       delete pBar;
       pBar = NULL;
     }

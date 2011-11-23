@@ -75,37 +75,33 @@ namespace bacon
 
   bool DeviceList::update()
   {
-    if (!mDeviceIds.empty()) {
+    if (!mDeviceIds.empty())
       mDeviceIds.clear();
-    }
 
     HtmlDoc doc;
 
-    if (doc.fetch()) {
+    if (doc.fetch())
+    {
       HtmlParser *parser = new HtmlParser(doc.content());
-
-      if (parser) {
+      if (parser)
+      {
         parser->allDeviceIds(mDeviceIds);
- 
-        if (mDeviceIds.size()) {
-
-          if (exists()) {
+        if (mDeviceIds.size())
+        {
+          if (exists())
             dispose();
-          }
-
-          if (open("w+")) {
+          if (open("w+"))
+          {
             writeDateLine();
-
-            for (size_t i = 0; i < mDeviceIds.size(); i++) {
-              if (mDeviceIds[i] == PSEUDO_RANDOM_DEVICE_ID) {
+            for (size_t i = 0; i < mDeviceIds.size(); i++)
+            {
+              if (mDeviceIds[i] == PSEUDO_RANDOM_DEVICE_ID)
                 continue;
-              }
               writeLine(mDeviceIds[i]);
             }
             close();
           }
         }
-
         delete parser;
         parser = NULL;
         APPEND_RANDOM_ID;
@@ -117,13 +113,12 @@ namespace bacon
 
   void DeviceList::getLocal()
   {
-    if (open()) {
-      for (string l = readLine(); !l.empty(); l = readLine()) {
+    if (open())
+    {
+      for (string l = readLine(); !l.empty(); l = readLine())
         mDeviceIds.push_back(l);
-      }
       close();
     }
-
     APPEND_RANDOM_ID;
   }
 
@@ -134,10 +129,10 @@ namespace bacon
 
   bool DeviceList::hasMatch(const string &deviceId) const
   {
-    for (size_t i = 0; i < mDeviceIds.size(); i++) {
-      if (deviceId == mDeviceIds[i]) {
+    for (size_t i = 0; i < mDeviceIds.size(); i++)
+    {
+      if (deviceId == mDeviceIds[i])
         return true;
-      }
     }
     return false;
   }
@@ -162,28 +157,26 @@ namespace bacon
     string result("");
     bool inDateLine = false;
 
-    if (open()) {
+    if (open())
+    {
       int ch;
-
-      while ((ch = fgetc(File::mStream)) != EOF) {
-
-        if (ch == (int)'#') {
-          if (!inDateLine) {
+      while ((ch = fgetc(File::mStream)) != EOF)
+      {
+        if (ch == (int)'#')
+        {
+          if (!inDateLine)
+          {
             inDateLine = true;
             continue;
           }
         }
-
-        if (ch == (int)'\n') {
+        if (ch == (int)'\n')
           break;
-        } else if (inDateLine) {
+        else if (inDateLine)
           result += (char)ch;
-        }
       }
-
       close();
     }
-
     return result;
   }
 }

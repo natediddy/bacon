@@ -57,21 +57,18 @@ namespace
 
   void writeBanner(const BannerType &type)
   {
-    if (!stream) {
+    if (!stream)
       return;
-    }
 
-    if (type == HEADER) {
+    if (type == HEADER)
       fputs("========================================\n", stream);
-    }
 
     fputs("*** BACON LOGGER ", stream);
 
-    if (type == HEADER) {
+    if (type == HEADER)
       fputs("START ", stream);
-    } else if (type == FOOTER) {
+    else if (type == FOOTER)
       fputs("END ", stream);
-    }
 
 #if HAVE_UNISTD_H
     fprintf(stream, "(pid:%d) ", myPid);
@@ -95,16 +92,16 @@ namespace bacon
 #if HAVE_UNISTD_H
       myPid = (int)getpid();
 #endif
-      if (!stream) {
+      if (!stream)
         stream = fopen(prefs::get(KEY_LOG_PATH).c_str(), "a+");
-      }
       writeBanner(HEADER);
     }
 
     void deactivate()
     {
       writeBanner(FOOTER);
-      if (stream) {
+      if (stream)
+      {
         fclose(stream);
         stream = NULL;
       }
@@ -116,15 +113,15 @@ namespace bacon
 
       va_start(args, msg);
 
-      if (prefix && *prefix) {
+      if (prefix && *prefix)
         fprintf(stream, "%s: ", prefix);
-      }
 
       vfprintf(stream, msg, args);
       fputc('\n', stream);
       va_end(args);
 
-      if (prefix) {
+      if (prefix)
+      {
         delete[] prefix;
         prefix = NULL;
       }
@@ -137,25 +134,22 @@ namespace bacon
       char *buf = NULL;
       size_t size = 0;
 
-      if (tag) {
+      if (tag)
         size += strlen(tag) + 1;
-      }
 
-      if (file) {
+      if (file)
         size += strlen(file) + 1;
-      }
 
       size += 20;
       buf = new char[size];
 
-      if (!buf) {
+      if (!buf)
         return NULL;
-      }
 
 #if HAVE_UNISTD_H
       snprintf(buf, size, "%s:(%d):%s:%d", tag, myPid, file, line);
 #else
-      snprintf(size, "%s:%s:%d", tag, file, line);
+      snprintf(buf, size, "%s:%s:%d", tag, file, line);
 #endif
 
       return buf;

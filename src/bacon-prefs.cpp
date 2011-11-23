@@ -37,7 +37,8 @@ namespace
   {
     string result;
 
-    switch (key) {
+    switch (key)
+    {
     case KEY_BASE_DIR:
       result = BASE_DIR_KEY_STRING;
       break;
@@ -50,7 +51,6 @@ namespace
     default:
       result = "";
     }
-
     return result;
   }
 }
@@ -63,11 +63,11 @@ namespace bacon
     {
       Config * config = new Config;
 
-      for (Key key = 0; key < KEY_TOTAL; ++key) {
+      for (Key key = 0; key < KEY_TOTAL; ++key)
         values[key] = config->valueOf(keyToString(key));
-      }
 
-      if (config) {
+      if (config)
+      {
         delete config;
         config = NULL;
       }
@@ -87,65 +87,65 @@ namespace bacon
     {
       bool result = true;
 
-      for (Key key = 0; key < KEY_TOTAL; ++key) {
-
-        if (key == KEY_BASE_DIR) {
+      for (Key key = 0; key < KEY_TOTAL; ++key)
+      {
+        if (key == KEY_BASE_DIR)
+        {
           File p(get(key));
-
-          if (!p.exists()) {
-
-            if (!p.makeDirs()) {
+          if (!p.exists())
+          {
+            if (!p.makeDirs())
+            {
               fprintf(stderr, "%s: error: failed to create directory `%s'\n",
                   gProgramName.c_str(), p.name().c_str());
-              if (result) {
+              if (result)
                 result = false;
-              }
             }
           }
-
-        } else if (key == KEY_LOG_PATH) {
-          if (values[key].empty()) {
+        }
+        else if (key == KEY_LOG_PATH)
+        {
+          if (values[key].empty())
+          {
             string p[] = {
               values[KEY_BASE_DIR], ".log", "bacon.log", ""
             };
             values[key] = env::pathJoin(p);
           }
-
           File p(get(key));
           p.change(p.dirName());
-
-          if (!p.exists()) {
-
-            if (!p.makeDirs()) {
+          if (!p.exists())
+          {
+            if (!p.makeDirs())
+            {
               fprintf(stderr, "%s: error: failed to create directory `%s'\n",
                   gProgramName.c_str(), p.name().c_str());
-              if (result) {
+              if (result)
                 result = false;
-              }
             }
-
-          } else if (p.isFile()) {
+          }
+          else if (p.isFile())
+          {
             fprintf(stderr, "%s: error: `%s' is a file, needs to be a "
                 "directory\n",
                 gProgramName.c_str(), p.name().c_str());
-            if (result) {
+            if (result)
               result = false;
-            }
           }
 
-        } else if (key == KEY_CM_ROOT_SERVER) {
+        }
+        else if (key == KEY_CM_ROOT_SERVER)
+        {
           string url(get(key));
-
-          if (!util::isValidUrl(url)) {
+          if (!util::isValidUrl(url))
+          {
             fprintf(stderr, "%s: error: `%s' is not a valid URL\n",
                 gProgramName.c_str(), url.c_str());
-            if (result) {
+            if (result)
               result = false;
-            }
           }
         }
       }
-
       return result;
     }
   }

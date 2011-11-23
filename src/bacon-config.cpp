@@ -67,11 +67,13 @@ namespace bacon
 
     mUser = new File(env::pathJoin(p));
 
-    if (!mUser->isFile()) {
+    if (!mUser->isFile())
+    {
 #ifdef _WIN32
       p[1] = "_bacon";
       mUser->change(env::pathJoin(p));
-      if (!mUser->isFile()) {
+      if (!mUser->isFile())
+      {
 #endif
         delete mUser;
         mUser = NULL;
@@ -83,7 +85,8 @@ namespace bacon
 
   Config::~Config()
   {
-    if (mUser) {
+    if (mUser)
+    {
       delete mUser;
       mUser = NULL;
     }
@@ -91,34 +94,27 @@ namespace bacon
 
   string Config::userDefined(const string &key)
   {
-    if (!mUser) {
+    if (!mUser)
       return string("");
-    }
 
     string value("");
 
-    if (mUser->open()) {
+    if (mUser->open())
+    {
       for (string ln = mUser->readLine(); !ln.empty(); ln = mUser->readLine())
       {
         size_t pos = ln.find(key);
-
-        if (pos != string::npos) {
-
-          while (ln[pos] != '=') {
+        if (pos != string::npos)
+        {
+          while (ln[pos] != '=')
             ++pos;
-          }
-
-          for (pos += 1; pos < ln.size(); ++pos) {
+          for (pos += 1; pos < ln.size(); ++pos)
             value += ln[pos];
-          }
-
-          if (!value.empty()) {
+          if (!value.empty())
             break;
-          }
         }
       }
     }
-
     value = util::convertShellSymbols(value);
     return value;
   }
@@ -127,44 +123,36 @@ namespace bacon
   {
     string value;
 
-    if (!(value = env::variableValue(key)).empty()) {
+    if (!(value = env::variableValue(key)).empty())
       return value;
-    } else if (!(value = userDefined(key)).empty()) {
+    else if (!(value = userDefined(key)).empty())
       return value;
-    } else {
+    else
       value = "";
-    }
 
-    if (open()) {
-
-      for (string ln = readLine(); !ln.empty(); ln = readLine()) {
+    if (open())
+    {
+      for (string ln = readLine(); !ln.empty(); ln = readLine())
+      {
         size_t pos = ln.find(key);
-
-        if (pos != string::npos) {
-
-          while (ln[pos] != '=') {
+        if (pos != string::npos)
+        {
+          while (ln[pos] != '=')
             ++pos;
-          }
-
-          for (pos += 1; pos < ln.size(); ++pos) {
+          for (pos += 1; pos < ln.size(); ++pos)
             value += ln[pos];
-          }
-
-          if (!value.empty()) {
+          if (!value.empty())
             break;
-          }
         }
       }
-
-    } else {
-
-      if (key == "BACON_BASE_DIR") {
-        return DEFAULTS::baseDir();
-      } else if (key == "BACON_CM_ROOT_SERVER") {
-        return DEFAULTS::cmRootUrl();
-      }
     }
-
+    else
+    {
+      if (key == "BACON_BASE_DIR")
+        return DEFAULTS::baseDir();
+      else if (key == "BACON_CM_ROOT_SERVER")
+        return DEFAULTS::cmRootUrl();
+    }
     value = util::convertShellSymbols(value);
     return value;
   }
