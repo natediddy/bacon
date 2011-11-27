@@ -21,6 +21,10 @@
 #include <cstdlib>
 #include <string>
 
+#ifdef _WIN32
+#include <conio.h>
+#endif
+
 #include "bacon-actions.h"
 #include "bacon-device.h"
 #include "bacon-devicelist.h"
@@ -60,8 +64,7 @@ namespace
     if (fp.isFile())
     {
       bacon::Md5 md5(path, deviceId, deviceType);
-      if (md5.verify())
-        ret = true;
+      ret = md5.verify();
     }
     else if (fp.isDir())
       LOGW("`%s' is a directory, not a file!", fp.name().c_str());
@@ -109,12 +112,12 @@ namespace
           string romPath = bacon::env::pathJoin(p);
           if (!romExists(romPath, device->id(), type))
           {
-            bacon::Rom *rom = new bacon::Rom(romName, romPath);
-            if (rom->fetch())
+            bacon::Rom rom(romName, romPath);
+            if (rom.fetch())
             {
               fputs("\nVerifying file integrity...", stdout);
-              bacon::Md5 *md5 = new bacon::Md5(romPath, device->id(), type);
-              if (!md5->verify())
+              bacon::Md5 md5(romPath, device->id(), type);
+              if (!md5.verify())
               {
                 fputs(" FAIL\n", stdout);
                 fprintf(stderr, "%s: `%s' may be corrupt!\n",
@@ -126,11 +129,6 @@ namespace
                 fprintf(stdout, "New ROM located at:\n\t%s\n",
                     romPath.c_str());
               }
-              if (md5)
-              {
-                delete md5;
-                md5 = NULL;
-              }
             }
             else
             {
@@ -139,16 +137,18 @@ namespace
               if (!*hasError)
                 *hasError = true;
             }
-            if (rom)
-            {
-              delete rom;
-              rom = NULL;
-            }
           }
           else
             fprintf(stdout, "%s: `%s' exists and has already been "
                 "downloaded\n", gProgramName.c_str(), romName.c_str());
         }
+      }
+      else if (doc)
+      {
+        delete doc;
+        doc = NULL;
+        if (!*hasError)
+          *hasError = true;
       }
     }
     else
@@ -159,10 +159,10 @@ namespace
       fprintf(stdout, "%s:\n", device->id().c_str());
       for (size_t i = 0; i < 3; i++)
       {
-        bacon::HtmlDoc *doc = new bacon::HtmlDoc(device->id(), types[i]);
-        if (doc->fetch())
+        bacon::HtmlDoc doc(device->id(), types[i]);
+        if (doc.fetch())
         {
-          bacon::HtmlParser parser(doc->content());
+          bacon::HtmlParser parser(doc.content());
           string romName = parser.latestRomForDevice();
           fprintf(stdout, "  %s:", types[i].c_str());
           for (size_t j = 0; j < (7 - types[i].size() + 2); ++j)
@@ -186,7 +186,7 @@ namespace
       return EXIT_FAILURE;
     }
 
-    for (vector<bacon::Device *>::size_type i = 0; i < devices.size(); i++)
+    for (size_t i = 0; i < devices.size(); i++)
     {
       if (!validDevice(devices[i]->id()))
       {
