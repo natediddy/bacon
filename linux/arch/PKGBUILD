@@ -16,7 +16,7 @@ replaces=()
 backup=()
 #install=
 source=(https://github.com/downloads/natediddy/${pkgname}/${pkgname}-${pkgver}.tar.gz)
-md5sums=('3dc472ce065b677e0636d80c2e4d6fbd')
+md5sums=('803589288357dacd4fbfd7b4e4323a75')
 
 build() {
   cd "${srcdir}/${pkgname}-${pkgver}"
