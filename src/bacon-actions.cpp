@@ -34,6 +34,7 @@
 #include "bacon-log.h"
 #include "bacon-md5.h"
 #include "bacon-rom.h"
+#include "bacon-stats.h"
 #include "bacon-util.h"
 
 using std::string;
@@ -43,6 +44,25 @@ extern string gProgramName;
 
 namespace
 {
+  void alignPrintNumber(const size_t n)
+  {
+    const size_t p = n + 1;
+    int spaces;
+
+    if (p < 10)
+      spaces = 3;
+    else if (p < 100)
+      spaces = 2;
+    else if (p < 1000)
+      spaces = 1;
+    else
+      spaces = 0;
+
+    for (int i = 0; i < spaces; ++i)
+      fputc(' ', stdout);
+    fprintf(stdout, "%zu) ", p);
+  }
+
   bool validDevice(const string &id)
   {
     bacon::DeviceList deviceList;
@@ -157,19 +177,33 @@ namespace
         "stable", "nightly", "rc"
       };
       fprintf(stdout, "%s:\n", device->id().c_str());
-      for (size_t i = 0; i < 3; i++)
+      for (size_t i = 0; i < 3; ++i)
       {
-        bacon::HtmlDoc doc(device->id(), types[i]);
-        if (doc.fetch())
+        bacon::Stats stats(device, types[i]);
+        fprintf(stdout, "  %s:", types[i].c_str());
+        for (size_t j = 0; j < (7 - types[i].size() + 2); ++j)
+          fputc(' ', stdout);
+        if (stats.init())
         {
-          bacon::HtmlParser parser(doc.content());
-          string romName = parser.latestRomForDevice();
-          fprintf(stdout, "  %s:", types[i].c_str());
-          for (size_t j = 0; j < (7 - types[i].size() + 2); ++j)
+          fprintf(stdout, "%s\n", stats.romName().c_str());
+          for (size_t j = 0;
+               j < (12 - types[i].size() + types[i].size());
+               ++j)
             fputc(' ', stdout);
-          fprintf(stdout, "%s\n", romName.empty() ?
-              "(not found)" : romName.c_str());
+          fputs("-- ", stdout);
+          if (stats.existsLocally())
+          {
+            if (stats.isValid())
+              fputs("ALREADY DOWNLOADED", stdout);
+            else
+              fputs("PARTIALLY DOWNLOADED OR CORRUPT", stdout);
+          }
+          else
+            fputs("NOT DOWNLOADED", stdout);
+          fputc('\n', stdout);
         }
+        else
+          fputs("(not found)\n", stdout);
       }
     }
   }
@@ -235,8 +269,8 @@ namespace bacon
 
     fprintf(stdout,
        "Options:\n"
-       "  -S, --show               show latest builds for DEVICE(s), don't "
-         "download\n"
+       "  -S, --show               show stats for latest builds for DEVICE(s)"
+          "\n"
        "  -s, --stable             download latest stable build for "
          "DEVICE(s)\n"
        "  -n, --nightly            download latest nightly build for "
@@ -293,15 +327,10 @@ namespace bacon
 
     for (size_t i = 0; i < total; ++i)
     {
-      if ((i + 1) < 10)
-        fprintf(stdout, "   ");
-      else if ((i + 1) < 100)
-        fprintf(stdout, "  ");
-      else if ((i + 1) < 1000)
-        fprintf(stdout, " ");
-      fprintf(stdout, "%zu)  %s", i + 1, deviceList[i].c_str());
+      alignPrintNumber(i);
+      fputs(deviceList[i].c_str(), stdout);
       if (deviceList[i] == PSEUDO_RANDOM_DEVICE_ID)
-        fputs("  (chooses a device at random)", stdout);
+        fputs("    -> (chooses a device at random)", stdout);
       fputc('\n', stdout);
     }
     return EXIT_SUCCESS;
@@ -318,8 +347,7 @@ namespace bacon
       oldList = deviceList.rawList();
     }
 
-    string lastUpdated = deviceList.lastUpdate();
-
+    string lastUpdated(deviceList.lastUpdate());
     fputs("Updating device list...", stdout);
 
     if (!lastUpdated.empty())
@@ -339,13 +367,20 @@ namespace bacon
 
     if (newCount)
     {
-      fprintf(stdout, "There %s %i new %s:\n",
-          (newCount > 1) ? "are" : "is", newCount,
-          (newCount > 1) ? "devices" : "device");
-      for (vector<string>::size_type i = 0; i < newList.size(); i++)
+      /* Use proper grammer... */
+      fputs("There ", stdout);
+      if (newCount > 1)
+        fputs("are ", stdout);
+      else
+        fputs("is ", stdout);
+      fprintf(stdout, "%d new device", newCount);
+      if (newCount > 1)
+        fputc('s', stdout);
+      fputs(":\n", stdout);
+      for (size_t i = 0, n = 0; i < newList.size(); ++i)
       {
         bool noMatch = true;
-        for (vector<string>::size_type j = 0; j < oldList.size(); j++)
+        for (size_t j = 0; j < oldList.size(); ++j)
         {
           if (newList[i] == oldList[j])
           {
@@ -354,14 +389,16 @@ namespace bacon
           }
         }
         if (noMatch)
-          fprintf(stdout, "%s\n", newList[i].c_str());
+        {
+          alignPrintNumber(n++);
+          fputs(newList[i].c_str(), stdout);
+        }
       }
-
     }
     else
-      fputs("No new devices since last update\n", stdout);
+      fputs("No new devices since last update", stdout);
 
-    fputs("Finished\n", stdout);
+    fputs("\nFinished\n", stdout);
     return EXIT_SUCCESS;
   }
 

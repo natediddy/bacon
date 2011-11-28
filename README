@@ -41,7 +41,7 @@ Usage
 ===========
 Usage: bacon [option] [DEVICE] ...
 Options:
-  -S, --show               show latest builds for DEVICE(s), don't download
+  -S, --show               show stats for latest builds for DEVICE(s)
   -s, --stable             download latest stable build for DEVICE(s)
   -n, --nightly            download latest nightly build for DEVICE(s)
   -r, --release-candidate  download latest release candidate for DEVICE(s)
@@ -58,7 +58,7 @@ Options:
 
 More than one DEVICE can be given, but only ONE option per DEVICE list.
 
-More usage information can be found in its man pages with the command:
+For more usage information, view the man page after installing with:
     man bacon
 
-Contact me, and report bugs to <me@nathanforbes.com>
+Contact me at me@nathanforbes.com

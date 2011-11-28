@@ -20,6 +20,7 @@ bacon_SOURCES = \
 	bacon-prefs.cpp \
 	bacon-progress.cpp \
 	bacon-rom.cpp \
+	bacon-stats.cpp \
 	bacon-util.cpp  \
 	bacon-actions.h \
 	bacon-cmd.h \
@@ -36,4 +37,5 @@ bacon_SOURCES = \
 	bacon-prefs.h \
 	bacon-progress.h \
 	bacon-rom.h \
+	bacon-stats.h \
 	bacon-util.h

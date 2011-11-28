@@ -52,7 +52,7 @@ am_bacon_OBJECTS = bacon-actions.$(OBJEXT) bacon-cmd.$(OBJEXT) \
 	bacon-htmlparser.$(OBJEXT) bacon-log.$(OBJEXT) \
 	bacon-main.$(OBJEXT) bacon-md5.$(OBJEXT) bacon-net.$(OBJEXT) \
 	bacon-prefs.$(OBJEXT) bacon-progress.$(OBJEXT) \
-	bacon-rom.$(OBJEXT) bacon-util.$(OBJEXT)
+	bacon-rom.$(OBJEXT) bacon-stats.$(OBJEXT) bacon-util.$(OBJEXT)
 bacon_OBJECTS = $(am_bacon_OBJECTS)
 bacon_LDADD = $(LDADD)
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
@@ -184,6 +184,7 @@ bacon_SOURCES = \
 	bacon-prefs.cpp \
 	bacon-progress.cpp \
 	bacon-rom.cpp \
+	bacon-stats.cpp \
 	bacon-util.cpp  \
 	bacon-actions.h \
 	bacon-cmd.h \
@@ -200,6 +201,7 @@ bacon_SOURCES = \
 	bacon-prefs.h \
 	bacon-progress.h \
 	bacon-rom.h \
+	bacon-stats.h \
 	bacon-util.h
 
 all: all-am
@@ -299,6 +301,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bacon-prefs.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bacon-progress.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bacon-rom.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bacon-stats.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bacon-util.Po@am__quote@
 
 .cpp.o:
