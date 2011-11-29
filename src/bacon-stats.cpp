@@ -72,5 +72,5 @@ namespace bacon
   {
     return mLatestRomName;
   }
-}
+} /* namespace bacon */
 

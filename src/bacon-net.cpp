@@ -64,5 +64,5 @@ namespace bacon
       LOGE("curl_easy_setopt: %s", curl_easy_strerror(pStatus));
     return pStatus == CURLE_OK;
   }
-}
+} /* namespace bacon */
 

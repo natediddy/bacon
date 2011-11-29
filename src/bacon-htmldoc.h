@@ -44,7 +44,7 @@ namespace bacon
 
     friend size_t write_CB(void *b, size_t s, size_t n, void *u);
   };
-}
+} /* namespace bacon */
 
 #endif /* !BACON_HTMLDOC_H_INCLUDED */
 

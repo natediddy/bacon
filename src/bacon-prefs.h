@@ -35,8 +35,8 @@ namespace bacon
     void override(const Key key, const std::string &val);
     std::string get(const Key key);
     bool check();
-  }
-}
+  } /* namespace prefs */
+} /* namespace bacon */
 
 #endif /* !BACON_PREFS_H_INCLUDED */
 

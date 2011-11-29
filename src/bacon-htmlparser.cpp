@@ -44,21 +44,21 @@
 using std::string;
 using std::vector;
 
-namespace
-{
-  bool filenameMatch(const string &s, const string &n, const size_t i)
-  {
-    for (size_t j = 0, k = i; j < n.size(); ++j, ++k)
-    {
-      if (s[k] != n[j])
-        return false;
-    }
-    return true;
-  }
-}
-
 namespace bacon
 {
+  namespace
+  {
+    bool filenameMatch(const string &s, const string &n, const size_t i)
+    {
+      for (size_t j = 0, k = i; j < n.size(); ++j, ++k)
+      {
+        if (s[k] != n[j])
+          return false;
+      }
+      return true;
+    }
+  } /* namespace */
+
   HtmlParser::HtmlParser(const string &content)
     : mContent(content)
   {}
@@ -130,5 +130,5 @@ namespace bacon
   {
     return mContent;
   }
-}
+} /* namespace bacon */
 

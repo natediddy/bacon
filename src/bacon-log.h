@@ -27,8 +27,8 @@ namespace bacon
     bool _isActive();
     void _write(char *prefix, const char *fmt, ...);
     char *_prefix(const char *tag, const char *file, const int line);
-  }
-}
+  } /* namespace log */
+} /* namespace bacon */
 
 #define LOG_MSG__(tag, msg, ...) \
   do \

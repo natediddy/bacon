@@ -37,35 +37,35 @@
 using std::string;
 using std::vector;
 
-namespace
-{
-  string prepareListFile()
-  {
-    string name(LIST_CONFIG_FILENAME);
-
-#ifndef _WIN32
-    string _name(".");
-    _name += name;
-    name = _name;
-#else
-    name += ".txt";
-#endif
-
-    string p[] = {
-      bacon::prefs::get(KEY_BASE_DIR), name, ""
-    };
-    string path(bacon::env::pathJoin(p));
-
-#ifdef _WIN32
-    SetFileAttributes(path.c_str(), FILE_ATTRIBUTE_HIDDEN);
-#endif
-
-    return path;
-  }
-}
-
 namespace bacon
 {
+  namespace
+  {
+    string prepareListFile()
+    {
+      string name(LIST_CONFIG_FILENAME);
+
+#ifndef _WIN32
+      string _name(".");
+      _name += name;
+      name = _name;
+#else
+      name += ".txt";
+#endif
+
+      string p[] = {
+        prefs::get(KEY_BASE_DIR), name, ""
+      };
+      string path(env::pathJoin(p));
+
+#ifdef _WIN32
+      SetFileAttributes(path.c_str(), FILE_ATTRIBUTE_HIDDEN);
+#endif
+
+      return path;
+    }
+  } /* namespace */
+
   DeviceList::DeviceList()
     : File(prepareListFile())
   {}
@@ -179,5 +179,5 @@ namespace bacon
     }
     return result;
   }
-}
+} /* namespace bacon */
 

@@ -45,7 +45,7 @@ namespace bacon
     class ActionCmdUtilImpl;
     std::vector<ActionCmdUtilImpl *> mActions;
   };
-}
+} /* namespace bacon */
 
 #endif /* !BACON_CMD_H_INCLUDED */
 

@@ -33,98 +33,98 @@ using std::vector;
 
 string gProgramName;
 
-namespace
-{
-  const string configOptions[] = {
-    "-b", "-l", "-c",
-#ifdef _WIN32
-    "/b", "/l", "/c",
-#endif
-    "--basedir", "--logpath", "--cmserver",
-    ""
-  };
-
-  const string basicOptions[] = {
-    "-h", "-?", "-v", "-d", "-u",
-#ifdef _WIN32
-    "/h", "/?", "/v", "/d", "/u",
-#endif
-    "--help", "--version", "--devices", "--update-devices",
-    ""
-  };
-
-  const string actionOptions[] = {
-    "-S", "-s", "-n", "-r",
-#ifdef _WIN32
-    "/S", "/s", "/n", "/r",
-#endif
-    "--show", "--stable", "--nightly", "--release-candidate",
-    ""
-  };
-
-  bool isConfigCmd(const string &arg)
-  {
-    for (size_t i = 0; !configOptions[i].empty(); ++i)
-    {
-      if (arg.find(configOptions[i]) != string::npos)
-        return true;
-    }
-    return false;
-  }
-
-  bool isBasicCmd(const string &arg)
-  {
-    for (size_t i = 0; !basicOptions[i].empty(); i++)
-    {
-      if (arg == basicOptions[i])
-        return true;
-    }
-    return false;
-  }
-
-  bool isActionCmd(const string &arg)
-  {
-    for (size_t i = 0; !actionOptions[i].empty(); i++)
-    {
-      if (arg == actionOptions[i])
-        return true;
-    }
-    return false;
-  }
-
-  void properProgramName(char *execName)
-  {
-    char *lastSlash = NULL;
-
-    if (!execName)
-    {
-      gProgramName = PACKAGE_NAME;
-      return;
-    }
-
-    lastSlash = strrchr(execName, bacon::env::dirSeparator());
-
-    if (!lastSlash)
-    {
-#ifdef _WIN32
-      lastSlash = strrchr(execName, '/');
-      if (!lastSlash)
-      {
-#endif
-        gProgramName = execName;
-        return;
-#ifdef _WIN32
-      } 
-#endif
-    }
-
-    (void)*++lastSlash;
-    gProgramName = lastSlash;
-  }
-}
-
 namespace bacon
 {
+  namespace
+  {
+    const string configOptions[] = {
+      "-b", "-l", "-c",
+#ifdef _WIN32
+      "/b", "/l", "/c",
+#endif
+      "--basedir", "--logpath", "--cmserver",
+      ""
+    };
+
+    const string basicOptions[] = {
+      "-h", "-?", "-v", "-d", "-u",
+#ifdef _WIN32
+      "/h", "/?", "/v", "/d", "/u",
+#endif
+      "--help", "--version", "--devices", "--update-devices",
+      ""
+    };
+
+    const string actionOptions[] = {
+      "-S", "-s", "-n", "-r",
+#ifdef _WIN32
+      "/S", "/s", "/n", "/r",
+#endif
+      "--show", "--stable", "--nightly", "--release-candidate",
+      ""
+    };
+
+    bool isConfigCmd(const string &arg)
+    {
+      for (size_t i = 0; !configOptions[i].empty(); ++i)
+      {
+        if (arg.find(configOptions[i]) != string::npos)
+          return true;
+      }
+      return false;
+    }
+
+    bool isBasicCmd(const string &arg)
+    {
+      for (size_t i = 0; !basicOptions[i].empty(); i++)
+      {
+        if (arg == basicOptions[i])
+          return true;
+      }
+      return false;
+    }
+
+    bool isActionCmd(const string &arg)
+    {
+      for (size_t i = 0; !actionOptions[i].empty(); i++)
+      {
+        if (arg == actionOptions[i])
+          return true;
+      }
+      return false;
+    }
+
+    void properProgramName(char *execName)
+    {
+      char *lastSlash = NULL;
+
+      if (!execName)
+      {
+        gProgramName = PACKAGE_NAME;
+        return;
+      }
+
+      lastSlash = strrchr(execName, env::dirSeparator());
+
+      if (!lastSlash)
+      {
+#ifdef _WIN32
+        lastSlash = strrchr(execName, '/');
+        if (!lastSlash)
+        {
+#endif
+          gProgramName = execName;
+          return;
+#ifdef _WIN32
+        } 
+#endif
+      }
+
+      (void)*++lastSlash;
+      gProgramName = lastSlash;
+    }
+  } /* namespace */
+
   class Cmd::ConfigCmdUtilImpl {
   public:
     ConfigCmdUtilImpl()
@@ -381,5 +381,5 @@ namespace bacon
     }
     return retval;
   }
-}
+} /* namespace bacon */
 

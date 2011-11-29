@@ -36,8 +36,8 @@ namespace bacon
     void strip(std::string &str);
     bool isValidUrl(std::string &url);
     std::string convertShellSymbols(const std::string &val);
-  }
-}
+  } /* namespace util */
+} /* namespace bacon */
 
 #endif /* !BACON_UTIL_H_INCLUDED */
 

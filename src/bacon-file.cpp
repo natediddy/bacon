@@ -308,5 +308,5 @@ namespace bacon
     }
     return line;
   }
-}
+} /* namespace bacon */
 

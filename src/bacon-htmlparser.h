@@ -36,7 +36,7 @@ namespace bacon
   private:
     std::string mContent;
   };
-}
+} /* namespace bacon */
 
 #endif /* !BACON_HTMLPARSER_H_INCLUDED */
 

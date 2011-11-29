@@ -24,25 +24,25 @@
 
 using std::string;
 
-namespace
-{
-  string getRandomDeviceIndex()
-  {
-    bacon::DeviceList list;
-
-    list.getLocal();
-    bacon::util::randomSeed();
-
-    unsigned int index = bacon::util::random();
-
-    while (index >= (list.size() - 1))
-      index = bacon::util::random() / 10000;
-    return list[index];
-  }
-}
-
 namespace bacon
 {
+  namespace
+  {
+    string getRandomDeviceIndex()
+    {
+      DeviceList list;
+
+      list.getLocal();
+      util::randomSeed();
+
+      unsigned int index = util::random();
+
+      while (index >= (list.size() - 1))
+        index = util::random() / 10000;
+      return list[index];
+    }
+  } /* namespace */
+
   Device::Device(const string &deviceId)
     : mId(deviceId)
   {
@@ -73,5 +73,5 @@ namespace bacon
 
     myDir.makeDir();
   }
-}
+} /* namespace bacon */
 

@@ -38,7 +38,7 @@ namespace bacon
   private:
     friend size_t write_CB(void *p, size_t s, size_t n, FILE *f);
   };
-}
+} /* namespace bacon */
 
 #endif /* !BACON_ROM_H_INCLUDED */
 

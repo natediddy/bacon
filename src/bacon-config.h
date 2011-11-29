@@ -35,7 +35,7 @@ namespace bacon
   private:
     File *mUser;
   };
-}
+} /* namespace bacon */
 
 #endif /* !BACON_CONFIG_H_INCLUDED */
 

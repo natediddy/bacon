@@ -26,35 +26,35 @@
 
 using std::string;
 
-namespace
-{
-  string formRequest(const string &deviceId, const string &deviceType)
-  {
-    string result("");
-
-    if (!deviceId.empty())
-    {
-      result += "?";
-      result += DEVICE_PARAM;
-      result += deviceId;
-    }
-
-    if (!deviceType.empty())
-    {
-      if (result.empty())
-        result += "?";
-      else
-        result += "&";
-      result += TYPE_PARAM;
-      result += deviceType;
-    }
-
-    return result;
-  }
-}
-
 namespace bacon
 {
+  namespace
+  {
+    string formRequest(const string &deviceId, const string &deviceType)
+    {
+      string result("");
+
+      if (!deviceId.empty())
+      {
+        result += "?";
+        result += DEVICE_PARAM;
+        result += deviceId;
+      }
+
+      if (!deviceType.empty())
+      {
+        if (result.empty())
+          result += "?";
+        else
+          result += "&";
+        result += TYPE_PARAM;
+        result += deviceType;
+      }
+
+      return result;
+    }
+  } /* namespace */
+
   size_t write_CB(void *buf, size_t size, size_t nmemb, void *userp)
   {
     size_t real = size * nmemb;
@@ -129,5 +129,5 @@ namespace bacon
   {
     return mContent;
   }
-}
+} /* namespace bacon */
 

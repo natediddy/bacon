@@ -26,37 +26,37 @@
 
 using std::string;
 
-namespace DEFAULTS
-{
-  /* These are the values used if these 3 conditions are met:
-       1) the system wide config file doesn't exist
-       2) a user provided config file doesn't exist
-       3) shell variables with the same name do not exist */
-
-  string systemConfig()
-  {
-    string p[] = {
-      SYSCONFDIR, SYSTEM_WIDE_CONF_FILE, ""
-    };
-    return bacon::env::pathJoin(p);
-  }
-
-  string baseDir()
-  {
-    string p[] = {
-      bacon::env::userHomeDir(), "Bacon", ""
-    };
-    return bacon::env::pathJoin(p);
-  }
-
-  string cmRootUrl()
-  {
-    return string("http://get.cm");
-  }
-}
-
 namespace bacon
 {
+  namespace DEFAULTS
+  {
+    /* These are the values used if these 3 conditions are met:
+         1) the system wide config file doesn't exist
+         2) a user provided config file doesn't exist
+         3) shell variables with the same name do not exist */
+
+    string systemConfig()
+    {
+      string p[] = {
+        SYSCONFDIR, SYSTEM_WIDE_CONF_FILE, ""
+      };
+      return env::pathJoin(p);
+    }
+
+    string baseDir()
+    {
+      string p[] = {
+        env::userHomeDir(), "Bacon", ""
+      };
+      return env::pathJoin(p);
+    }
+
+    string cmRootUrl()
+    {
+      return string("http://get.cm");
+    }
+  } /* namespace DEFAULTS */
+
   Config::Config()
     : File(DEFAULTS::systemConfig())
     , mUser(NULL)
@@ -156,5 +156,5 @@ namespace bacon
     value = util::convertShellSymbols(value);
     return value;
   }
-}
+} /* namespace bacon */
 

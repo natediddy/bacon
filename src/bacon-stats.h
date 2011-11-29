@@ -40,7 +40,7 @@ namespace bacon
     std::string mLatestRomName;
     std::string mRomPath;
   };
-}
+} /* namespace bacon */
 
 #endif /* !BACON_STATS_H_INCLUDED */
 

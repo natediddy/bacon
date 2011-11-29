@@ -42,220 +42,220 @@ using std::vector;
 
 extern string gProgramName;
 
-namespace
+namespace bacon
 {
-  void alignPrintNumber(const size_t n)
+  namespace
   {
-    const size_t p = n + 1;
-    int spaces;
-
-    if (p < 10)
-      spaces = 3;
-    else if (p < 100)
-      spaces = 2;
-    else if (p < 1000)
-      spaces = 1;
-    else
-      spaces = 0;
-
-    for (int i = 0; i < spaces; ++i)
-      fputc(' ', stdout);
-    fprintf(stdout, "%zu) ", p);
-  }
-
-  bool validDevice(const string &id)
-  {
-    bacon::DeviceList deviceList;
-
-    if (!deviceList.exists())
-      deviceList.update();
-    else
-      deviceList.getLocal();
-    return deviceList.hasMatch(id);
-  }
-
-  bool romExists(const string &path,
-                 const string &deviceId,
-                 const string &deviceType)
-  {
-    bacon::File fp(path);
-    bool ret = false;
-
-    if (fp.isFile())
+    void alignPrintNumber(const size_t n)
     {
-      bacon::Md5 md5(path, deviceId, deviceType);
-      ret = md5.verify();
+      const size_t p = n + 1;
+      int spaces;
+
+      if (p < 10)
+        spaces = 3;
+      else if (p < 100)
+        spaces = 2;
+      else if (p < 1000)
+        spaces = 1;
+      else
+        spaces = 0;
+
+      for (int i = 0; i < spaces; ++i)
+        fputc(' ', stdout);
+      fprintf(stdout, "%zu) ", p);
     }
-    else if (fp.isDir())
-      LOGW("`%s' is a directory, not a file!", fp.name().c_str());
-    return ret;
-  }
 
-  enum Action {
-    SHOWONLY,
-    DOWNLOAD_ST,
-    DOWNLOAD_NI,
-    DOWNLOAD_RC
-  };
-
-  void downloadAction(bool *hasError,
-                      const Action &action,
-                      const bacon::Device *device)
-  {
-    if (action != SHOWONLY)
+    bool validDevice(const string &id)
     {
-      string type;
-      switch (action)
+      DeviceList deviceList;
+
+      if (!deviceList.exists())
+        deviceList.update();
+      else
+        deviceList.getLocal();
+      return deviceList.hasMatch(id);
+    }
+
+    bool romExists(const string &path,
+                   const string &deviceId,
+                   const string &deviceType)
+    {
+      File fp(path);
+      bool ret = false;
+
+      if (fp.isFile())
       {
-      case DOWNLOAD_ST:
-        type = "stable";
-        break;
-      case DOWNLOAD_NI:
-        type = "nightly";
-        break;
-      case DOWNLOAD_RC:
-        type = "rc";
-        break;
+        Md5 md5(path, deviceId, deviceType);
+        ret = md5.verify();
       }
-      bacon::HtmlDoc *doc = new bacon::HtmlDoc(device->id(), type);
-      if (doc->fetch())
+      else if (fp.isDir())
+        LOGW("`%s' is a directory, not a file!", fp.name().c_str());
+      return ret;
+    }
+
+    enum Action {
+      SHOWONLY,
+      DOWNLOAD_ST,
+      DOWNLOAD_NI,
+      DOWNLOAD_RC
+    };
+
+    void downloadAction(bool *hasError,
+                        const Action &action,
+                        const Device *device)
+    {
+      if (action != SHOWONLY)
       {
-        bacon::HtmlParser parser(doc->content());
-        string romName = parser.latestRomForDevice();
-        delete doc;
-        doc = NULL;
-        if (!romName.empty())
+        string type;
+        switch (action)
         {
-          string p[] = {
-            device->romDir(), romName, ""
-          };
-          string romPath = bacon::env::pathJoin(p);
-          if (!romExists(romPath, device->id(), type))
+        case DOWNLOAD_ST:
+          type = "stable";
+          break;
+        case DOWNLOAD_NI:
+          type = "nightly";
+          break;
+        case DOWNLOAD_RC:
+          type = "rc";
+          break;
+        }
+        HtmlDoc *doc = new HtmlDoc(device->id(), type);
+        if (doc->fetch())
+        {
+          HtmlParser parser(doc->content());
+          string romName = parser.latestRomForDevice();
+          delete doc;
+          doc = NULL;
+          if (!romName.empty())
           {
-            bacon::Rom rom(romName, romPath);
-            if (rom.fetch())
+            string p[] = {
+              device->romDir(), romName, ""
+            };
+            string romPath = env::pathJoin(p);
+            if (!romExists(romPath, device->id(), type))
             {
-              fputs("\nVerifying file integrity...", stdout);
-              bacon::Md5 md5(romPath, device->id(), type);
-              if (!md5.verify())
+              Rom rom(romName, romPath);
+              if (rom.fetch())
               {
-                fputs(" FAIL\n", stdout);
-                fprintf(stderr, "%s: `%s' may be corrupt!\n",
-                    gProgramName.c_str(), romPath.c_str());
+                fputs("\nVerifying file integrity...", stdout);
+                Md5 md5(romPath, device->id(), type);
+                if (!md5.verify())
+                {
+                  fputs(" FAIL\n", stdout);
+                  fprintf(stderr, "%s: `%s' may be corrupt!\n",
+                      gProgramName.c_str(), romPath.c_str());
+                }
+                else
+                {
+                  fputs(" PASS\n", stdout);
+                  fprintf(stdout, "New ROM located at:\n\t%s\n",
+                      romPath.c_str());
+                }
               }
               else
               {
-                fputs(" PASS\n", stdout);
-                fprintf(stdout, "New ROM located at:\n\t%s\n",
-                    romPath.c_str());
+                fprintf(stderr, "\n%s: error: failed to fetch %s\n",
+                    gProgramName.c_str(), romName.c_str());
+                if (!*hasError)
+                  *hasError = true;
               }
             }
             else
-            {
-              fprintf(stderr, "\n%s: error: failed to fetch %s\n",
-                  gProgramName.c_str(), romName.c_str());
-              if (!*hasError)
-                *hasError = true;
-            }
+              fprintf(stdout, "%s: `%s' exists and has already been "
+                  "downloaded\n", gProgramName.c_str(), romName.c_str());
           }
-          else
-            fprintf(stdout, "%s: `%s' exists and has already been "
-                "downloaded\n", gProgramName.c_str(), romName.c_str());
         }
-      }
-      else if (doc)
-      {
-        delete doc;
-        doc = NULL;
-        if (!*hasError)
-          *hasError = true;
-      }
-    }
-    else
-    {
-      string types[3] = {
-        "stable", "nightly", "rc"
-      };
-      fprintf(stdout, "%s:\n", device->id().c_str());
-      for (size_t i = 0; i < 3; ++i)
-      {
-        bacon::Stats stats(device, types[i]);
-        fprintf(stdout, "  %s:", types[i].c_str());
-        for (size_t j = 0; j < (7 - types[i].size() + 2); ++j)
-          fputc(' ', stdout);
-        if (stats.init())
+        else if (doc)
         {
-          fprintf(stdout, "%s\n", stats.romName().c_str());
-          for (size_t j = 0;
-               j < (12 - types[i].size() + types[i].size());
-               ++j)
+          delete doc;
+          doc = NULL;
+          if (!*hasError)
+            *hasError = true;
+        }
+      }
+      else
+      {
+        string types[3] = {
+          "stable", "nightly", "rc"
+        };
+        fprintf(stdout, "%s:\n", device->id().c_str());
+        for (size_t i = 0; i < 3; ++i)
+        {
+          Stats stats(device, types[i]);
+          fprintf(stdout, "  %s:", types[i].c_str());
+          for (size_t j = 0; j < (7 - types[i].size() + 2); ++j)
             fputc(' ', stdout);
-          fputs("-- ", stdout);
-          if (stats.existsLocally())
+          if (stats.init())
           {
-            if (stats.isValid())
-              fputs("ALREADY DOWNLOADED", stdout);
+            fprintf(stdout, "%s\n", stats.romName().c_str());
+            for (size_t j = 0;
+                 j < (12 - types[i].size() + types[i].size());
+                 ++j)
+              fputc(' ', stdout);
+            fputs("-- ", stdout);
+            if (stats.existsLocally())
+            {
+              if (stats.isValid())
+                fputs("already downloaded", stdout);
+              else
+                fputs("partially downloaded or corrupt", stdout);
+            }
             else
-              fputs("PARTIALLY DOWNLOADED OR CORRUPT", stdout);
+              fputs("not downloaded", stdout);
+            fputc('\n', stdout);
           }
           else
-            fputs("NOT DOWNLOADED", stdout);
-          fputc('\n', stdout);
+            fputs("(not found)\n", stdout);
         }
-        else
-          fputs("(not found)\n", stdout);
       }
     }
-  }
 
-  int performAction(const Action &action,
-                    const vector<bacon::Device *> &devices)
-  {
-    bool hasError = false;
-
-    if (!devices.size())
+    int performAction(const Action &action,
+                      const vector<Device *> &devices)
     {
-      fprintf(stderr, "%s: error: no device(s) given\n",
-          gProgramName.c_str());
-      return EXIT_FAILURE;
-    }
+      bool hasError = false;
 
-    for (size_t i = 0; i < devices.size(); i++)
-    {
-      if (!validDevice(devices[i]->id()))
+      if (!devices.size())
       {
-        fprintf(stderr, "%s: warning: unknown device `%s', skipping...\n",
-            gProgramName.c_str(),
-            bacon::util::toUpperCase(devices[i]->id()).c_str());
-        continue;
+        fprintf(stderr, "%s: error: no device(s) given\n",
+            gProgramName.c_str());
+        return EXIT_FAILURE;
       }
-      else if (action != SHOWONLY)
-        devices[i]->createRomDir();
-      if (action == SHOWONLY)
-        fputs("Showing ", stdout);
-      else
-        fputs("Downloading ", stdout);
-      fputs("latest ", stdout);
-      if (action == DOWNLOAD_ST)
-        fputs("Stable ", stdout);
-      else if (action == DOWNLOAD_NI)
-        fputs("Nightly ", stdout);
-      else if (action == DOWNLOAD_RC)
-        fputs("Release Candidate ", stdout);
-      fprintf(stdout, "%s for %s...\n",
-          (action == SHOWONLY) ? "ROMs" : "ROM",
-          bacon::util::toUpperCase(devices[i]->id()).c_str());
-      downloadAction(&hasError, action, devices[i]);
+
+      for (size_t i = 0; i < devices.size(); i++)
+      {
+        if (!validDevice(devices[i]->id()))
+        {
+          fprintf(stderr, "%s: warning: unknown device `%s', skipping...\n",
+              gProgramName.c_str(),
+              util::toUpperCase(devices[i]->id()).c_str());
+          continue;
+        }
+        else if (action != SHOWONLY)
+          devices[i]->createRomDir();
+        if (action == SHOWONLY)
+          fputs("Showing ", stdout);
+        else
+          fputs("Downloading ", stdout);
+        fputs("latest ", stdout);
+        if (action == DOWNLOAD_ST)
+          fputs("Stable ", stdout);
+        else if (action == DOWNLOAD_NI)
+          fputs("Nightly ", stdout);
+        else if (action == DOWNLOAD_RC)
+          fputs("Release Candidate ", stdout);
+        fprintf(stdout, "%s for %s...\n",
+            (action == SHOWONLY) ? "ROMs" : "ROM",
+            util::toUpperCase(devices[i]->id()).c_str());
+        downloadAction(&hasError, action, devices[i]);
+      }
+
+      if (hasError)
+        return EXIT_FAILURE;
+      return EXIT_SUCCESS;
     }
+  } /* namespace */
 
-    if (hasError)
-      return EXIT_FAILURE;
-    return EXIT_SUCCESS;
-  }
-}
-
-namespace bacon
-{
   int showUsage()
   {
     fprintf(stdout, "Usage: %s [option] [DEVICE] ...\n",
@@ -421,5 +421,5 @@ namespace bacon
   {
     return performAction(DOWNLOAD_RC, devices);
   }
-}
+} /* namespace bacon */
 

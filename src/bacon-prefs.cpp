@@ -29,34 +29,34 @@ using std::string;
 
 extern string gProgramName;
 
-namespace
-{
-  string values[KEY_TOTAL];
-
-  string keyToString(const bacon::prefs::Key key)
-  {
-    string result;
-
-    switch (key)
-    {
-    case KEY_BASE_DIR:
-      result = BASE_DIR_KEY_STRING;
-      break;
-    case KEY_LOG_PATH:
-      result = LOG_PATH_KEY_STRING;
-      break;
-    case KEY_CM_ROOT_SERVER:
-      result = CM_ROOT_SERVER_KEY_STRING;
-      break;
-    default:
-      result = "";
-    }
-    return result;
-  }
-}
-
 namespace bacon
 {
+  namespace
+  {
+    string values[KEY_TOTAL];
+
+    string keyToString(const prefs::Key key)
+    {
+      string result;
+
+      switch (key)
+      {
+      case KEY_BASE_DIR:
+        result = BASE_DIR_KEY_STRING;
+        break;
+      case KEY_LOG_PATH:
+        result = LOG_PATH_KEY_STRING;
+        break;
+      case KEY_CM_ROOT_SERVER:
+        result = CM_ROOT_SERVER_KEY_STRING;
+        break;
+      default:
+        result = "";
+      }
+      return result;
+    }
+  } /* namespace */
+
   namespace prefs
   {
     void init()
@@ -148,6 +148,6 @@ namespace bacon
       }
       return result;
     }
-  }
-}
+  } /* namespace prefs */
+} /* namespace bacon */
 

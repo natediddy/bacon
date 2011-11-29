@@ -34,7 +34,7 @@ namespace bacon
   private:
     std::string mId;
   };
-}
+} /* namespace bacon */
 
 #endif /* !BACON_DEVICE_H_INCLUDED */
 

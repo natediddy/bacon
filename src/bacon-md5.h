@@ -34,7 +34,7 @@ namespace bacon
     std::string mLocalHash;
     std::string mRemoteHash;
   };
-}
+} /* namespace bacon */
 
 #endif /* !BACON_MD5_H_INCLUDED */
 

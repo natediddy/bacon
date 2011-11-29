@@ -30,8 +30,8 @@ namespace bacon
     std::string pathJoin(const std::string arr[]);
     char variableSymbol();
     char dirSeparator();
-  }
-}
+  } /* namespace env */
+} /* namespace bacon */
 
 #endif /* !BACON_ENV_H_INCLUDED */
 

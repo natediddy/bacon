@@ -40,7 +40,7 @@ namespace bacon
   private:
     std::string mUrl;
   };
-}
+} /* namespace bacon */
 
 #endif /* !BACON_NET_H_INCLUDED */
 

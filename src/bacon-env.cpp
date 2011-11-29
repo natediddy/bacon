@@ -83,6 +83,6 @@ namespace bacon
     {
       return PATH_SEP_CHAR;
     }
-  }
-}
+  } /* namespace env */
+} /* namespace bacon */
 

@@ -25,7 +25,7 @@ namespace bacon
                   double downloadedSoFar,
                   double totalToUpload,
                   double uploadedSoFar);
-}
+} /* namespace bacon */
 
 #endif /* !BACON_PROGRESS_H_INCLUDED */
 

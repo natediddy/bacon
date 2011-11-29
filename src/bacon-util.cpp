@@ -31,17 +31,17 @@
 
 using std::string;
 
-namespace
-{
-  unsigned int rSeed;
-
-  const string urlPrefixes[] = {
-    "http://", "https://", "ftp://", "git://", "ssh://", ""
-  };
-}
-
 namespace bacon
 {
+  namespace
+  {
+    unsigned int rSeed;
+
+    const string urlPrefixes[] = {
+    "http://", "https://", "ftp://", "git://", "ssh://", ""
+    };
+  } /* namespace */
+
   namespace util
   {
     string toUpperCase(const string &str)
@@ -246,6 +246,6 @@ namespace bacon
         return string(val);
       return conv;
     }
-  }
-}
+  } /* namespace util */
+} /* namespace bacon */
 

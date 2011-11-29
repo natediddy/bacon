@@ -27,19 +27,19 @@ using std::string;
 
 long gStartEpoch = 0;
 
-namespace
-{
-  string formRequest(const string &name)
-  {
-    string result("get/");
-
-    result += name;
-    return result;
-  }
-}
-
 namespace bacon
 {
+  namespace
+  {
+    string formRequest(const string &name)
+    {
+      string result("get/");
+
+      result += name;
+      return result;
+    }
+  } /* namespace */
+
   size_t write_CB(void *ptr, size_t size, size_t nmemb, FILE *fp)
   {
     return fwrite(ptr, size, nmemb, fp);
@@ -112,5 +112,5 @@ namespace bacon
     close();
     return Net::pStatus == CURLE_OK;
   }
-}
+} /* namespace bacon */
 

@@ -46,7 +46,7 @@ namespace bacon
   private:
     std::vector<std::string> mDeviceIds;
   };
-}
+} /* namespace bacon */
 
 #endif /* !BACON_DEVICELIST_H_INCLUDED */
 

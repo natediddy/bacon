@@ -55,7 +55,7 @@ namespace bacon
     class FilePropImpl;
     FilePropImpl *mProp;
   };
-}
+} /* namespace bacon */
 
 #endif /* !BACON_FILE_H_INCLUDED */
 

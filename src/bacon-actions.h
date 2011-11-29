@@ -34,7 +34,7 @@ namespace bacon
   int downloadLatestStableRom(const std::vector<Device *> &devices);
   int downloadLatestNightlyRom(const std::vector<Device *> &devices);
   int downloadLatestRcRom(const std::vector<Device *> &devices);
-}
+} /* namespace bacon */
 
 #endif /* !BACON_ACTIONS_H_INCLUDED */
 

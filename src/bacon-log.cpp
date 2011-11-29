@@ -43,43 +43,43 @@
 
 using std::string;
 
-namespace
-{
-#if HAVE_UNISTD_H
-  int myPid = 0;
-#endif
-  FILE *stream = NULL;
-
-  enum BannerType {
-    HEADER,
-    FOOTER
-  };
-
-  void writeBanner(const BannerType &type)
-  {
-    if (!stream)
-      return;
-
-    if (type == HEADER)
-      fputs("========================================\n", stream);
-
-    fputs("*** BACON LOGGER ", stream);
-
-    if (type == HEADER)
-      fputs("START ", stream);
-    else if (type == FOOTER)
-      fputs("END ", stream);
-
-#if HAVE_UNISTD_H
-    fprintf(stream, "(pid:%d) ", myPid);
-#endif
-    fprintf(stream, "%s ***\n",
-        bacon::util::timeString(BANNER_DATE_FORMAT).c_str());
-  }
-}
-
 namespace bacon
 {
+  namespace
+  {
+#if HAVE_UNISTD_H
+    int myPid = 0;
+#endif
+    FILE *stream = NULL;
+
+    enum BannerType {
+      HEADER,
+      FOOTER
+    };
+
+    void writeBanner(const BannerType &type)
+    {
+      if (!stream)
+        return;
+
+      if (type == HEADER)
+        fputs("========================================\n", stream);
+
+      fputs("*** BACON LOGGER ", stream);
+
+      if (type == HEADER)
+        fputs("START ", stream);
+      else if (type == FOOTER)
+        fputs("END ", stream);
+
+#if HAVE_UNISTD_H
+      fprintf(stream, "(pid:%d) ", myPid);
+#endif
+      fprintf(stream, "%s ***\n",
+          util::timeString(BANNER_DATE_FORMAT).c_str());
+    }
+  } /* namespace */
+
   namespace log
   {
     bool _isActive()
@@ -154,6 +154,6 @@ namespace bacon
 
       return buf;
     }
-  }
-}
+  } /* namespace log */
+} /* namespace bacon */
 
