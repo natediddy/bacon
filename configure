@@ -4380,6 +4380,10 @@ if test x"$BACON_ROM_HISTORY_MAX" = x; then
   BACON_ROM_HISTORY_MAX=10
 fi
 
+if test x"$MACHTYPE" != x; then
+  CXXFLAGS="$CXXFLAGS -DBACON_MACHTYPE=\\\"$MACHTYPE\\\""
+fi
+
 ac_ext=c
 ac_cpp='$CPP $CPPFLAGS'
 ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'

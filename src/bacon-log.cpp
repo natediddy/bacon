@@ -68,9 +68,9 @@ namespace bacon
       fputs("*** BACON LOGGER ", stream);
 
       if (type == HEADER)
-        fputs("START ", stream);
+        fprintf(stream, "START (v%s) ", PACKAGE_VERSION);
       else if (type == FOOTER)
-        fputs("END ", stream);
+        fprintf(stream, "END (v%s) ", PACKAGE_VERSION);
 
 #if HAVE_UNISTD_H
       fprintf(stream, "(pid:%d) ", myPid);
@@ -147,7 +147,6 @@ namespace bacon
 #else
       snprintf(buf, size, "%s:%s:%d", tag, file, line);
 #endif
-
       return buf;
     }
   } /* namespace log */

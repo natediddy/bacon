@@ -1,3 +1,17 @@
+0.20.4:
+  - display current bacon version in log header and footer
+  - display machine info in --version
+
+0.20.3:
+  - added -H/--rom-history option for better control in which ROMs are
+    being downloaded
+  - better readability and organization in the code
+
+0.20.2:
+  - more minor optimizations
+  - simplifications
+  - more info in -S/--show command
+
 0.20.1:
   - fix a problem with MD5 checks
 

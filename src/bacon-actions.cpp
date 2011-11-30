@@ -387,11 +387,18 @@ namespace bacon
   int showVersion()
   {
     fprintf(stdout, "%s %s\n"
+#ifdef BACON_MACHTYPE
+       "Built for %s\n"
+#endif
        "Copyright (C) 2011 Nathan Forbes\n"
        "This is free software; see the source for copying conditions.\n"
        "There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A\n"
        "PARTICULAR PURPOSE.\n",
-       PACKAGE_NAME, PACKAGE_VERSION);
+       PACKAGE_NAME, PACKAGE_VERSION
+#ifdef BACON_MACHTYPE
+       , BACON_MACHTYPE
+#endif
+       );
 
     return EXIT_SUCCESS;
   }

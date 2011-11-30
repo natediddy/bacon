@@ -1,5 +1,5 @@
 AC_PREREQ([2.50])
-AC_INIT(bacon, 0.20.3)
+AC_INIT(bacon, 0.20.4)
 AC_CONFIG_SRCDIR([src])
 
 AC_CONFIG_HEADERS([config.h])
@@ -29,6 +29,10 @@ fi
 
 if test x"$BACON_ROM_HISTORY_MAX" = x; then
   BACON_ROM_HISTORY_MAX=10
+fi
+
+if test x"$MACHTYPE" != x; then
+  CXXFLAGS="$CXXFLAGS -DBACON_MACHTYPE=\\\"$MACHTYPE\\\""
 fi
 
 AC_CHECK_HEADERS([sys/ioctl.h unistd.h])
