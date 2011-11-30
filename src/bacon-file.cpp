@@ -43,14 +43,10 @@
 #include "bacon-log.h"
 #include "bacon-util.h"
 
-#define REFRESH_FILE_PROPS                   \
-  do                                         \
-  {                                          \
-    if (mProp)                               \
-    {                                        \
-      delete mProp;                          \
-      mProp = NULL;                          \
-    }                                        \
+#define REFRESH_FILE_PROPS \
+  do \
+  { \
+    BACON_FREE(mProp); \
     mProp = new FilePropImpl(mName.c_str()); \
   } while (0)
 
@@ -129,12 +125,7 @@ namespace bacon
   File::~File()
   {
     close();
-
-    if (mProp)
-    {
-      delete mProp;
-      mProp = NULL;
-    }
+    BACON_FREE(mProp);
   }
 
   string File::name() const

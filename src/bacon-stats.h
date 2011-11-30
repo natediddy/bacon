@@ -19,6 +19,7 @@
 #define BACON_STATS_H_INCLUDED
 
 #include <string>
+#include <vector>
 
 namespace bacon
 {
@@ -30,15 +31,15 @@ namespace bacon
     ~Stats();
 
     bool init();
-    bool existsLocally() const;
-    bool isValid() const;
-    std::string romName() const;
+    bool existsLocally(const size_t n) const;
+    bool isValid(const size_t n) const;
+    std::vector<std::string> romNames() const;
 
   private:
     const Device *mDevice;
     std::string mType;
-    std::string mLatestRomName;
-    std::string mRomPath;
+    std::vector<std::string> mLatestRomNames;
+    std::vector<std::string> mRomPaths;
   };
 } /* namespace bacon */
 

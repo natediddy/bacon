@@ -102,8 +102,7 @@ namespace bacon
             close();
           }
         }
-        delete parser;
-        parser = NULL;
+        BACON_FREE(parser);
         APPEND_RANDOM_ID;
         return true;
       }

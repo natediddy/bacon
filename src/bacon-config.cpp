@@ -75,8 +75,7 @@ namespace bacon
       if (!mUser->isFile())
       {
 #endif
-        delete mUser;
-        mUser = NULL;
+        BACON_FREE(mUser);
 #ifdef _WIN32
       }
 #endif
@@ -85,11 +84,7 @@ namespace bacon
 
   Config::~Config()
   {
-    if (mUser)
-    {
-      delete mUser;
-      mUser = NULL;
-    }
+    BACON_FREE(mUser);
   }
 
   string Config::userDefined(const string &key)

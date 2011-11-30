@@ -32,11 +32,16 @@ using std::string;
 using std::vector;
 
 string gProgramName;
+int gRomHistory = BACON_ROM_HISTORY_DEFAULT;
+bool gRomHistExplicit = false;
 
 namespace bacon
 {
   namespace
   {
+    bool dlReq = false;
+    bool wantsSpec = false;
+
     const string configOptions[] = {
       "-b", "-l", "-c",
 #ifdef _WIN32
@@ -92,6 +97,22 @@ namespace bacon
           return true;
       }
       return false;
+    }
+
+    bool isRomHistCmd(const string &arg)
+    {
+      return arg.find("-H") != string::npos ||
+        arg.find("--rom-history") != string::npos;
+    }
+
+    void setRomHistory(const string &val)
+    {
+      int hist = util::stringToInt(val);
+
+      if (hist <= 0 || hist > BACON_ROM_HISTORY_MAX)
+        return;
+      wantsSpec = true;
+      gRomHistory = hist;
     }
 
     void properProgramName(char *execName)
@@ -227,31 +248,34 @@ namespace bacon
           || action == "/s"
 #endif
          )
+      {
         mFun = downloadLatestStableRom;
+        dlReq = true;
+      }
       else if (action == "-n" || action == "--nightly"
 #ifdef _WIN32
           || action == "/n"
 #endif
          )
+      {
         mFun = downloadLatestNightlyRom;
+        dlReq = true;
+      }
       else if (action == "-r" || action == "--release-candidate"
 #ifdef _WIN32
           || action == "/r"
 #endif
          )
+      {
         mFun = downloadLatestRcRom;
+        dlReq = true;
+      }
     }
 
     ~ActionCmdUtilImpl()
     {
       for (size_t i = 0; i < mDevices.size(); i++)
-      {
-        if (mDevices[i])
-        {
-          delete mDevices[i];
-          mDevices[i] = NULL;
-        }
-      }
+        BACON_FREE(mDevices[i]);
     }
 
     int perform() const
@@ -283,22 +307,12 @@ namespace bacon
 
   Cmd::~Cmd()
   {
-    if (mBasic)
-    {
-      delete mBasic;
-      mBasic = NULL;
-    }
+    BACON_FREE(mBasic);
 
     if (mActions.size())
     {
       for (size_t i = 0; i < mActions.size(); i++)
-      {
-        if (mActions[i])
-        {
-          delete mActions[i];
-          mActions[i] = NULL;
-        }
-      }
+        BACON_FREE(mActions[i]);
     }
   }
 
@@ -323,11 +337,12 @@ namespace bacon
                         util::convertShellSymbols(mArgs[i].substr(
                             mArgs[i].find_first_of('=') + 1,
                             mArgs[i].size())));
-        else
+        else if (mArgs[i].size() > 2)
+          mConf->addNew(mArgs[i].substr(0, 2),
+                        mArgs[i].substr(2, mArgs[i].size()));
+        else if ((i + 1) < argCount)
         {
-          if ((i + 1) < argCount) {
-            mConf->addNew(mArgs[i], util::convertShellSymbols(mArgs[i + 1]));
-          }
+          mConf->addNew(mArgs[i], util::convertShellSymbols(mArgs[i + 1]));
           ++i;
         }
 
@@ -353,6 +368,21 @@ namespace bacon
         }
         mActions.push_back(new ActionCmdUtilImpl(mArgs[i_save], devices));
       }
+      else if (isRomHistCmd(mArgs[i]))
+      {
+        string histVal("");
+        if (mArgs[i][0] == '-' && mArgs[i][1] == '-')
+          histVal =
+            mArgs[i].substr(mArgs[i].find_first_of('=') + 1, mArgs[i].size());
+        else if (mArgs[i].size() > 2)
+          histVal = mArgs[i].substr(2, mArgs[i].size());
+        else if ((i + 1) < argCount)
+        {
+          histVal = mArgs[i + 1];
+          ++i;
+        }
+        setRomHistory(histVal);
+      }
     }
 
     if (mConf)
@@ -368,6 +398,8 @@ namespace bacon
       retval = mBasic->perform();
     else if (mActions.size())
     {
+      if (dlReq && wantsSpec && gRomHistory > 1)
+        gRomHistExplicit = true;
       for(size_t i = 0; i < mActions.size(); i++)
       {
         if (mActions[i]->perform() == EXIT_FAILURE)

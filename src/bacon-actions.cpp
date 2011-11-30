@@ -21,10 +21,6 @@
 #include <cstdlib>
 #include <string>
 
-#ifdef _WIN32
-#include <conio.h>
-#endif
-
 #include "bacon-actions.h"
 #include "bacon-device.h"
 #include "bacon-devicelist.h"
@@ -41,6 +37,8 @@ using std::string;
 using std::vector;
 
 extern string gProgramName;
+extern int gRomHistory;
+extern bool gRomHistExplicit;
 
 namespace bacon
 {
@@ -100,102 +98,120 @@ namespace bacon
       DOWNLOAD_RC
     };
 
-    void downloadAction(bool *hasError,
-                        const Action &action,
-                        const Device *device)
+    string actionToString(const Action &action)
     {
-      if (action != SHOWONLY)
+      switch (action)
       {
-        string type;
-        switch (action)
+      case DOWNLOAD_ST:
+        return string("stable");
+      case DOWNLOAD_NI:
+        return string("nightly");
+      case DOWNLOAD_RC:
+        return string("rc");
+      }
+      return string("");
+    }
+
+    bool performRomDownload(bool *err,
+                            const string &romName,
+                            const string &type,
+                            const Device *device)
+    {
+      string _p[] = {
+        device->romDir(), romName, ""
+      };
+      string romPath = env::pathJoin(_p);
+
+      if (!romExists(romPath, device->id(), type))
+      {
+        Rom rom(romName, romPath);
+        if (rom.fetch())
         {
-        case DOWNLOAD_ST:
-          type = "stable";
-          break;
-        case DOWNLOAD_NI:
-          type = "nightly";
-          break;
-        case DOWNLOAD_RC:
-          type = "rc";
-          break;
-        }
-        HtmlDoc *doc = new HtmlDoc(device->id(), type);
-        if (doc->fetch())
-        {
-          HtmlParser parser(doc->content());
-          string romName = parser.latestRomForDevice();
-          delete doc;
-          doc = NULL;
-          if (!romName.empty())
+          fputs("\nVerifying file integrity...", stdout);
+          Md5 md5(romPath, device->id(), type);
+          if (!md5.verify())
           {
-            string p[] = {
-              device->romDir(), romName, ""
-            };
-            string romPath = env::pathJoin(p);
-            if (!romExists(romPath, device->id(), type))
-            {
-              Rom rom(romName, romPath);
-              if (rom.fetch())
-              {
-                fputs("\nVerifying file integrity...", stdout);
-                Md5 md5(romPath, device->id(), type);
-                if (!md5.verify())
-                {
-                  fputs(" FAIL\n", stdout);
-                  fprintf(stderr, "%s: `%s' may be corrupt!\n",
-                      gProgramName.c_str(), romPath.c_str());
-                }
-                else
-                {
-                  fputs(" PASS\n", stdout);
-                  fprintf(stdout, "New ROM located at:\n\t%s\n",
-                      romPath.c_str());
-                }
-              }
-              else
-              {
-                fprintf(stderr, "\n%s: error: failed to fetch %s\n",
-                    gProgramName.c_str(), romName.c_str());
-                if (!*hasError)
-                  *hasError = true;
-              }
-            }
-            else
-              fprintf(stdout, "%s: `%s' exists and has already been "
-                  "downloaded\n", gProgramName.c_str(), romName.c_str());
+            fputs(" FAIL\n", stdout);
+            fprintf(stderr, "%s: `%s' may be corrupt!\n",
+                gProgramName.c_str(), romPath.c_str());
+          }
+          else
+          {
+            fputs(" PASS\n", stdout);
+            fprintf(stdout, "New ROM located at:\n\t%s\n",
+                romPath.c_str());
           }
         }
-        else if (doc)
+        else
         {
-          delete doc;
-          doc = NULL;
-          if (!*hasError)
-            *hasError = true;
+          fprintf(stderr, "\n%s: error: failed to fetch %s\n",
+              gProgramName.c_str(), romName.c_str());
+          if (!*err)
+            *err = true;
         }
       }
       else
+        fprintf(stdout, "%s: `%s' exists and has already been "
+            "downloaded\n", gProgramName.c_str(), romName.c_str());
+    }
+
+    bool prepRomDownload(const string &type, const Device *device)
+    {
+      HtmlDoc *doc = new HtmlDoc(device->id(), type);
+      bool err = false;
+
+      if (doc->fetch())
       {
-        string types[3] = {
-          "stable", "nightly", "rc"
-        };
-        fprintf(stdout, "%s:\n", device->id().c_str());
-        for (size_t i = 0; i < 3; ++i)
+        HtmlParser parser(doc->content());
+        vector<string> romNames = parser.latestRomsForDevice();
+        BACON_FREE(doc);
+        for (size_t i = 0; i < romNames.size(); ++i)
         {
-          Stats stats(device, types[i]);
-          fprintf(stdout, "  %s:", types[i].c_str());
-          for (size_t j = 0; j < (7 - types[i].size() + 2); ++j)
-            fputc(' ', stdout);
-          if (stats.init())
+          if (gRomHistExplicit)
           {
-            fprintf(stdout, "%s\n", stats.romName().c_str());
-            for (size_t j = 0;
-                 j < (12 - types[i].size() + types[i].size());
-                 ++j)
-              fputc(' ', stdout);
-            fputs("-- ", stdout);
-            if (stats.existsLocally())
+            if (i == (gRomHistory - 1))
             {
-              if (stats.isValid())
+              performRomDownload(&err, romNames[i], type, device);
+              break;
+            }
+            continue;
+          }
+          performRomDownload(&err, romNames[i], type, device);
+          break;
+        }
+      }
+      else if (!err)
+        err = true;
+
+      BACON_FREE(doc);
+      return err;
+    }
+
+    bool performShowOnly(const Device *device)
+    {
+      string types[3] = {
+        "stable", "nightly", "rc"
+      };
+
+      fprintf(stdout, "%s:\n", device->id().c_str());
+      for (size_t i = 0; i < 3; ++i)
+      {
+        Stats stats(device, types[i]);
+        fprintf(stdout, "  %s:\n", types[i].c_str());
+        if (stats.init())
+        {
+          vector<string> romNames = stats.romNames();
+          for (size_t j = 0; j < romNames.size(); ++j)
+          {
+            fputc('\t', stdout);
+            if (types[i] == "nightly")
+              fputs(util::nightlyBuildNo(romNames[j]).c_str(), stdout);
+            else
+              fputs(util::romVersionNo(romNames[j]).c_str(), stdout);
+            fputs(" -- ", stdout);
+            if (stats.existsLocally(j))
+            {
+              if (stats.isValid(j))
                 fputs("already downloaded", stdout);
               else
                 fputs("partially downloaded or corrupt", stdout);
@@ -204,16 +220,23 @@ namespace bacon
               fputs("not downloaded", stdout);
             fputc('\n', stdout);
           }
-          else
-            fputs("(not found)\n", stdout);
         }
+        else
+          fputs("\t(none found)\n", stdout);
       }
     }
 
-    int performAction(const Action &action,
-                      const vector<Device *> &devices)
+    void downloadAction(bool *err, const Action &action, const Device *device)
     {
-      bool hasError = false;
+      if (action != SHOWONLY)
+        *err = prepRomDownload(actionToString(action), device);
+      else
+        *err = performShowOnly(device);
+    }
+
+    int perform(const Action &action, const vector<Device *> &devices)
+    {
+      bool err = false;
 
       if (!devices.size())
       {
@@ -237,23 +260,88 @@ namespace bacon
           fputs("Showing ", stdout);
         else
           fputs("Downloading ", stdout);
+        fputs("the ", stdout);
+        if (action != SHOWONLY && gRomHistExplicit)
+          fprintf(stdout, "%s to ",
+              util::properNumber(gRomHistory).c_str());
+        else if (action == SHOWONLY)
+          fprintf(stdout, "%d ", gRomHistory);
         fputs("latest ", stdout);
-        if (action == DOWNLOAD_ST)
-          fputs("Stable ", stdout);
-        else if (action == DOWNLOAD_NI)
-          fputs("Nightly ", stdout);
-        else if (action == DOWNLOAD_RC)
-          fputs("Release Candidate ", stdout);
-        fprintf(stdout, "%s for %s...\n",
-            (action == SHOWONLY) ? "ROMs" : "ROM",
+        if (action != SHOWONLY)
+          fprintf(stdout, "%s ", actionToString(action).c_str());
+        fputs("ROM", stdout);
+        if (action == SHOWONLY)
+          fputs("s from all categories", stdout);
+        fprintf(stdout, " for %s...\n",
             util::toUpperCase(devices[i]->id()).c_str());
-        downloadAction(&hasError, action, devices[i]);
+        downloadAction(&err, action, devices[i]);
       }
 
-      if (hasError)
+      if (err)
         return EXIT_FAILURE;
       return EXIT_SUCCESS;
     }
+
+    struct ListCmpData {
+      int nDiff;
+      vector<string> diff;
+    };
+
+    ListCmpData *listCompare(DeviceList &deviceList,
+                             const vector<string> &oldList)
+    {
+      vector<string> newList = deviceList.rawList();
+      ListCmpData *data = new ListCmpData;
+
+      data->nDiff = (int)newList.size() - (int)oldList.size();
+      if (data->nDiff)
+      {
+        for (size_t i = 0; i < newList.size(); ++i)
+        {
+          bool noMatch = true;
+          for (size_t j = 0; j < oldList.size(); ++j)
+          {
+            if (newList[i] == oldList[j])
+            {
+              noMatch = false;
+              break;
+            }
+          }
+          if (noMatch)
+            data->diff.push_back(newList[i]);
+        }
+      }
+      return data;
+    }
+
+    void printListDiff(ListCmpData *data)
+    {
+      if (data->nDiff <= 0)
+      {
+        fputs("No new devices since last update\n", stdout);
+        return;
+      }
+
+      fputs("There ", stdout);
+      if (data->nDiff > 1)
+        fputs("are ", stdout);
+      else
+        fputs("is ", stdout);
+
+      fprintf(stdout, "%d new device", data->nDiff);
+      if (data->nDiff > 1)
+        fputc('s', stdout);
+
+      fputs(":\n", stdout);
+      for (size_t i = 0; i < data->diff.size(); ++i)
+      {
+        alignPrintNumber(i);
+        fprintf(stdout, "%s\n", data->diff[i].c_str());
+      }
+
+      BACON_FREE(data);
+    }
+
   } /* namespace */
 
   int showUsage()
@@ -281,6 +369,9 @@ namespace bacon
        "  -u, --update-devices     update the current DEVICE list and exit\n"
        "  -h, -?, --help           display this message and exit\n"
        "  -v, --version            display version information and exit\n"
+       "  -H INTEGER, --rom-history=INTEGER\n"
+       "                           set the number of latest ROMs to search "
+         "for\n"
        "  -b BASEDIR, --basedir=BASEDIR\n"
        "                           set alternate base directory\n"
        "  -l LOGPATH, --logpath=LOGPATH\n"
@@ -348,11 +439,10 @@ namespace bacon
     }
 
     string lastUpdated(deviceList.lastUpdate());
-    fputs("Updating device list...", stdout);
 
+    fputs("Updating device list...", stdout);
     if (!lastUpdated.empty())
       fprintf(stdout, " (last updated %s)", lastUpdated.c_str());
-
     fputc('\n', stdout);
 
     if (!deviceList.update())
@@ -362,64 +452,29 @@ namespace bacon
       return EXIT_FAILURE;
     }
 
-    vector<string> newList = deviceList.rawList();
-    int newCount = (int)newList.size() - (int)oldList.size();
-
-    if (newCount)
-    {
-      /* Use proper grammer... */
-      fputs("There ", stdout);
-      if (newCount > 1)
-        fputs("are ", stdout);
-      else
-        fputs("is ", stdout);
-      fprintf(stdout, "%d new device", newCount);
-      if (newCount > 1)
-        fputc('s', stdout);
-      fputs(":\n", stdout);
-      for (size_t i = 0, n = 0; i < newList.size(); ++i)
-      {
-        bool noMatch = true;
-        for (size_t j = 0; j < oldList.size(); ++j)
-        {
-          if (newList[i] == oldList[j])
-          {
-            noMatch = false;
-            break;
-          }
-        }
-        if (noMatch)
-        {
-          alignPrintNumber(n++);
-          fputs(newList[i].c_str(), stdout);
-        }
-      }
-    }
-    else
-      fputs("No new devices since last update", stdout);
-
-    fputs("\nFinished\n", stdout);
+    printListDiff(listCompare(deviceList, oldList));
+    fputs("Finished\n", stdout);
     return EXIT_SUCCESS;
   }
 
   int showAllRoms(const vector<Device *> &devices)
   {
-    return performAction(SHOWONLY, devices);
+    return perform(SHOWONLY, devices);
   }
 
   int downloadLatestStableRom(const vector<Device *> &devices)
   {
-    return performAction(DOWNLOAD_ST, devices);
+    return perform(DOWNLOAD_ST, devices);
   }
 
   int downloadLatestNightlyRom(const vector<Device *> &devices)
   {
-    return performAction(DOWNLOAD_NI, devices);
+    return perform(DOWNLOAD_NI, devices);
   }
 
   int downloadLatestRcRom(const vector<Device *> &devices)
   {
-    return performAction(DOWNLOAD_RC, devices);
+    return perform(DOWNLOAD_RC, devices);
   }
 } /* namespace bacon */
 

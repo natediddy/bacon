@@ -1,7 +1,9 @@
 bin_PROGRAMS = bacon
 
-INCLUDES = \
-	-DSYSCONFDIR=\""$(sysconfdir)"\"
+bacon_CXXFLAGS = \
+	-DSYSCONFDIR=\""$(sysconfdir)"\" \
+	-DBACON_ROM_HISTORY_DEFAULT=@BACON_ROM_HISTORY_DEFAULT@ \
+	-DBACON_ROM_HISTORY_MAX=@BACON_ROM_HISTORY_MAX@
 
 bacon_SOURCES = \
 	bacon-actions.cpp \

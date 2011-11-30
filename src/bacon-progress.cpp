@@ -210,13 +210,13 @@ namespace bacon
     int pos;
     int i;
 
-    if (!pBar)
-      pBar = new ProgressBar;
-    else
+    if (pBar)
     {
       pBar->count++;
       pBar->updateWidth();
     }
+    else
+      pBar = new ProgressBar;
 
     if (downloadedSoFar)
     {
@@ -251,10 +251,7 @@ namespace bacon
     pBar->display();
 
     if (downloadedSoFar >= totalToDownload)
-    {
-      delete pBar;
-      pBar = NULL;
-    }
+      BACON_FREE(pBar);
 
     return 0;
   }

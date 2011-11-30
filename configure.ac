@@ -18,6 +18,19 @@ AC_CHECK_LIB(curl, curl_easy_init, [LIBS="$LIBS -lcurl"], [
            from your system package manager (if you have one))
 ])
 
+AC_ARG_VAR(BACON_ROM_HISTORY_DEFAULT,
+           declares the default amount of ROMs to search for)
+AC_ARG_VAR(BACON_ROM_HISTORY_MAX,
+           declares the maximum number of ROMs to search for)
+
+if test x"$BACON_ROM_HISTORY_DEFAULT" = x; then
+  BACON_ROM_HISTORY_DEFAULT=3
+fi
+
+if test x"$BACON_ROM_HISTORY_MAX" = x; then
+  BACON_ROM_HISTORY_MAX=10
+fi
+
 AC_CHECK_HEADERS([sys/ioctl.h unistd.h])
 
 AC_HEADER_STDBOOL

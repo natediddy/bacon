@@ -22,6 +22,7 @@
 #include "bacon-log.h"
 #include "bacon-progress.h"
 #include "bacon-rom.h"
+#include "bacon-util.h"
 
 using std::string;
 

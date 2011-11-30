@@ -61,16 +61,12 @@ namespace bacon
   {
     void init()
     {
-      Config * config = new Config;
+      Config *config = new Config;
 
       for (Key key = 0; key < KEY_TOTAL; ++key)
         values[key] = config->valueOf(keyToString(key));
 
-      if (config)
-      {
-        delete config;
-        config = NULL;
-      }
+      BACON_FREE(config);
     }
 
     void override(const Key key, const string &val)

@@ -30,19 +30,24 @@
   && s[i+28] == '/' && s[i+29] == '?' && s[i+30] == 'd' && s[i+31] == 'e' \
   && s[i+32] == 'v' && s[i+33] == 'i' && s[i+34] == 'c' && s[i+35] == 'e' \
   && s[i+36] == '='
+#define DEVICE_BULLET_SIZE 37
 
 /* '/get/' */
 #define GET_URL(s, i) \
   s[i] == '/' && s[i+1] == 'g' && s[i+2] == 'e' && s[i+3] == 't' \
   && s[i+4] == '/'
+#define GET_URL_SIZE 5
 
 /* 'md5sum: ' */
 #define MD5_CLASS(s, i) \
   s[i]      == 'm' && s[i+1] == 'd' && s[i+2] == '5' && s[i+3] == 's' \
   && s[i+4] == 'u' && s[i+5] == 'm' && s[i+6] == ':' && s[i+7] == ' '
+#define MD5_CLASS_SIZE 8
 
 using std::string;
 using std::vector;
+
+extern int gRomHistory;
 
 namespace bacon
 {
@@ -68,12 +73,12 @@ namespace bacon
 
   void HtmlParser::allDeviceIds(vector<string> &vec) const
   {
-    for (size_t i = 0; i < mContent.size(); i++)
+    for (size_t i = 0; i < mContent.size(); ++i)
     {
       if (DEVICE_BULLET(mContent, i))
       {
         string tmp("");
-        i += 37;
+        i += DEVICE_BULLET_SIZE;
         while (mContent[i] != '"')
           tmp += mContent[i++];
         if (!tmp.empty())
@@ -95,7 +100,7 @@ namespace bacon
         {
           if (MD5_CLASS(mContent, i))
           {
-            i += 8;
+            i += MD5_CLASS_SIZE;
             while (mContent[i] != '<')
               hash += mContent[i++];
             break;
@@ -104,26 +109,34 @@ namespace bacon
         }
       }
     }
-
     return hash;
   }
 
-  string HtmlParser::latestRomForDevice() const
+  vector<string> HtmlParser::latestRomsForDevice() const
   {
+    vector<string> names;
     string name("");
+    int idx = 0;
 
-    for (size_t i = 0; i < mContent.size(); i++)
+    for (size_t i = 0; i < mContent.size(); ++i)
     {
       if (GET_URL(mContent, i))
       {
-        i += 5;
+        i += GET_URL_SIZE;
         while (mContent[i] != '"')
           name += mContent[i++];
-        break;
+        if (!name.empty())
+        {
+          names.push_back(name);
+          if (idx == (gRomHistory - 1))
+            break;
+          ++idx;
+          name = "";
+          continue;
+        }
       }
     }
-
-    return name;
+    return names;
   }
 
   string HtmlParser::currentContent() const

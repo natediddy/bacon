@@ -120,11 +120,7 @@ namespace bacon
       fputc('\n', stream);
       va_end(args);
 
-      if (prefix)
-      {
-        delete[] prefix;
-        prefix = NULL;
-      }
+      BACON_FREE_ARRAY(prefix);
     }
 
     char *_prefix(const char *tag,

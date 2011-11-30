@@ -39,6 +39,12 @@ download the latest available nightly CyanogenMod build for \fIDEVICE_ID\fR
 \fB\-r\fR, \fB\-\-release\-candidate\fR \fIDEVICE_ID\fR
 download the latest available CyanogenMod release candidate for \fIDEVICE_ID\fR
 .TP
+\fB\-H \fIINTEGER\fR\fR, \fB\-\-rom-history\fR=\fIINTEGER\fR
+Can be used 2 different ways.
+Use with \fB--show\fR to set the number of latest ROMs to list and search for to \fIINTEGER\fR.
+Use with \fB\-\-stable\fR, \fB\-\-nightly\fR, or \fB\-\-release-candidate\fR to chooses a specific ROM to download.
+For instance, `\-H3' or `\-\-rom-history=3' would choose the 3rd most recent ROM for \fIDEVICE_ID\fR.
+.TP
 \fB\-b \fIBASEDIR\fR\fR, \fB\-\-basedir\fR=\fIBASEDIR\fR
 set \fIBACON_BASE_DIR\fR to \fIBASEDIR\fR
 .TP

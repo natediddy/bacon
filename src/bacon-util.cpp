@@ -143,12 +143,19 @@ namespace bacon
       return string(buf);
     }
 
+    bool isNumeric(const char c)
+    {
+      return c >= '0' && c <= '9';
+    }
+
+    bool isAlpha(const char c)
+    {
+      return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
+    }
+
     bool isAlphaNumeric(const char c)
     {
-      if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') ||
-          (c >= '0' && c <= '9'))
-        return true;
-      return false;
+      return isAlpha(c) || isNumeric(c);
     }
 
     void strip(string &str)
@@ -245,6 +252,94 @@ namespace bacon
       if (conv.empty())
         return string(val);
       return conv;
+    }
+
+    string romVersionNo(const string &name)
+    {
+      string result("");
+
+      if (name.empty())
+        return result;
+
+      result += 'v';
+      for (size_t i = 0; i < name.size(); ++i)
+      {
+        if (isNumeric(name[i]))
+        {
+          result += name[i];
+          if ((i + 1) < name.size())
+          {
+            if (name[i + 1] == '.')
+            {
+              result += '.';
+              ++i;
+            }
+            else if (!isNumeric(name[i + 1]))
+              break;
+          }
+        }
+      }
+      return result;
+    }
+
+    string nightlyBuildNo(const string &name)
+    {
+      string result("");
+
+      if (name.empty())
+        return result;
+
+      result += '#';
+      for (size_t i = 0; i < name.size(); ++i)
+      {
+        if (isNumeric(name[i]))
+          result += name[i];
+      }
+      return result;
+    }
+
+    int stringToInt(const string &str)
+    {
+      int result = 0;
+
+      if (!str.empty())
+      {
+        for (size_t i = 0; i < str.size(); ++i)
+        {
+          if (isNumeric(str[i]))
+            result = (result * 10) + (str[i] - '0');
+          else
+          {
+            result = -1;
+            break;
+          }
+        }
+      }
+      return result;
+    }
+
+    string properNumber(const int num)
+    {
+      char buf[20];
+      string result("");
+
+      snprintf(buf, 20, "%d", num);
+      result += buf;
+      switch (result[result.size() - 1])
+      {
+      case '1':
+        result += "st";
+        break;
+      case '2':
+        result += "nd";
+        break;
+      case '3':
+        result += "rd";
+        break;
+      default:
+        result += "th";
+      }
+      return result;
     }
   } /* namespace util */
 } /* namespace bacon */
