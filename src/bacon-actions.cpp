@@ -282,66 +282,62 @@ namespace bacon
       return EXIT_SUCCESS;
     }
 
-    struct ListCmpData {
-      int nDiff;
-      vector<string> diff;
-    };
-
-    ListCmpData *listCompare(DeviceList &deviceList,
-                             const vector<string> &oldList)
-    {
-      vector<string> newList = deviceList.rawList();
-      ListCmpData *data = new ListCmpData;
-
-      data->nDiff = (int)newList.size() - (int)oldList.size();
-      if (data->nDiff)
+    class ListCompareData {
+    public:
+      ListCompareData(DeviceList &deviceList, const vector<string> &oldList)
       {
-        for (size_t i = 0; i < newList.size(); ++i)
+        vector<string> newList = deviceList.rawList();
+
+        mDiffCount = (int)newList.size() - (int)oldList.size();
+        if (mDiffCount)
         {
-          bool noMatch = true;
-          for (size_t j = 0; j < oldList.size(); ++j)
+          for (size_t i = 0; i < newList.size(); ++i)
           {
-            if (newList[i] == oldList[j])
+            bool noMatch = true;
+            for (size_t j = 0; j < oldList.size(); ++j)
             {
-              noMatch = false;
-              break;
+              if (newList[i] == oldList[j])
+              {
+                noMatch = false;
+                break;
+              }
             }
+            if (noMatch)
+              mDiff.push_back(newList[i]);
           }
-          if (noMatch)
-            data->diff.push_back(newList[i]);
         }
       }
-      return data;
-    }
 
-    void printListDiff(ListCmpData *data)
-    {
-      if (data->nDiff <= 0)
+      void printDiff()
       {
-        fputs("No new devices since last update\n", stdout);
-        return;
+        if (mDiffCount <= 0)
+        {
+          fputs("No new devices since last update\n", stdout);
+          return;
+        }
+
+        fputs("There ", stdout);
+        if (mDiffCount > 1)
+          fputs("are ", stdout);
+        else
+          fputs("is ", stdout);
+
+        fprintf(stdout, "%d new device", mDiffCount);
+        if (mDiffCount > 1)
+          fputc('s', stdout);
+
+        fputs(":\n", stdout);
+        for (size_t i = 0; i < mDiff.size(); ++i)
+        {
+          alignPrintNumber(i);
+          fprintf(stdout, "%s\n", mDiff[i].c_str());
+        }
       }
 
-      fputs("There ", stdout);
-      if (data->nDiff > 1)
-        fputs("are ", stdout);
-      else
-        fputs("is ", stdout);
-
-      fprintf(stdout, "%d new device", data->nDiff);
-      if (data->nDiff > 1)
-        fputc('s', stdout);
-
-      fputs(":\n", stdout);
-      for (size_t i = 0; i < data->diff.size(); ++i)
-      {
-        alignPrintNumber(i);
-        fprintf(stdout, "%s\n", data->diff[i].c_str());
-      }
-
-      BACON_FREE(data);
-    }
-
+    private:
+      int mDiffCount;
+      vector<string> mDiff;
+    };
   } /* namespace */
 
   int showUsage()
@@ -459,7 +455,9 @@ namespace bacon
       return EXIT_FAILURE;
     }
 
-    printListDiff(listCompare(deviceList, oldList));
+    ListCompareData cmp(deviceList, oldList);
+    cmp.printDiff();
+
     fputs("Finished\n", stdout);
     return EXIT_SUCCESS;
   }
