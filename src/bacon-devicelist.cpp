@@ -89,8 +89,8 @@ bool DeviceList::update()
                     dispose();
                 if (open("w+")) {
                     writeDateLine();
-                    for (size_t i = 0; i < mDeviceIds.size(); i++) {
-                        if (mDeviceIds[i] == PSEUDO_RANDOM_DEVICE_ID)
+                    for (size_t i = 0; i < mDeviceIds.size(); ++i) {
+                        if (mDeviceIds[i] == BACON_PSEUDO_RANDOM_DEVICE_ID)
                             continue;
                         writeLine(mDeviceIds[i]);
                     }

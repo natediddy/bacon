@@ -184,10 +184,10 @@ bool File::makeDir()
     if (!exists())
         ret =
 #if HAVE_MKDIR
-            !mkdir(mName.c_str(), S_IRWXU);
+            !mkdir(mName.c_str(), S_IRWXU)
 #else
 #ifdef _WIN32
-            CreateDirectory(mName.c_str(), NULL);
+            CreateDirectory(mName.c_str(), NULL)
 #endif
 #endif
         ;
@@ -284,7 +284,7 @@ string File::readLine()
                 break;
             }
             if (!comment)
-            line += (char)ch;
+                line += (char)ch;
         }
     }
     return line;

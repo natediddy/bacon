@@ -193,17 +193,17 @@ bool performShowOnly(const Device *device)
                     fputs(util::romVersionNo(romNames[j]).c_str(), stdout);
                 fputs(" -- ", stdout);
                 if (stats.existsLocally(j)) {
-                if (stats.isValid(j))
-                    fputs("already downloaded", stdout);
-                else
-                    fputs("partially downloaded or corrupt", stdout);
+                    if (stats.isValid(j))
+                        fputs("already downloaded", stdout);
+                    else
+                        fputs("partially downloaded or corrupt", stdout);
                 } else {
                     fputs("not downloaded", stdout);
                 }
                 fputc('\n', stdout);
             }
         } else {
-          fputs("\t(none found)\n", stdout);
+            fputs("\t(none found)\n", stdout);
         }
     }
 }
@@ -261,56 +261,57 @@ int perform(const Action &action, const vector<Device *> &devices)
     return EXIT_SUCCESS;
 }
 
-    class ListCompareData {
-    public:
-        ListCompareData(DeviceList &deviceList, const vector<string> &oldList)
-        {
-            vector<string> newList = deviceList.rawList();
+class ListCompareData {
+public:
+    ListCompareData(DeviceList &deviceList, const vector<string> &oldList)
+    {
+        vector<string> newList = deviceList.rawList();
 
-            mDiffCount = (int)newList.size() - (int)oldList.size();
-            if (mDiffCount) {
-                for (size_t i = 0; i < newList.size(); ++i) {
-                    bool noMatch = true;
-                    for (size_t j = 0; j < oldList.size(); ++j) {
-                        if (newList[i] == oldList[j]) {
-                            noMatch = false;
-                            break;
-                        }
+        mDiffCount = (int)newList.size() - (int)oldList.size();
+        if (mDiffCount) {
+            for (size_t i = 0; i < newList.size(); ++i) {
+                bool noMatch = true;
+                for (size_t j = 0; j < oldList.size(); ++j) {
+                    if (newList[i] == oldList[j]) {
+                        noMatch = false;
+                        break;
                     }
-                    if (noMatch)
-                        mDiff.push_back(newList[i]);
                 }
+                if (noMatch)
+                    mDiff.push_back(newList[i]);
             }
         }
+    }
 
-        void printDiff()
-        {
-            if (mDiffCount <= 0) {
-                fputs("No new devices since last update\n", stdout);
-                return;
-            }
-
-            fputs("There ", stdout);
-            if (mDiffCount > 1)
-                fputs("are ", stdout);
-            else
-                fputs("is ", stdout);
-
-            fprintf(stdout, "%d new device", mDiffCount);
-            if (mDiffCount > 1)
-                fputc('s', stdout);
-
-            fputs(":\n", stdout);
-            for (size_t i = 0; i < mDiff.size(); ++i) {
-                alignPrintNumber(i);
-                fprintf(stdout, "%s\n", mDiff[i].c_str());
-            }
+    void printDiff()
+    {
+        if (mDiffCount <= 0) {
+            fputs("No new devices since last update\n", stdout);
+            return;
         }
 
-    private:
-        int mDiffCount;
-        vector<string> mDiff;
-    };
+        fputs("There ", stdout);
+        if (mDiffCount > 1)
+            fputs("are ", stdout);
+        else
+            fputs("is ", stdout);
+
+        fprintf(stdout, "%d new device", mDiffCount);
+        if (mDiffCount > 1)
+            fputc('s', stdout);
+
+        fputs(":\n", stdout);
+        for (size_t i = 0; i < mDiff.size(); ++i) {
+            alignPrintNumber(i);
+            fprintf(stdout, "%s\n", mDiff[i].c_str());
+        }
+    }
+
+private:
+    int mDiffCount;
+    vector<string> mDiff;
+};
+
 } /* namespace */
 
 int showUsage()
@@ -393,7 +394,7 @@ int showDevices()
     for (size_t i = 0; i < total; ++i) {
         alignPrintNumber(i);
         fputs(deviceList[i].c_str(), stdout);
-        if (deviceList[i] == PSEUDO_RANDOM_DEVICE_ID)
+        if (deviceList[i] == BACON_PSEUDO_RANDOM_DEVICE_ID)
             fputs("    -> (chooses a device at random)", stdout);
         fputc('\n', stdout);
     }
@@ -406,8 +407,8 @@ int updateDeviceList()
     vector<string> oldList;
 
     if (deviceList.exists()) {
-      deviceList.getLocal();
-      oldList = deviceList.rawList();
+        deviceList.getLocal();
+        oldList = deviceList.rawList();
     }
 
     string lastUpdated(deviceList.lastUpdate());

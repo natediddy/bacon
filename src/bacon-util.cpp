@@ -32,17 +32,16 @@
 using std::string;
 
 namespace bacon {
+namespace util {
+
 namespace {
 
 unsigned int rSeed;
-
 const string urlPrefixes[] = {
     "http://", "https://", "ftp://", "git://", "ssh://", ""
 };
 
 } /* namespace */
-
-namespace util {
 
 string toUpperCase(const string &str)
 {
@@ -124,10 +123,11 @@ unsigned int random()
 string timeString(const string &fmt)
 {
     time_t now;
-    char buf[fmt.size() * 2];
+    size_t size = fmt.size() * 2;
+    char buf[size];
 
     time(&now);
-    strftime(buf, fmt.size() * 2, fmt.c_str(), localtime(&now));
+    strftime(buf, size, fmt.c_str(), localtime(&now));
     return string(buf);
 }
 
@@ -156,16 +156,13 @@ void strip(string &str)
 
 bool isValidUrl(string &url)
 {
-      /* This is about all the URL parsing needed for bacon IMO... */
-
     strip(url);
-
     if (url[url.size() - 1] != '/')
         url += '/';
 
     for (size_t i = 0; !urlPrefixes[i].empty(); ++i) {
         if (url.substr(0, urlPrefixes[i].size()) == urlPrefixes[i])
-          return true;
+            return true;
     }
     return false;
 }
@@ -242,11 +239,12 @@ string romVersionNo(const string &name)
         if (isNumeric(name[i])) {
             result += name[i];
             if ((i + 1) < name.size()) {
-            if (name[i + 1] == '.') {
-                result += '.';
-                ++i;
-            } else if (!isNumeric(name[i + 1]))
-                break;
+                if (name[i + 1] == '.') {
+                    result += '.';
+                    ++i;
+                } else if (!isNumeric(name[i + 1])) {
+                    break;
+                }
             }
         }
     }

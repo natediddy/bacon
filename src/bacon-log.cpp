@@ -44,6 +44,8 @@
 using std::string;
 
 namespace bacon {
+namespace log {
+
 namespace {
 
 #if HAVE_UNISTD_H
@@ -79,8 +81,6 @@ void writeBanner(const BannerType &type)
 }
 
 } /* namespace */
-
-namespace log {
 
 bool _isActive()
 {

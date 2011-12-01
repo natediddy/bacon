@@ -30,6 +30,8 @@ using std::string;
 extern string gProgramName;
 
 namespace bacon {
+namespace prefs {
+
 namespace {
 
 string values[KEY_TOTAL];
@@ -55,8 +57,6 @@ string keyToString(const prefs::Key key)
 }
 
 } /* namespace */
-
-namespace prefs {
 
 void init()
 {

@@ -162,9 +162,8 @@ void md5_memcpy(unsigned char *output,
                 unsigned char *input,
                 unsigned int len)
 {
-    for (unsigned int i = 0; i < len; i++) {
+    for (unsigned int i = 0; i < len; i++)
         output[i] = input[i];
-    }
 }
 
 void md5_memset(unsigned char *output,

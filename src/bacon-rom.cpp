@@ -87,8 +87,7 @@ bool Rom::setup()
     }
 
     Net::pStatus = curl_easy_setopt(Net::pCurl, CURLOPT_NOPROGRESS, false);
-    if (Net::pStatus != CURLE_OK)
-    {
+    if (Net::pStatus != CURLE_OK) {
         LOGE("curl_easy_setopt: %s", curl_easy_strerror(Net::pStatus));
         return false;
     }

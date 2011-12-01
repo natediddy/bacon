@@ -235,8 +235,9 @@ public:
                 || action == "/S"
 #endif
            )
+        {
             mFun = showAllRoms;
-        else if (action == "-s" || action == "--stable"
+        } else if (action == "-s" || action == "--stable"
 #ifdef _WIN32
                 || action == "/s"
 #endif

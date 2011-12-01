@@ -155,7 +155,6 @@ bool isNaN(const double d)
         LOGW("NaN value detected", NULL);
         return true;
     }
-
     return false;
 }
 
@@ -165,7 +164,7 @@ string percentString(const double d)
         return string("0%");
 
     char buf[6];
-    sprintf(buf, "%3.0f%%", d * 100);
+    snprintf(buf, 6, "%3.0f%%", d * 100);
     return string(buf);
 }
 
@@ -228,7 +227,7 @@ int progressBar(void * data,
 
     barPosStopPoint = pBar->width -
         (dlSoFarString.size() + totalToDlString.size() +
-        speed.size() + eta.size() + 11);
+         speed.size() + eta.size() + 11);
     pos = roundFraction(fractionDownloaded * barPosStopPoint);
 
     for (i = 0; i < pos; ++i)

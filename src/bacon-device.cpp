@@ -46,7 +46,7 @@ string getRandomDeviceIndex()
 Device::Device(const string &deviceId)
     : mId(deviceId)
 {
-    if (mId == PSEUDO_RANDOM_DEVICE_ID)
+    if (mId == BACON_PSEUDO_RANDOM_DEVICE_ID)
         mId = getRandomDeviceIndex();
 }
 
