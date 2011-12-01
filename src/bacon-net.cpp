@@ -28,41 +28,41 @@
 
 using std::string;
 
-namespace bacon
-{
-  Net::Net(const string &request)
+namespace bacon {
+
+Net::Net(const string &request)
     : pCurl(curl_easy_init())
     , pStatus(CURLE_OK)
     , mUrl(prefs::get(KEY_CM_ROOT_SERVER) + request)
-  {
+{
     LOGI("connecting to: %s", mUrl.c_str());
-  }
+}
 
-  Net::~Net()
-  {
+Net::~Net()
+{
     if (pCurl && pStatus == CURLE_OK)
-      curl_easy_cleanup(pCurl);
-  }
+        curl_easy_cleanup(pCurl);
+}
 
-  bool Net::fetch()
-  {
+bool Net::fetch()
+{
     pStatus = curl_easy_perform(pCurl);
     return pStatus == CURLE_OK;
-  }
+}
 
-  bool Net::setup()
-  {
+bool Net::setup()
+{
     pStatus = curl_easy_setopt(pCurl, CURLOPT_URL, mUrl.c_str());
-    if (pStatus != CURLE_OK)
-    {
-      LOGE("curl_easy_setopt: %s", curl_easy_strerror(pStatus));
-      return false;
+    if (pStatus != CURLE_OK) {
+        LOGE("curl_easy_setopt: %s", curl_easy_strerror(pStatus));
+        return false;
     }
 
     pStatus = curl_easy_setopt(pCurl, CURLOPT_USERAGENT, BACON_AGENT);
     if (pStatus != CURLE_OK)
-      LOGE("curl_easy_setopt: %s", curl_easy_strerror(pStatus));
+        LOGE("curl_easy_setopt: %s", curl_easy_strerror(pStatus));
     return pStatus == CURLE_OK;
-  }
+}
+
 } /* namespace bacon */
 

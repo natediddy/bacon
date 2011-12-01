@@ -21,10 +21,10 @@
 #include <cstdio>
 #include <string>
 
-namespace bacon
-{
-  class File {
-  public:
+namespace bacon {
+
+class File {
+public:
     File(const std::string &name);
     ~File();
 
@@ -46,15 +46,16 @@ namespace bacon
     void writeLine(const std::string &line);
     std::string readLine();
 
-  protected:
+protected:
     FILE *mStream;
 
-  private:
+private:
     std::string mName;
 
     class FilePropImpl;
     FilePropImpl *mProp;
-  };
+};
+
 } /* namespace bacon */
 
 #endif /* !BACON_FILE_H_INCLUDED */

@@ -82,104 +82,103 @@
 
 using std::string;
 
-namespace bacon
+namespace bacon {
+namespace {
+
+inline unsigned int rotateLeft(unsigned int x, unsigned int n)
 {
-  namespace
-  {
-    inline unsigned int rotateLeft(unsigned int x, unsigned int n)
-    {
-      return (x << n) | (x >> (32 - n));
-    }
+    return (x << n) | (x >> (32 - n));
+}
 
-    inline unsigned int F(unsigned int x, unsigned int y, unsigned int z)
-    {
-      return (x & y) | (~x & z);
-    }
+inline unsigned int F(unsigned int x, unsigned int y, unsigned int z)
+{
+    return (x & y) | (~x & z);
+}
 
-    inline unsigned int G(unsigned int x, unsigned int y, unsigned int z)
-    {
-      return (x & z) | (y & ~z);
-    }
+inline unsigned int G(unsigned int x, unsigned int y, unsigned int z)
+{
+    return (x & z) | (y & ~z);
+}
 
-    inline unsigned int H(unsigned int x, unsigned int y, unsigned int z)
-    {
-      return x ^ y ^ z;
-    }
+inline unsigned int H(unsigned int x, unsigned int y, unsigned int z)
+{
+    return x ^ y ^ z;
+}
 
-    inline unsigned int I(unsigned int x, unsigned int y, unsigned int z)
-    {
-      return y ^ (x | ~z);
-    }
+inline unsigned int I(unsigned int x, unsigned int y, unsigned int z)
+{
+    return y ^ (x | ~z);
+}
 
-    inline void FF(unsigned int &a,
-                   unsigned int b,
-                   unsigned int c,
-                   unsigned int d,
-                   unsigned int x,
-                   unsigned int s,
-                   unsigned int ac)
-    {
-      a += F(b, c, d) + x + ac;
-      a = rotateLeft(a, s) + b;
-    }
+inline void FF(unsigned int &a,
+               unsigned int b,
+               unsigned int c,
+               unsigned int d,
+               unsigned int x,
+               unsigned int s,
+               unsigned int ac)
+{
+    a += F(b, c, d) + x + ac;
+    a = rotateLeft(a, s) + b;
+}
 
-    inline void GG(unsigned int &a,
-                   unsigned int b,
-                   unsigned int c,
-                   unsigned int d,
-                   unsigned int x,
-                   unsigned int s,
-                   unsigned int ac)
-    {
-      a += G(b, c, d) + x + ac;
-      a = rotateLeft(a, s) + b;
-    }
+inline void GG(unsigned int &a,
+               unsigned int b,
+               unsigned int c,
+               unsigned int d,
+               unsigned int x,
+               unsigned int s,
+               unsigned int ac)
+{
+    a += G(b, c, d) + x + ac;
+    a = rotateLeft(a, s) + b;
+}
 
-    inline void HH(unsigned int &a,
-                   unsigned int b,
-                   unsigned int c,
-                   unsigned int d,
-                   unsigned int x,
-                   unsigned int s,
-                   unsigned int ac)
-    {
-      a += H(b, c, d) + x + ac;
-      a = rotateLeft(a, s) + b;
-    }
+inline void HH(unsigned int &a,
+               unsigned int b,
+               unsigned int c,
+               unsigned int d,
+               unsigned int x,
+               unsigned int s,
+               unsigned int ac)
+{
+    a += H(b, c, d) + x + ac;
+    a = rotateLeft(a, s) + b;
+}
 
-    inline void II(unsigned int &a,
-                   unsigned int b,
-                   unsigned int c,
-                   unsigned int d,
-                   unsigned int x,
-                   unsigned int s,
-                   unsigned int ac)
-    {
-      a += I(b, c, d) + x + ac;
-      a = rotateLeft(a, s) + b;
-    }
+inline void II(unsigned int &a,
+               unsigned int b,
+               unsigned int c,
+               unsigned int d,
+               unsigned int x,
+               unsigned int s,
+               unsigned int ac)
+{
+    a += I(b, c, d) + x + ac;
+    a = rotateLeft(a, s) + b;
+}
 
-    void md5_memcpy(unsigned char *output,
-                    unsigned char *input,
-                    unsigned int len)
-    {
-      for (unsigned int i = 0; i < len; i++) {
+void md5_memcpy(unsigned char *output,
+                unsigned char *input,
+                unsigned int len)
+{
+    for (unsigned int i = 0; i < len; i++) {
         output[i] = input[i];
-      }
     }
+}
 
-    void md5_memset(unsigned char *output,
-                    unsigned char value,
-                    unsigned int len)
-    {
-      for (unsigned int i = 0; i < len; i++)
+void md5_memset(unsigned char *output,
+                unsigned char value,
+                unsigned int len)
+{
+    for (unsigned int i = 0; i < len; i++)
         output[i] = value;
-    }
+}
 
-    class Md5Impl {
-    public:
-      Md5Impl(FILE *stream)
-      {
+class Md5Impl {
+public:
+    Md5Impl(FILE *stream)
+    {
         mStream = stream;
         mFinalized = false;
 
@@ -192,49 +191,48 @@ namespace bacon
 
         update();
         finalize();
-      }
+    }
 
-      string toString() const
-      {
+    string toString() const
+    {
         if (!mFinalized)
-          return string("");
+            return string("");
 
         char buf[33];
 
         for (int i = 0; i < 16; i++)
-          sprintf(buf + i * 2, "%02x", mDigest[i]);
+            sprintf(buf + i * 2, "%02x", mDigest[i]);
 
         buf[32] = '\0';
         return string(buf);
-      }
+    }
 
-    private:
-      void encode(unsigned char *output,
-                  unsigned int *input,
-                  unsigned int len)
-      {
-        for (unsigned int i = 0, j = 0; j < len; i++, j += 4)
-        {
-          output[j]   = (unsigned char)(input[i] & 0xff);
-          output[j+1] = (unsigned char)((input[i] >> 8) & 0xff);
-          output[j+2] = (unsigned char)((input[i] >> 16) & 0xff);
-          output[j+3] = (unsigned char)((input[i] >> 24) & 0xff);
+private:
+    void encode(unsigned char *output,
+                unsigned int *input,
+                unsigned int len)
+    {
+        for (unsigned int i = 0, j = 0; j < len; i++, j += 4) {
+            output[j]   = (unsigned char)(input[i] & 0xff);
+            output[j+1] = (unsigned char)((input[i] >> 8) & 0xff);
+            output[j+2] = (unsigned char)((input[i] >> 16) & 0xff);
+            output[j+3] = (unsigned char)((input[i] >> 24) & 0xff);
         }
-      }
+    }
 
-      void decode(unsigned int *output,
-                  unsigned char *input,
-                  unsigned int len)
-      {
+    void decode(unsigned int *output,
+                unsigned char *input,
+                unsigned int len)
+    {
         for (unsigned int i = 0, j = 0; j < len; i++, j += 4)
-          output[i] = ((unsigned int)input[j]) |
+            output[i] = ((unsigned int)input[j]) |
             (((unsigned int)input[j+1]) << 8) |
             (((unsigned int)input[j+2]) << 16) |
             (((unsigned int)input[j+3]) << 24);
-      }
+    }
 
-      void transform(unsigned char block[64])
-      {
+    void transform(unsigned char block[64])
+    {
         unsigned int a = mState[0];
         unsigned int b = mState[1];
         unsigned int c = mState[2];
@@ -317,12 +315,12 @@ namespace bacon
         mState[3] += d;
 
         md5_memset((unsigned char *)x, 0, sizeof(x));
-      }
+    }
 
-      void update(unsigned char *buffer, unsigned int len)
-      {
+    void update(unsigned char *buffer, unsigned int len)
+    {
         if (mFinalized)
-          return;
+            return;
 
         unsigned int inputIndex;
         unsigned int bufferIndex;
@@ -330,53 +328,50 @@ namespace bacon
 
         bufferIndex = (unsigned int)((mCount[0] >> 3) & 0x3f);
         if ((mCount[0] += ((unsigned int)len << 3)) <
-            ((unsigned int)len << 3))
-          mCount[1]++;
+                ((unsigned int)len << 3))
+            mCount[1]++;
 
         mCount[1] += ((unsigned int)len >> 29);
         bufferSpace = 64 - bufferIndex;
 
-        if (len >= bufferSpace)
-        {
-          md5_memcpy(mBuffer + bufferIndex, buffer, bufferSpace);
-          transform(mBuffer);
-          for (inputIndex = bufferSpace;
-               inputIndex + 63 < len;
-               inputIndex += 64)
-            transform(buffer + inputIndex);
-          bufferIndex = 0;
+        if (len >= bufferSpace) {
+            md5_memcpy(mBuffer + bufferIndex, buffer, bufferSpace);
+            transform(mBuffer);
+            for (inputIndex = bufferSpace; inputIndex + 63 < len;
+                    inputIndex += 64)
+                transform(buffer + inputIndex);
+            bufferIndex = 0;
+        } else {
+            inputIndex = 0;
         }
-        else
-          inputIndex = 0;
 
         md5_memcpy(mBuffer + bufferIndex,
-            buffer + inputIndex, len - inputIndex);
-      }
+                buffer + inputIndex, len - inputIndex);
+    }
 
-      void update()
-      {
+    void update()
+    {
         unsigned char buffer[1024];
         int len;
 
         while ((len = fread(buffer, 1, 1024, mStream)))
-          update(buffer, len);
-      }
+            update(buffer, len);
+    }
 
-      void finalize()
-      {
-        static unsigned char padding[64] =
-        {
-          0x80, 0, 0, 0, 0, 0, 0, 0, 0,
-          0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-          0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-          0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-          0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-          0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-          0, 0, 0, 0, 0
+    void finalize()
+    {
+        static unsigned char padding[64] = {
+            0x80, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0
         };
 
         if (mFinalized)
-          return;
+            return;
 
         unsigned char bits[8];
         unsigned int index;
@@ -392,45 +387,45 @@ namespace bacon
 
         md5_memset(mBuffer, 0, sizeof(*mBuffer));
         mFinalized = true;
-      }
+    }
 
-    private:
-      FILE *mStream;
-      unsigned int mState[4];
-      unsigned int mCount[2];
-      unsigned char mBuffer[64];
-      unsigned char mDigest[16];
-      bool mFinalized;
-    };
-  } /* namespace */
+private:
+    FILE *mStream;
+    unsigned int mState[4];
+    unsigned int mCount[2];
+    unsigned char mBuffer[64];
+    unsigned char mDigest[16];
+    bool mFinalized;
+};
 
-  Md5::Md5(const string &path,
-           const string &deviceId,
-           const string &deviceType)
+} /* namespace */
+
+Md5::Md5(const string &path,
+         const string &deviceId,
+         const string &deviceType)
     : File(path)
     , mLocalHash("")
     , mRemoteHash("")
-  {
-    if (open("rb"))
-    {
-      Md5Impl impl(File::mStream);
-      mLocalHash = impl.toString();
+{
+    if (open("rb")) {
+        Md5Impl impl(File::mStream);
+        mLocalHash = impl.toString();
+    } else {
+        LOGW("could not read `%s' to generate MD5 hash!", name().c_str());
     }
-    else
-      LOGW("could not read `%s' to generate MD5 hash!", name().c_str());
 
     HtmlDoc doc(deviceId, deviceType);
 
-    if (doc.fetch())
-    {
-      HtmlParser parser(doc.content());
-      mRemoteHash = parser.checksumStringForFile(baseName());
+    if (doc.fetch()) {
+        HtmlParser parser(doc.content());
+        mRemoteHash = parser.checksumStringForFile(baseName());
     }
-  }
+}
 
-  bool Md5::verify()
-  {
+bool Md5::verify()
+{
     return mLocalHash == mRemoteHash;
-  }
+}
+
 } /* namespace bacon */
 

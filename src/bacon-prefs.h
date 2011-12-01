@@ -25,17 +25,17 @@
 #define KEY_CM_ROOT_SERVER 2
 #define KEY_TOTAL          3
 
-namespace bacon
-{
-  namespace prefs
-  {
-    typedef unsigned int Key;
+namespace bacon {
+namespace prefs {
 
-    void init();
-    void override(const Key key, const std::string &val);
-    std::string get(const Key key);
-    bool check();
-  } /* namespace prefs */
+typedef unsigned int Key;
+
+void init();
+void override(const Key key, const std::string &val);
+std::string get(const Key key);
+bool check();
+
+} /* namespace prefs */
 } /* namespace bacon */
 
 #endif /* !BACON_PREFS_H_INCLUDED */

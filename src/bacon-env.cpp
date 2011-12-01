@@ -32,57 +32,56 @@
 
 using std::string;
 
-namespace bacon
+namespace bacon {
+namespace env {
+
+string variableValue(const string &key)
 {
-  namespace env
-  {
-    string variableValue(const string &key)
-    {
-      string result("");
-      const char *val = getenv(key.c_str());
+    string result("");
+    const char *val = getenv(key.c_str());
 
-      if (val)
+    if (val)
         result += val;
-      return result;
-    }
+    return result;
+}
 
-    string variableValue(const char *key)
-    {
-      string result("");
-      const char *val = getenv(key);
+string variableValue(const char *key)
+{
+    string result("");
+    const char *val = getenv(key);
 
-      if (val)
+    if (val)
         result += val;
-      return val;
-    }
+    return val;
+}
 
-    string userHomeDir()
-    {
-      return variableValue(HOME_VAR_STR);
-    }
+string userHomeDir()
+{
+    return variableValue(HOME_VAR_STR);
+}
 
-    string pathJoin(const string arr[])
-    {
-      string result;
+string pathJoin(const string arr[])
+{
+    string result;
 
-      for (int i = 0; !arr[i].empty(); i++)
-      {
+    for (int i = 0; !arr[i].empty(); i++) {
         result += arr[i];
         if (!arr[i + 1].empty())
-          result += PATH_SEP_CHAR;
-      }
-      return result;
+            result += PATH_SEP_CHAR;
     }
+    return result;
+}
 
-    char variableSymbol()
-    {
-      return VAR_SYMBOL;
-    }
+char variableSymbol()
+{
+    return VAR_SYMBOL;
+}
 
-    char dirSeparator()
-    {
-      return PATH_SEP_CHAR;
-    }
-  } /* namespace env */
+char dirSeparator()
+{
+    return PATH_SEP_CHAR;
+}
+
+} /* namespace env */
 } /* namespace bacon */
 

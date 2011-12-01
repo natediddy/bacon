@@ -43,112 +43,109 @@
 
 using std::string;
 
-namespace bacon
-{
-  namespace
-  {
+namespace bacon {
+namespace {
+
 #if HAVE_UNISTD_H
-    int myPid = 0;
+int myPid = 0;
 #endif
-    FILE *stream = NULL;
+FILE *stream = NULL;
 
-    enum BannerType {
-      HEADER,
-      FOOTER
-    };
+enum BannerType {
+    HEADER,
+    FOOTER
+};
 
-    void writeBanner(const BannerType &type)
-    {
-      if (!stream)
+void writeBanner(const BannerType &type)
+{
+    if (!stream)
         return;
 
-      if (type == HEADER)
+    if (type == HEADER)
         fputs("========================================\n", stream);
 
-      fputs("*** BACON LOGGER ", stream);
+    fputs("*** BACON LOGGER ", stream);
 
-      if (type == HEADER)
+    if (type == HEADER)
         fprintf(stream, "START (v%s) ", PACKAGE_VERSION);
-      else if (type == FOOTER)
+    else if (type == FOOTER)
         fprintf(stream, "END (v%s) ", PACKAGE_VERSION);
 
 #if HAVE_UNISTD_H
-      fprintf(stream, "(pid:%d) ", myPid);
+    fprintf(stream, "(pid:%d) ", myPid);
 #endif
-      fprintf(stream, "%s ***\n",
-          util::timeString(BANNER_DATE_FORMAT).c_str());
-    }
-  } /* namespace */
+    fprintf(stream, "%s ***\n",
+            util::timeString(BANNER_DATE_FORMAT).c_str());
+}
 
-  namespace log
-  {
-    bool _isActive()
-    {
-      return !!stream;
-    }
+} /* namespace */
 
-    void activate()
-    {
+namespace log {
+
+bool _isActive()
+{
+    return !!stream;
+}
+
+void activate()
+{
 #if HAVE_UNISTD_H
-      myPid = (int)getpid();
+    myPid = (int)getpid();
 #endif
-      if (!stream)
+    if (!stream)
         stream = fopen(prefs::get(KEY_LOG_PATH).c_str(), "a+");
-      writeBanner(HEADER);
-    }
+    writeBanner(HEADER);
+}
 
-    void deactivate()
-    {
-      writeBanner(FOOTER);
-      if (stream)
-      {
+void deactivate()
+{
+    writeBanner(FOOTER);
+    if (stream) {
         fclose(stream);
         stream = NULL;
-      }
     }
+}
 
-    void _write(char *prefix, const char *msg, ...)
-    {
-      va_list args;
+void _write(char *prefix, const char *msg, ...)
+{
+    va_list args;
 
-      va_start(args, msg);
+    va_start(args, msg);
 
-      if (prefix && *prefix)
+    if (prefix && *prefix)
         fprintf(stream, "%s: ", prefix);
 
-      vfprintf(stream, msg, args);
-      fputc('\n', stream);
-      va_end(args);
+    vfprintf(stream, msg, args);
+    fputc('\n', stream);
+    va_end(args);
+    BACON_FREE_ARRAY(prefix);
+}
 
-      BACON_FREE_ARRAY(prefix);
-    }
+char *_prefix(const char *tag, const char *file, const int line)
+{
+    char *buf = NULL;
+    size_t size = 0;
 
-    char *_prefix(const char *tag,
-                  const char *file,
-                  const int line)
-    {
-      char *buf = NULL;
-      size_t size = 0;
-
-      if (tag)
+    if (tag)
         size += strlen(tag) + 1;
 
-      if (file)
+    if (file)
         size += strlen(file) + 1;
 
-      size += 20;
-      buf = new char[size];
+    size += 20;
+    buf = new char[size];
 
-      if (!buf)
+    if (!buf)
         return NULL;
 
 #if HAVE_UNISTD_H
-      snprintf(buf, size, "%s:(%d):%s:%d", tag, myPid, file, line);
+    snprintf(buf, size, "%s:(%d):%s:%d", tag, myPid, file, line);
 #else
-      snprintf(buf, size, "%s:%s:%d", tag, file, line);
+    snprintf(buf, size, "%s:%s:%d", tag, file, line);
 #endif
-      return buf;
-    }
-  } /* namespace log */
+    return buf;
+}
+
+} /* namespace log */
 } /* namespace bacon */
 

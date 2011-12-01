@@ -27,56 +27,55 @@
 using std::string;
 using std::vector;
 
-namespace bacon
-{
-  Stats::Stats(const Device *device, const string &deviceType)
+namespace bacon {
+
+Stats::Stats(const Device *device, const string &deviceType)
     : mDevice(device)
     , mType(deviceType)
-  {}
+{}
 
-  Stats::~Stats()
-  {}
+Stats::~Stats()
+{}
 
-  bool Stats::init()
-  {
+bool Stats::init()
+{
     HtmlDoc doc(mDevice->id(), mType);
 
-    if (doc.fetch())
-    {
-      HtmlParser parser(doc.content());
-      mLatestRomNames = parser.latestRomsForDevice();
-      for (size_t i = 0; i < mLatestRomNames.size(); ++i)
-      {
-        string p[] = {
-          mDevice->romDir(), mLatestRomNames[i], ""
-        };
-        mRomPaths.push_back(env::pathJoin(p));
-      }
+    if (doc.fetch()) {
+        HtmlParser parser(doc.content());
+        mLatestRomNames = parser.latestRomsForDevice();
+        for (size_t i = 0; i < mLatestRomNames.size(); ++i) {
+            string p[] = {
+                mDevice->romDir(), mLatestRomNames[i], ""
+            };
+            mRomPaths.push_back(env::pathJoin(p));
+        }
     }
     return mLatestRomNames.size() && mRomPaths.size();
-  }
+}
 
-  bool Stats::existsLocally(const size_t n) const
-  {
+bool Stats::existsLocally(const size_t n) const
+{
     if (n >= mRomPaths.size())
-      return false;
+        return false;
 
     File p(mRomPaths[n]);
     return p.isFile();
-  }
+}
 
-  bool Stats::isValid(const size_t n) const
-  {
+bool Stats::isValid(const size_t n) const
+{
     if (n >= mRomPaths.size())
-      return false;
+        return false;
 
     Md5 md5(mRomPaths[n], mDevice->id(), mType);
     return md5.verify();
-  }
+}
 
-  vector<string> Stats::romNames() const
-  {
+vector<string> Stats::romNames() const
+{
     return mLatestRomNames;
-  }
+}
+
 } /* namespace bacon */
 

@@ -24,54 +24,55 @@
 
 using std::string;
 
-namespace bacon
+namespace bacon {
+namespace {
+
+string getRandomDeviceIndex()
 {
-  namespace
-  {
-    string getRandomDeviceIndex()
-    {
-      DeviceList list;
+    DeviceList list;
 
-      list.getLocal();
-      util::randomSeed();
+    list.getLocal();
+    util::randomSeed();
 
-      unsigned int index = util::random();
+    unsigned int index = util::random();
 
-      while (index >= (list.size() - 1))
+    while (index >= (list.size() - 1))
         index = util::random() / 10000;
-      return list[index];
-    }
-  } /* namespace */
+    return list[index];
+}
 
-  Device::Device(const string &deviceId)
+} /* namespace */
+
+Device::Device(const string &deviceId)
     : mId(deviceId)
-  {
+{
     if (mId == PSEUDO_RANDOM_DEVICE_ID)
-      mId = getRandomDeviceIndex();
-  }
+        mId = getRandomDeviceIndex();
+}
 
-  Device::~Device()
-  {}
+Device::~Device()
+{}
 
-  string Device::id() const
-  {
+string Device::id() const
+{
     return mId;
-  }
+}
 
-  string Device::romDir() const
-  {
+string Device::romDir() const
+{
     string p[] = {
-      prefs::get(KEY_BASE_DIR), mId, ""
+        prefs::get(KEY_BASE_DIR), mId, ""
     };
 
     return env::pathJoin(p);
-  }
+}
 
-  void Device::createRomDir() const
-  {
+void Device::createRomDir() const
+{
     File myDir(romDir());
 
     myDir.makeDir();
-  }
+}
+
 } /* namespace bacon */
 

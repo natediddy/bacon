@@ -20,20 +20,21 @@
 
 #include <vector>
 
-namespace bacon
-{
-  int showUsage();
-  int showHelp();
-  int showVersion();
-  int showDevices();
-  int updateDeviceList();
+namespace bacon {
 
-  class Device;
+int showUsage();
+int showHelp();
+int showVersion();
+int showDevices();
+int updateDeviceList();
 
-  int showAllRoms(const std::vector<Device *> &devices);
-  int downloadLatestStableRom(const std::vector<Device *> &devices);
-  int downloadLatestNightlyRom(const std::vector<Device *> &devices);
-  int downloadLatestRcRom(const std::vector<Device *> &devices);
+class Device;
+
+int showAllRoms(const std::vector<Device *> &devices);
+int downloadLatestStableRom(const std::vector<Device *> &devices);
+int downloadLatestNightlyRom(const std::vector<Device *> &devices);
+int downloadLatestRcRom(const std::vector<Device *> &devices);
+
 } /* namespace bacon */
 
 #endif /* !BACON_ACTIONS_H_INCLUDED */

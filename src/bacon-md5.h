@@ -20,20 +20,21 @@
 
 #include "bacon-file.h"
 
-namespace bacon
-{
-  class Md5 : public File {
-  public:
+namespace bacon {
+
+class Md5 : public File {
+public:
     Md5(const std::string &path,
         const std::string &deviceId,
         const std::string &deviceType);
 
     bool verify();
 
-  private:
+private:
     std::string mLocalHash;
     std::string mRemoteHash;
-  };
+};
+
 } /* namespace bacon */
 
 #endif /* !BACON_MD5_H_INCLUDED */

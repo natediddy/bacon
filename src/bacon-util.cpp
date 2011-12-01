@@ -31,316 +31,283 @@
 
 using std::string;
 
-namespace bacon
-{
-  namespace
-  {
-    unsigned int rSeed;
+namespace bacon {
+namespace {
 
-    const string urlPrefixes[] = {
+unsigned int rSeed;
+
+const string urlPrefixes[] = {
     "http://", "https://", "ftp://", "git://", "ssh://", ""
-    };
-  } /* namespace */
+};
 
-  namespace util
-  {
-    string toUpperCase(const string &str)
-    {
-      string ret("");
+} /* namespace */
 
-      for (size_t i = 0; i < str.size(); ++i)
-      {
+namespace util {
+
+string toUpperCase(const string &str)
+{
+    string ret("");
+
+    for (size_t i = 0; i < str.size(); ++i) {
         if (str[i] >= 'a' && str[i] <= 'z')
-          ret += (str[i] - 'a' + 'A');
+            ret += (str[i] - 'a' + 'A');
         else
-          ret += str[i];
-      }
-      return ret;
+            ret += str[i];
     }
+    return ret;
+}
 
-    string toLowerCase(const string &str)
-    {
-      string ret("");
+string toLowerCase(const string &str)
+{
+    string ret("");
 
-      for (size_t i = 0; i < str.size(); ++i)
-      {
+    for (size_t i = 0; i < str.size(); ++i) {
         if (str[i] >= 'A' && str[i] <= 'Z')
-          ret += (str[i] - 'A' + 'a');
+            ret += (str[i] - 'A' + 'a');
         else
-          ret += str[i];
-      }
-      return ret;
+            ret += str[i];
     }
+    return ret;
+}
 
-    string bytesToReadable(const size_t maxSize,
+string bytesToReadable(const size_t maxSize,
                            const long &bytes,
                            const bool precision)
-    {
-      if (!bytes)
+{
+    if (!bytes)
         return string("0B");
 
-      char abbr;
-      char buf[maxSize];
-      double final;
+    char abbr;
+    char buf[maxSize];
+    double final;
 
-      if (DIVLNG(TB_FACTOR))
-      {
+    if (DIVLNG(TB_FACTOR)) {
         final = DIVDBL(TB_FACTOR);
         abbr = 'T';
-      }
-      else if (DIVLNG(GB_FACTOR))
-      {
+    } else if (DIVLNG(GB_FACTOR)) {
         final = DIVDBL(GB_FACTOR);
         abbr = 'G';
-      }
-      else if (DIVLNG(MB_FACTOR))
-      {
+    } else if (DIVLNG(MB_FACTOR)) {
         final = DIVDBL(MB_FACTOR);
         abbr = 'M';
-      }
-      else if (DIVLNG(KB_FACTOR))
-      {
+    } else if (DIVLNG(KB_FACTOR)) {
         final = DIVDBL(KB_FACTOR);
         abbr = 'K';
-      }
-      else
-      {
+    } else {
         final = (double)bytes;
         abbr = 'B';
-      }
+    }
 
-      if (precision)
+    if (precision)
         snprintf(buf, maxSize, "%.1f%c", final, abbr);
-      else
+    else
         snprintf(buf, maxSize, "%.0f%c", final, abbr);
-      return string(buf);
-    }
+    return string(buf);
+}
 
-    void randomSeed()
-    {
-      rSeed = (unsigned int)time(0);
-      random();
-      random();
-      random();
-    }
+void randomSeed()
+{
+    rSeed = (unsigned int)time(0);
+    random();
+    random();
+    random();
+}
 
-    unsigned int random()
-    {
-      unsigned int i;
+unsigned int random()
+{
+    unsigned int i;
 
-      i = rSeed = rSeed * 1765301923 + 12345;
-      return (i << 16) | ((i >> 16) & 0xffff);
-    }
+    i = rSeed = rSeed * 1765301923 + 12345;
+    return (i << 16) | ((i >> 16) & 0xffff);
+}
 
-    string timeString(const string &fmt)
-    {
-      time_t now;
-      char buf[fmt.size() * 2];
+string timeString(const string &fmt)
+{
+    time_t now;
+    char buf[fmt.size() * 2];
 
-      time(&now);
-      strftime(buf, fmt.size() * 2, fmt.c_str(), localtime(&now));
+    time(&now);
+    strftime(buf, fmt.size() * 2, fmt.c_str(), localtime(&now));
+    return string(buf);
+}
 
-      return string(buf);
-    }
+bool isNumeric(const char c)
+{
+    return c >= '0' && c <= '9';
+}
 
-    bool isNumeric(const char c)
-    {
-      return c >= '0' && c <= '9';
-    }
+bool isAlpha(const char c)
+{
+    return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
+}
 
-    bool isAlpha(const char c)
-    {
-      return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
-    }
+bool isAlphaNumeric(const char c)
+{
+    return isAlpha(c) || isNumeric(c);
+}
 
-    bool isAlphaNumeric(const char c)
-    {
-      return isAlpha(c) || isNumeric(c);
-    }
-
-    void strip(string &str)
-    {
-      for (size_t i = 0; i < str.size(); ++i)
-      {
+void strip(string &str)
+{
+    for (size_t i = 0; i < str.size(); ++i) {
         if (str[i] == ' ')
-          str.erase(i, 1);
-      }
+            str.erase(i, 1);
     }
+}
 
-    bool isValidUrl(string &url)
-    {
+bool isValidUrl(string &url)
+{
       /* This is about all the URL parsing needed for bacon IMO... */
 
-      strip(url);
+    strip(url);
 
-      if (url[url.size() - 1] != '/')
+    if (url[url.size() - 1] != '/')
         url += '/';
 
-      for (size_t i = 0; !urlPrefixes[i].empty(); ++i)
-      {
+    for (size_t i = 0; !urlPrefixes[i].empty(); ++i) {
         if (url.substr(0, urlPrefixes[i].size()) == urlPrefixes[i])
           return true;
-      }
-      return false;
     }
+    return false;
+}
 
-    string convertShellSymbols(const string &val)
-    {
-      int totalVars = 0;
+string convertShellSymbols(const string &val)
+{
+    int totalVars = 0;
 
-      for (size_t i = 0; i < val.size(); ++i)
-      {
+    for (size_t i = 0; i < val.size(); ++i) {
         if (val[i] == env::variableSymbol())
-          ++totalVars;
+            ++totalVars;
 #ifndef _WIN32
         else if (val[i] == '~')
-          ++totalVars;
+            ++totalVars;
 #endif
-      }
+    }
 
-      if (!totalVars)
+    if (!totalVars)
         return string(val);
 
 #ifdef _WIN32
-      if (totalVars % 2 != 0)
-      {
+    if (totalVars % 2 != 0) {
         LOGW("syntax error shell string `%s'", val.c_str());
         return string(val);
-      }
-      totalVars /= 2;
+    }
+    totalVars /= 2;
 #endif
 
-      string conv("");
-      string var("");
-      bool inVar = false;
+    string conv("");
+    string var("");
+    bool inVar = false;
 
-      for (size_t i = 0; i < val.size(); ++i)
-      {
-        if (val[i] == env::variableSymbol())
-        {
-          if (!inVar)
-            inVar = true;
+    for (size_t i = 0; i < val.size(); ++i) {
+        if (val[i] == env::variableSymbol()) {
+            if (!inVar)
+                inVar = true;
 #ifdef _WIN32
-          else
-            inVar = false;
+            else
+                inVar = false;
 #endif
-          continue;
-        }
-        else if (val[i] == '~')
-        {
-          conv += env::userHomeDir();
-          continue;
-        }
-        if (inVar)
-        {
-          if (isAlphaNumeric(val[i]) || val[i] == '_')
-          {
-            var += val[i];
             continue;
-          }
-          else
-          {
-            inVar = false;
-            conv += env::variableValue(var);
-            var = "";
-          }
+        } else if (val[i] == '~') {
+            conv += env::userHomeDir();
+            continue;
+        }
+        if (inVar) {
+            if (isAlphaNumeric(val[i]) || val[i] == '_') {
+                var += val[i];
+                continue;
+            } else {
+                inVar = false;
+                conv += env::variableValue(var);
+                var = "";
+            }
         }
         if (!inVar)
-          conv += val[i];
+            conv += val[i];
       }
 
-      if (conv.empty())
+    if (conv.empty())
         return string(val);
-      return conv;
-    }
+    return conv;
+}
 
-    string romVersionNo(const string &name)
-    {
-      string result("");
+string romVersionNo(const string &name)
+{
+    string result("");
 
-      if (name.empty())
+    if (name.empty())
         return result;
 
-      result += 'v';
-      for (size_t i = 0; i < name.size(); ++i)
-      {
-        if (isNumeric(name[i]))
-        {
-          result += name[i];
-          if ((i + 1) < name.size())
-          {
-            if (name[i + 1] == '.')
-            {
-              result += '.';
-              ++i;
+    result += 'v';
+    for (size_t i = 0; i < name.size(); ++i) {
+        if (isNumeric(name[i])) {
+            result += name[i];
+            if ((i + 1) < name.size()) {
+            if (name[i + 1] == '.') {
+                result += '.';
+                ++i;
+            } else if (!isNumeric(name[i + 1]))
+                break;
             }
-            else if (!isNumeric(name[i + 1]))
-              break;
-          }
         }
-      }
-      return result;
     }
+    return result;
+}
 
-    string nightlyBuildNo(const string &name)
-    {
-      string result("");
+string nightlyBuildNo(const string &name)
+{
+    string result("");
 
-      if (name.empty())
+    if (name.empty())
         return result;
 
-      result += '#';
-      for (size_t i = 0; i < name.size(); ++i)
-      {
+    result += '#';
+    for (size_t i = 0; i < name.size(); ++i) {
         if (isNumeric(name[i]))
-          result += name[i];
-      }
-      return result;
+            result += name[i];
     }
+    return result;
+}
 
-    int stringToInt(const string &str)
-    {
-      int result = 0;
+int stringToInt(const string &str)
+{
+    int result = 0;
 
-      if (!str.empty())
-      {
-        for (size_t i = 0; i < str.size(); ++i)
-        {
-          if (isNumeric(str[i]))
-            result = (result * 10) + (str[i] - '0');
-          else
-          {
-            result = -1;
-            break;
-          }
+    if (!str.empty()) {
+        for (size_t i = 0; i < str.size(); ++i) {
+            if (isNumeric(str[i])) {
+                result = (result * 10) + (str[i] - '0');
+            } else {
+                result = -1;
+                break;
+            }
         }
-      }
-      return result;
     }
+    return result;
+}
 
-    string properNumber(const int num)
-    {
-      char buf[20];
-      string result("");
+string properNumber(const int num)
+{
+    char buf[20];
+    string result("");
 
-      snprintf(buf, 20, "%d", num);
-      result += buf;
-      switch (result[result.size() - 1])
-      {
-      case '1':
+    snprintf(buf, 20, "%d", num);
+    result += buf;
+    switch (result[result.size() - 1]) {
+    case '1':
         result += "st";
         break;
-      case '2':
+    case '2':
         result += "nd";
         break;
-      case '3':
+    case '3':
         result += "rd";
         break;
-      default:
+    default:
         result += "th";
-      }
-      return result;
     }
-  } /* namespace util */
+    return result;
+}
+
+} /* namespace util */
 } /* namespace bacon */
 

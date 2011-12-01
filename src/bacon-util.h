@@ -21,48 +21,44 @@
 #include <string>
 
 #define BACON_FREE(p) \
-  do \
-  { \
-    if ((p)) \
-    { \
-      delete (p); \
-      (p) = NULL; \
-    } \
-  } while (0)
+    do { \
+        if ((p)) { \
+            delete (p); \
+            (p) = NULL; \
+        } \
+    } while (0)
 
 #define BACON_FREE_ARRAY(p) \
-  do \
-  { \
-    if ((p)) \
-    { \
-      delete [](p); \
-      (p) = NULL; \
-    } \
+    do { \
+        if ((p)) { \
+            delete [](p); \
+            (p) = NULL; \
+        } \
   } while (0)
 
-namespace bacon
-{
-  namespace util
-  {
-    std::string toUpperCase(const std::string &str);
-    std::string toLowerCase(const std::string &str);
-    std::string bytesToReadable(const size_t size,
-                                const long &bytes,
-                                const bool precision = false);
-    void randomSeed();
-    unsigned int random();
-    std::string timeString(const std::string &fmt);
-    bool isNumeric(const char c);
-    bool isAlpha(const char c);
-    bool isAlphaNumeric(const char c);
-    void strip(std::string &str);
-    bool isValidUrl(std::string &url);
-    std::string convertShellSymbols(const std::string &val);
-    std::string romVersionNo(const std::string &name);
-    std::string nightlyBuildNo(const std::string &name);
-    int stringToInt(const std::string &str);
-    std::string properNumber(const int num);
-  } /* namespace util */
+namespace bacon {
+namespace util {
+
+std::string toUpperCase(const std::string &str);
+std::string toLowerCase(const std::string &str);
+std::string bytesToReadable(const size_t size,
+                            const long &bytes,
+                            const bool precision = false);
+void randomSeed();
+unsigned int random();
+std::string timeString(const std::string &fmt);
+bool isNumeric(const char c);
+bool isAlpha(const char c);
+bool isAlphaNumeric(const char c);
+void strip(std::string &str);
+bool isValidUrl(std::string &url);
+std::string convertShellSymbols(const std::string &val);
+std::string romVersionNo(const std::string &name);
+std::string nightlyBuildNo(const std::string &name);
+int stringToInt(const std::string &str);
+std::string properNumber(const int num);
+
+} /* namespace util */
 } /* namespace bacon */
 
 #endif /* !BACON_UTIL_H_INCLUDED */

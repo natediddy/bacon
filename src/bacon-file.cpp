@@ -44,41 +44,39 @@
 #include "bacon-util.h"
 
 #define REFRESH_FILE_PROPS \
-  do \
-  { \
-    BACON_FREE(mProp); \
-    mProp = new FilePropImpl(mName.c_str()); \
-  } while (0)
+    do { \
+        BACON_FREE(mProp); \
+        mProp = new FilePropImpl(mName.c_str()); \
+    } while (0)
 
 #define PATH_SEPARATORS "/\\"
 
 using std::string;
 
-namespace bacon
-{
-  class File::FilePropImpl {
-  public:
+namespace bacon {
+
+class File::FilePropImpl {
+public:
     FilePropImpl(const char * name)
-      : mIsDir(false)
-      , mIsFile(false)
-      , mSizeInBytes(0)
+        : mIsDir(false)
+        , mIsFile(false)
+        , mSizeInBytes(0)
     {
 #if HAVE_SYS_STAT_H
-      memset(&mStatBuf, 0, sizeof (struct stat));
+        memset(&mStatBuf, 0, sizeof (struct stat));
 
-      if (!stat(name, &mStatBuf))
-      {
-        if (S_ISDIR(mStatBuf.st_mode))
-          mIsDir = true;
-        else if (S_ISREG(mStatBuf.st_mode))
-          mIsFile = true;
-        else
-          LOGW("`%s' is neither a file nor directory", name);
-        if (mIsDir || mIsFile)
-          mSizeInBytes = mStatBuf.st_size;
-      }
-      else
-        LOGW("stat: `%s': %s", name, strerror(errno));
+        if (!stat(name, &mStatBuf)) {
+            if (S_ISDIR(mStatBuf.st_mode))
+                mIsDir = true;
+            else if (S_ISREG(mStatBuf.st_mode))
+                mIsFile = true;
+            else
+                LOGW("`%s' is neither a file nor directory", name);
+            if (mIsDir || mIsFile)
+                mSizeInBytes = mStatBuf.st_size;
+        } else {
+            LOGW("stat: `%s': %s", name, strerror(errno));
+        }
 #endif
     }
 
@@ -87,118 +85,118 @@ namespace bacon
 
     bool exists() const
     {
-      if (mIsDir || mIsFile)
-        return true;
-      return false;
+        if (mIsDir || mIsFile)
+            return true;
+        return false;
     }
 
     bool isDir() const
     {
-      return mIsDir;
+        return mIsDir;
     }
 
     bool isFile() const
     {
-      return mIsFile;
+        return mIsFile;
     }
 
     size_t sizeInBytes() const
     {
-      return mSizeInBytes;
+        return mSizeInBytes;
     }
 
-  private:
+private:
 #if HAVE_SYS_STAT_H
     struct stat mStatBuf;
 #endif
     bool mIsDir;
     bool mIsFile;
     size_t mSizeInBytes;
-  };
+};
 
-  File::File(const string &name)
+File::File(const string &name)
     : mStream(NULL)
     , mName(name)
     , mProp(new File::FilePropImpl(name.c_str()))
-  {}
+{}
 
-  File::~File()
-  {
+File::~File()
+{
     close();
     BACON_FREE(mProp);
-  }
+}
 
-  string File::name() const
-  {
+string File::name() const
+{
     return mName;
-  }
+}
 
-  string File::dirName() const
-  {
+string File::dirName() const
+{
     return mName.substr(0, mName.find_last_of(PATH_SEPARATORS));
-  }
+}
 
-  string File::baseName() const
-  {
+string File::baseName() const
+{
     return mName.substr(mName.find_last_of(PATH_SEPARATORS) + 1);
-  }
+}
 
-  bool File::isOpen() const
-  {
+bool File::isOpen() const
+{
     return !!mStream;
-  }
+}
 
-  bool File::open(const char *mode /*= "r"*/)
-  {
+bool File::open(const char *mode /*= "r"*/)
+{
     mStream = fopen(mName.c_str(), mode);
 
     if (!mStream)
-      return false;
+        return false;
 
     REFRESH_FILE_PROPS;
     return true;
-  }
+}
 
-  bool File::close()
-  {
+bool File::close()
+{
     bool ret = true;
 
     if (mStream && (ret = !fclose(mStream)))
-      mStream = NULL;
+        mStream = NULL;
     REFRESH_FILE_PROPS;
     return ret;
-  }
+}
 
-  bool File::dispose()
-  {
+bool File::dispose()
+{
     bool ret = false;
 
     if (exists())
-      ret = !remove(mName.c_str());
+        ret = !remove(mName.c_str());
     REFRESH_FILE_PROPS;
     return ret;
-  }
+}
 
-  bool File::makeDir()
-  {
+bool File::makeDir()
+{
     bool ret = true;
 
     if (!exists())
-      ret =
+        ret =
 #if HAVE_MKDIR
-        !mkdir(mName.c_str(), S_IRWXU);
+            !mkdir(mName.c_str(), S_IRWXU);
 #else
 #ifdef _WIN32
-        CreateDirectory(mName.c_str(), NULL);
+            CreateDirectory(mName.c_str(), NULL);
 #endif
 #endif
-      ;
+        ;
     REFRESH_FILE_PROPS;
     return ret;
-  }
+}
 
-  bool File::makeDirs()
-  {
+bool File::makeDirs()
+{
     bool ret = true;
     char path[FILENAME_MAX];
     char *p = NULL;
@@ -207,97 +205,90 @@ namespace bacon
     strcpy(path, dirName().c_str());
     pn = strchr(path, env::dirSeparator());
 
-    if (pn++)
-    {
-      while ((p = strchr(pn, env::dirSeparator())))
-      {
-        *p = '\0';
-        File f(path);
-        if (!f.makeDir())
-        {
-          ret = false;
-          break;
+    if (pn++) {
+        while ((p = strchr(pn, env::dirSeparator()))) {
+            *p = '\0';
+            File f(path);
+            if (!f.makeDir()) {
+                ret = false;
+                break;
+            }
+            *p = env::dirSeparator();
+            pn = p + 1;
         }
-        *p = env::dirSeparator();
-        pn = p + 1;
-      }
     }
 
     if (ret && !makeDir())
-      ret = false;
+        ret = false;
     REFRESH_FILE_PROPS;
     return ret;
-  }
+}
 
-  bool File::exists() const
-  {
+bool File::exists() const
+{
     return mProp && mProp->exists();
-  }
+}
 
-  bool File::isDir() const
-  {
+bool File::isDir() const
+{
     return mProp && mProp->isDir();
-  }
+}
 
-  bool File::isFile() const
-  {
+bool File::isFile() const
+{
     return mProp && mProp->isFile();
-  }
+}
 
-  size_t File::sizeInBytes() const
-  {
+size_t File::sizeInBytes() const
+{
     return mProp && mProp->sizeInBytes();
-  }
+}
 
-  string File::sizeString() const
-  {
+string File::sizeString() const
+{
     return util::bytesToReadable(12, mProp->sizeInBytes(), true);
-  }
+}
 
-  void File::change(const string &name)
-  {
+void File::change(const string &name)
+{
     close();
     mName = name;
     REFRESH_FILE_PROPS;
-  }
+}
 
-  void File::writeLine(const string &line)
-  {
+void File::writeLine(const string &line)
+{
     if (isOpen())
-      fprintf(mStream, "%s\n", line.c_str());
-  }
+        fprintf(mStream, "%s\n", line.c_str());
+}
 
-  string File::readLine()
-  {
+string File::readLine()
+{
     string line("");
     bool comment = false;
 
-    if (isOpen())
-    {
-      int ch;
-      while ((ch = fgetc(mStream)) != EOF)
-      {
-        if (ch == (int)'#')
-        {
-          if (!comment)
-            comment = true;
+    if (isOpen()) {
+        int ch;
+        while ((ch = fgetc(mStream)) != EOF) {
+            if (ch == (int)'#') {
+                if (!comment)
+                    comment = true;
+            }
+            if (ch == (int)'\n') {
+                if (comment) {
+                    comment = false;
+                    continue;
+                }
+                if (line.empty())
+                    continue;
+                break;
+            }
+            if (!comment)
+            line += (char)ch;
         }
-        if (ch == (int)'\n')
-        {
-          if (comment)
-          {
-            comment = false;
-            continue;
-          }
-          if (line.empty())
-            continue;
-          break;
-        }
-        if (!comment)
-          line += (char)ch;
-      }
     }
     return line;
-  }
+}
+
 } /* namespace bacon */
 

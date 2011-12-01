@@ -48,31 +48,30 @@ using std::string;
 
 extern long gStartEpoch;
 
-namespace bacon
-{
-  namespace
-  {
-    class ProgressBar {
-    public:
-      ProgressBar()
+namespace bacon {
+namespace {
+
+class ProgressBar {
+public:
+    ProgressBar()
         : count(0)
         , width(0)
         , mBuffer("")
-      {
+    {
         updateWidth();
         mSpaceTilEnd = width;
-      }
+    }
 
-      ~ProgressBar()
-      {}
+    ~ProgressBar()
+    {}
 
-      void updateWidth()
-      {
+    void updateWidth()
+    {
 #ifdef _WIN32
         CONSOLE_SCREEN_BUFFER_INFO cb;
 
         if (GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &cb))
-          width = cb.dwSize.X;
+            width = cb.dwSize.X;
 #else
 #if HAVE_SYS_IOCTL_H && HAVE_UNISTD_H
         struct winsize ws;
@@ -85,123 +84,119 @@ namespace bacon
 #endif
 
         if (width <= 0)
-          width = DEFAULT_PROGRESSBAR_WIDTH;
-      }
+            width = DEFAULT_PROGRESSBAR_WIDTH;
+    }
 
-      void add(const char c, const bool space = true)
-      {
+    void add(const char c, const bool space = true)
+    {
         mBuffer += c;
         --mSpaceTilEnd;
 
-        if (space)
-        {
-          mBuffer += ' ';
-          --mSpaceTilEnd;
-        }
-      }
-
-      void add(const string &s,
-               const bool space = true,
-               const bool last = false)
-      {
-        if (last)
-        {
-          for (int i = 0; i < (mSpaceTilEnd - 4); ++i)
+        if (space) {
             mBuffer += ' ';
+            --mSpaceTilEnd;
+        }
+    }
+
+    void add(const string &s,
+             const bool space = true,
+             const bool last = false)
+    {
+        if (last) {
+            for (int i = 0; i < (mSpaceTilEnd - 4); ++i)
+                mBuffer += ' ';
         }
 
         mBuffer += s;
         mSpaceTilEnd -= s.size();
 
-        if (space)
-        {
-          mBuffer += ' ';
-          --mSpaceTilEnd;
+        if (space) {
+            mBuffer += ' ';
+            --mSpaceTilEnd;
         }
       }
 
-      void display(FILE *stream = stdout)
-      {
+    void display(FILE *stream = stdout)
+    {
         if (mBuffer.empty())
-          return;
+            return;
 
         mBuffer += '\r';
         fprintf(stream, "%s", mBuffer.c_str());
         fflush(stream);
         mBuffer = "";
         mSpaceTilEnd = width;
-      }
-
-      unsigned int count;
-      int width;
-
-    private:
-      int mSpaceTilEnd;
-      string mBuffer;
-    } * pBar = NULL;
-
-    int roundFraction(const double fraction)
-    {
-      int ret;
-
-      if (fraction >= 0)
-        ret = (int)(fraction + 0.5);
-      else
-        ret = (int)(fraction - 0.5);
-      return ret;
     }
 
-    bool isNaN(const double d)
-    {
-      volatile double check = d;
+    unsigned int count;
+    int width;
 
-      if (check != check)
-      {
+private:
+    int mSpaceTilEnd;
+    string mBuffer;
+} *pBar = NULL;
+
+int roundFraction(const double fraction)
+{
+    int ret;
+
+    if (fraction >= 0)
+        ret = (int)(fraction + 0.5);
+    else
+        ret = (int)(fraction - 0.5);
+    return ret;
+}
+
+bool isNaN(const double d)
+{
+    volatile double check = d;
+
+    if (check != check) {
         LOGW("NaN value detected", NULL);
         return true;
-      }
-
-      return false;
     }
 
-    string percentString(const double d)
-    {
-      if (isNaN(d) || isNaN(d * 100))
+    return false;
+}
+
+string percentString(const double d)
+{
+    if (isNaN(d) || isNaN(d * 100))
         return string("0%");
 
-      char buf[6];
-      sprintf(buf, "%3.0f%%", d * 100);
-      return string(buf);
-    }
+    char buf[6];
+    sprintf(buf, "%3.0f%%", d * 100);
+    return string(buf);
+}
 
-    string etaString(const int bytesRemaining, const int speed)
-    {
-      string result("");
+string etaString(const int bytesRemaining, const int speed)
+{
+    string result("");
 
-      if (speed)
-      {
+    if (speed) {
         char buf[20];
         snprintf(buf, 20, "(eta %02d:%02d)",
             ((bytesRemaining / speed) / 60),
             ((bytesRemaining / speed) % 60));
         result += buf;
-      }
-      else
+    } else {
         result += "(eta --:--)";
-      return result;
     }
-  } /* namespace */
+    return result;
+}
 
-  int progressBar(void * data,
-                  double totalToDownload,
-                  double downloadedSoFar,
-                  double totalToUpload,
-                  double uploadedSoFar)
-  {
+} /* namespace */
+
+int progressBar(void * data,
+                double totalToDownload,
+                double downloadedSoFar,
+                double totalToUpload,
+                double uploadedSoFar)
+{
     string dlSoFarString =
-      util::bytesToReadable(6, (long)downloadedSoFar, true);
+        util::bytesToReadable(6, (long)downloadedSoFar, true);
     string totalToDlString =
-      util::bytesToReadable(6, (long)totalToDownload, true);
+        util::bytesToReadable(6, (long)totalToDownload, true);
     double fractionDownloaded = downloadedSoFar / totalToDownload;
     string speed("");
     string eta("");
@@ -210,22 +205,20 @@ namespace bacon
     int pos;
     int i;
 
-    if (pBar)
-    {
-      pBar->count++;
-      pBar->updateWidth();
+    if (pBar) {
+        pBar->count++;
+        pBar->updateWidth();
+    } else {
+        pBar = new ProgressBar;
     }
-    else
-      pBar = new ProgressBar;
 
-    if (downloadedSoFar)
-    {
-      dlSpeed = downloadedSoFar / (gStartEpoch - time(0));
-      if (dlSpeed < 0)
-        dlSpeed = -dlSpeed;
-      speed = util::bytesToReadable(6, dlSpeed);
-      speed += "/s";
-      eta = etaString(totalToDownload - downloadedSoFar, dlSpeed);
+    if (downloadedSoFar) {
+        dlSpeed = downloadedSoFar / (gStartEpoch - time(0));
+        if (dlSpeed < 0)
+            dlSpeed = -dlSpeed;
+        speed = util::bytesToReadable(6, dlSpeed);
+        speed += "/s";
+        eta = etaString(totalToDownload - downloadedSoFar, dlSpeed);
     }
 
     pBar->add(dlSoFarString, false);
@@ -234,15 +227,15 @@ namespace bacon
     pBar->add(PROGRESSBAR_START_CHAR, false);
 
     barPosStopPoint = pBar->width -
-      (dlSoFarString.size() + totalToDlString.size() +
-       speed.size() + eta.size() + 11);
+        (dlSoFarString.size() + totalToDlString.size() +
+        speed.size() + eta.size() + 11);
     pos = roundFraction(fractionDownloaded * barPosStopPoint);
 
     for (i = 0; i < pos; ++i)
-      pBar->add(PROGRESSBAR_HAS_CHAR, false);
+        pBar->add(PROGRESSBAR_HAS_CHAR, false);
 
     for (; i < barPosStopPoint; ++i)
-      pBar->add(PROGRESSBAR_NOT_CHAR, false);
+        pBar->add(PROGRESSBAR_NOT_CHAR, false);
 
     pBar->add(PROGRESSBAR_END_CHAR);
     pBar->add(speed);
@@ -251,9 +244,9 @@ namespace bacon
     pBar->display();
 
     if (downloadedSoFar >= totalToDownload)
-      BACON_FREE(pBar);
-
+        BACON_FREE(pBar);
     return 0;
-  }
+}
+
 } /* namespace bacon */
 

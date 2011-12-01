@@ -20,21 +20,22 @@
 
 #include "bacon-file.h"
 
-namespace bacon
-{
-  class Config : public File {
-  public:
+namespace bacon {
+
+class Config : public File {
+public:
     Config();
     ~Config();
 
     std::string valueOf(const std::string &key);
 
-  private:
+private:
     std::string userDefined(const std::string &key);
 
-  private:
+private:
     File *mUser;
-  };
+};
+
 } /* namespace bacon */
 
 #endif /* !BACON_CONFIG_H_INCLUDED */

@@ -20,10 +20,10 @@
 
 #include "bacon-net.h"
 
-namespace bacon
-{
-  class HtmlDoc : public Net {
-  public:
+namespace bacon {
+
+class HtmlDoc : public Net {
+public:
     HtmlDoc(const std::string &deviceId = "",
             const std::string &deviceType = "");
     ~HtmlDoc();
@@ -31,19 +31,20 @@ namespace bacon
     std::string content() const;
     bool fetch();
 
-  protected:
+protected:
     bool setup();
 
-  private:
+private:
     struct MemoryChunk {
-      char *mem;
-      size_t size;
+        char *mem;
+        size_t size;
     } mMemoryChunk;
 
     std::string mContent;
 
     friend size_t write_CB(void *b, size_t s, size_t n, void *u);
-  };
+};
+
 } /* namespace bacon */
 
 #endif /* !BACON_HTMLDOC_H_INCLUDED */

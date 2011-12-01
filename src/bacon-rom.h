@@ -23,21 +23,22 @@
 
 #include <cstdio>
 
-namespace bacon
-{
-  class Rom : public Net, File {
-  public:
+namespace bacon {
+
+class Rom : public Net, File {
+public:
     Rom(const std::string &name, const std::string &path);
     ~Rom();
 
     bool fetch();
 
-  protected:
+protected:
     bool setup();
 
-  private:
+private:
     friend size_t write_CB(void *p, size_t s, size_t n, FILE *f);
-  };
+};
+
 } /* namespace bacon */
 
 #endif /* !BACON_ROM_H_INCLUDED */

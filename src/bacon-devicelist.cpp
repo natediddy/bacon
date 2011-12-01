@@ -30,153 +30,143 @@
 #define LIST_CONFIG_FILENAME "device_list"
 
 #define APPEND_RANDOM_ID \
-  mDeviceIds.push_back(string(PSEUDO_RANDOM_DEVICE_ID))
+    mDeviceIds.push_back(string(PSEUDO_RANDOM_DEVICE_ID))
 
 #define DATE_LINE_FORMAT "#%A, %B %d, %I:%M%p"
 
 using std::string;
 using std::vector;
 
-namespace bacon
+namespace bacon {
+namespace {
+
+string prepareListFile()
 {
-  namespace
-  {
-    string prepareListFile()
-    {
-      string name(LIST_CONFIG_FILENAME);
+    string name(LIST_CONFIG_FILENAME);
 
 #ifndef _WIN32
-      string _name(".");
-      _name += name;
-      name = _name;
+    string _name(".");
+    _name += name;
+    name = _name;
 #else
-      name += ".txt";
+    name += ".txt";
 #endif
 
-      string p[] = {
+    string p[] = {
         prefs::get(KEY_BASE_DIR), name, ""
-      };
-      string path(env::pathJoin(p));
+    };
+    string path(env::pathJoin(p));
 
 #ifdef _WIN32
-      SetFileAttributes(path.c_str(), FILE_ATTRIBUTE_HIDDEN);
+    SetFileAttributes(path.c_str(), FILE_ATTRIBUTE_HIDDEN);
 #endif
 
-      return path;
-    }
-  } /* namespace */
+    return path;
+}
 
-  DeviceList::DeviceList()
+} /* namespace */
+
+DeviceList::DeviceList()
     : File(prepareListFile())
-  {}
+{}
 
-  DeviceList::~DeviceList()
-  {}
+DeviceList::~DeviceList()
+{}
 
-  bool DeviceList::update()
-  {
+bool DeviceList::update()
+{
     if (!mDeviceIds.empty())
-      mDeviceIds.clear();
+        mDeviceIds.clear();
 
     HtmlDoc doc;
 
-    if (doc.fetch())
-    {
-      HtmlParser *parser = new HtmlParser(doc.content());
-      if (parser)
-      {
-        parser->allDeviceIds(mDeviceIds);
-        if (mDeviceIds.size())
-        {
-          if (exists())
-            dispose();
-          if (open("w+"))
-          {
-            writeDateLine();
-            for (size_t i = 0; i < mDeviceIds.size(); i++)
-            {
-              if (mDeviceIds[i] == PSEUDO_RANDOM_DEVICE_ID)
-                continue;
-              writeLine(mDeviceIds[i]);
+    if (doc.fetch()) {
+        HtmlParser *parser = new HtmlParser(doc.content());
+        if (parser) {
+            parser->allDeviceIds(mDeviceIds);
+            if (mDeviceIds.size()) {
+                if (exists())
+                    dispose();
+                if (open("w+")) {
+                    writeDateLine();
+                    for (size_t i = 0; i < mDeviceIds.size(); i++) {
+                        if (mDeviceIds[i] == PSEUDO_RANDOM_DEVICE_ID)
+                            continue;
+                        writeLine(mDeviceIds[i]);
+                    }
+                    close();
+                }
             }
-            close();
-          }
+            BACON_FREE(parser);
+            APPEND_RANDOM_ID;
+            return true;
         }
-        BACON_FREE(parser);
-        APPEND_RANDOM_ID;
-        return true;
-      }
     }
     return false;
-  }
+}
 
-  void DeviceList::getLocal()
-  {
-    if (open())
-    {
-      for (string l = readLine(); !l.empty(); l = readLine())
-        mDeviceIds.push_back(l);
-      close();
+void DeviceList::getLocal()
+{
+    if (open()) {
+        for (string l = readLine(); !l.empty(); l = readLine())
+            mDeviceIds.push_back(l);
+        close();
     }
     APPEND_RANDOM_ID;
-  }
+}
 
-  size_t DeviceList::size() const
-  {
+size_t DeviceList::size() const
+{
     return mDeviceIds.size();
-  }
+}
 
-  bool DeviceList::hasMatch(const string &deviceId) const
-  {
-    for (size_t i = 0; i < mDeviceIds.size(); i++)
-    {
-      if (deviceId == mDeviceIds[i])
-        return true;
+bool DeviceList::hasMatch(const string &deviceId) const
+{
+    for (size_t i = 0; i < mDeviceIds.size(); i++) {
+        if (deviceId == mDeviceIds[i])
+            return true;
     }
     return false;
-  }
+}
 
-  string DeviceList::operator[](const size_t index) const
-  {
+string DeviceList::operator[](const size_t index) const
+{
     return mDeviceIds[index];
-  }
+}
 
-  void DeviceList::writeDateLine()
-  {
+void DeviceList::writeDateLine()
+{
     writeLine(string(util::timeString(DATE_LINE_FORMAT)));
-  }
+}
 
-  vector<string> DeviceList::rawList() const
-  {
+vector<string> DeviceList::rawList() const
+{
     return mDeviceIds;
-  }
+}
 
-  string DeviceList::lastUpdate()
-  {
+string DeviceList::lastUpdate()
+{
     string result("");
     bool inDateLine = false;
 
-    if (open())
-    {
-      int ch;
-      while ((ch = fgetc(File::mStream)) != EOF)
-      {
-        if (ch == (int)'#')
-        {
-          if (!inDateLine)
-          {
-            inDateLine = true;
-            continue;
-          }
+    if (open()) {
+        int ch;
+        while ((ch = fgetc(File::mStream)) != EOF) {
+            if (ch == (int)'#') {
+                if (!inDateLine) {
+                    inDateLine = true;
+                    continue;
+                }
+            }
+            if (ch == (int)'\n')
+                break;
+            else if (inDateLine)
+                result += (char)ch;
         }
-        if (ch == (int)'\n')
-          break;
-        else if (inDateLine)
-          result += (char)ch;
-      }
-      close();
+        close();
     }
     return result;
-  }
+}
+
 } /* namespace bacon */
 

@@ -20,17 +20,17 @@
 
 #include <string>
 
-namespace bacon
-{
-  namespace env
-  {
-    std::string variableValue(const std::string &key);
-    std::string variableValue(const char *key);
-    std::string userHomeDir();
-    std::string pathJoin(const std::string arr[]);
-    char variableSymbol();
-    char dirSeparator();
-  } /* namespace env */
+namespace bacon {
+namespace env {
+
+std::string variableValue(const std::string &key);
+std::string variableValue(const char *key);
+std::string userHomeDir();
+std::string pathJoin(const std::string arr[]);
+char variableSymbol();
+char dirSeparator();
+
+} /* namespace env */
 } /* namespace bacon */
 
 #endif /* !BACON_ENV_H_INCLUDED */

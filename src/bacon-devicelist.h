@@ -25,10 +25,10 @@
 
 #define PSEUDO_RANDOM_DEVICE_ID "random"
 
-namespace bacon
-{
-  class DeviceList : public File {
-  public:
+namespace bacon {
+
+class DeviceList : public File {
+public:
     DeviceList();
     ~DeviceList();
 
@@ -40,12 +40,13 @@ namespace bacon
     std::vector<std::string> rawList() const;
     std::string lastUpdate();
 
-  private:
+private:
     void writeDateLine();
 
-  private:
+private:
     std::vector<std::string> mDeviceIds;
-  };
+};
+
 } /* namespace bacon */
 
 #endif /* !BACON_DEVICELIST_H_INCLUDED */

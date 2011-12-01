@@ -21,25 +21,26 @@
 #include <string>
 #include <curl/curl.h>
 
-namespace bacon
-{
-  class Net {
-  public:
+namespace bacon {
+
+class Net {
+public:
     Net(const std::string &request = "");
     ~Net();
 
     virtual bool fetch();
 
-  protected:
+protected:
     bool setup();
 
-  protected:
+protected:
     CURL *pCurl;
     CURLcode pStatus;
 
-  private:
+private:
     std::string mUrl;
-  };
+};
+
 } /* namespace bacon */
 
 #endif /* !BACON_NET_H_INCLUDED */

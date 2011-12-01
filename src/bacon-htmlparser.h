@@ -21,10 +21,10 @@
 #include <string>
 #include <vector>
 
-namespace bacon
-{
-  class HtmlParser {
-  public:
+namespace bacon {
+
+class HtmlParser {
+public:
     HtmlParser(const std::string &content);
     ~HtmlParser();
 
@@ -33,9 +33,10 @@ namespace bacon
     std::vector<std::string> latestRomsForDevice() const;
     std::string currentContent() const;
 
-  private:
+private:
     std::string mContent;
-  };
+};
+
 } /* namespace bacon */
 
 #endif /* !BACON_HTMLPARSER_H_INCLUDED */

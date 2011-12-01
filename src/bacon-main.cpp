@@ -25,16 +25,14 @@ using namespace bacon;
 
 int main(int argc, char **argv)
 {
-  prefs::init();
-  Cmd cmd(&argv);
+    prefs::init();
+    Cmd cmd(&argv);
 
-  if (prefs::check())
-  {
-    atexit(log::deactivate);
-    log::activate();
-    exit(cmd.exec());
-  }
-
-  exit(EXIT_FAILURE);
+    if (prefs::check()) {
+        atexit(log::deactivate);
+        log::activate();
+        exit(cmd.exec());
+    }
+    exit(EXIT_FAILURE);
 }
 

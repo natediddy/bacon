@@ -21,19 +21,19 @@
 #include <string>
 #include <vector>
 
-namespace bacon
-{
-  class Cmd {
-  public:
+namespace bacon {
+
+class Cmd {
+public:
     Cmd(char ***argv);
     ~Cmd();
 
     int exec() const;
 
-  private:
+private:
     void analyze();
 
-  private:
+private:
     std::vector<std::string> mArgs;
 
     class ConfigCmdUtilImpl;
@@ -44,7 +44,8 @@ namespace bacon
 
     class ActionCmdUtilImpl;
     std::vector<ActionCmdUtilImpl *> mActions;
-  };
+};
+
 } /* namespace bacon */
 
 #endif /* !BACON_CMD_H_INCLUDED */

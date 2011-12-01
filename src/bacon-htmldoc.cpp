@@ -26,108 +26,104 @@
 
 using std::string;
 
-namespace bacon
-{
-  namespace
-  {
-    string formRequest(const string &deviceId, const string &deviceType)
-    {
-      string result("");
+namespace bacon {
+namespace {
 
-      if (!deviceId.empty())
-      {
+string formRequest(const string &deviceId, const string &deviceType)
+{
+    string result("");
+
+    if (!deviceId.empty()) {
         result += "?";
         result += DEVICE_PARAM;
         result += deviceId;
-      }
+    }
 
-      if (!deviceType.empty())
-      {
+    if (!deviceType.empty()) {
         if (result.empty())
-          result += "?";
+            result += "?";
         else
-          result += "&";
+            result += "&";
         result += TYPE_PARAM;
         result += deviceType;
-      }
-
-      return result;
     }
-  } /* namespace */
 
-  size_t write_CB(void *buf, size_t size, size_t nmemb, void *userp)
-  {
+    return result;
+}
+
+} /* namespace */
+
+size_t write_CB(void *buf, size_t size, size_t nmemb, void *userp)
+{
     size_t real = size * nmemb;
     HtmlDoc::MemoryChunk *mem = (HtmlDoc::MemoryChunk *)userp;
 
     mem->mem = (char *)realloc(mem->mem, mem->size + real + 1);
 
     if (!mem->mem)
-      return 0;
+        return 0;
 
     memcpy(&(mem->mem[mem->size]), buf, real);
     mem->size += real;
     mem->mem[mem->size] = 0;
-
     return real;
-  }
+}
 
-  HtmlDoc::HtmlDoc(const string &deviceId, const string &deviceType)
+HtmlDoc::HtmlDoc(const string &deviceId, const string &deviceType)
     : Net(formRequest(deviceId, deviceType))
     , mContent("")
-  {
+{
     mMemoryChunk.mem = (char *)malloc(1);
     mMemoryChunk.size = 0;
     setup();
-  }
+}
 
-  HtmlDoc::~HtmlDoc()
-  {
-    if (mMemoryChunk.mem)
-    {
-      free((void *)mMemoryChunk.mem);
-      mMemoryChunk.mem = NULL;
+HtmlDoc::~HtmlDoc()
+{
+    if (mMemoryChunk.mem) {
+        free((void *)mMemoryChunk.mem);
+        mMemoryChunk.mem = NULL;
     }
     mMemoryChunk.size = 0;
-  }
+}
 
-  bool HtmlDoc::setup()
-  {
+bool HtmlDoc::setup()
+{
     if (!Net::setup())
-      return false;
+        return false;
 
     Net::pStatus = curl_easy_setopt(Net::pCurl, CURLOPT_WRITEDATA,
-        (void *)&mMemoryChunk);
+            (void *)&mMemoryChunk);
 
-    if (Net::pStatus != CURLE_OK)
-    {
-      LOGE("curl_easy_setopt: %s", curl_easy_strerror(Net::pStatus));
-      return false;
+    if (Net::pStatus != CURLE_OK) {
+        LOGE("curl_easy_setopt: %s", curl_easy_strerror(Net::pStatus));
+        return false;
     }
 
     Net::pStatus = curl_easy_setopt(Net::pCurl, CURLOPT_WRITEFUNCTION,
-        write_CB);
+            write_CB);
 
     if (Net::pStatus != CURLE_OK)
-      LOGE("curl_easy_setopt: %s", curl_easy_strerror(Net::pStatus));
+        LOGE("curl_easy_setopt: %s", curl_easy_strerror(Net::pStatus));
     return Net::pStatus == CURLE_OK;
-  }
+}
 
-  bool HtmlDoc::fetch()
-  {
+bool HtmlDoc::fetch()
+{
     Net::pStatus = curl_easy_perform(Net::pCurl);
 
     if (mMemoryChunk.mem)
-      mContent = mMemoryChunk.mem;
+        mContent = mMemoryChunk.mem;
 
     if (Net::pStatus != CURLE_OK)
-      LOGE("curl_easy_perform: %s", curl_easy_strerror(Net::pStatus));
+        LOGE("curl_easy_perform: %s", curl_easy_strerror(Net::pStatus));
     return Net::pStatus == CURLE_OK;
-  }
+}
 
-  string HtmlDoc::content() const
-  {
+string HtmlDoc::content() const
+{
     return mContent;
-  }
+}
+
 } /* namespace bacon */
 

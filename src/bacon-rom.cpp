@@ -28,90 +28,87 @@ using std::string;
 
 long gStartEpoch = 0;
 
-namespace bacon
+namespace bacon {
+namespace {
+
+string formRequest(const string &name)
 {
-  namespace
-  {
-    string formRequest(const string &name)
-    {
-      string result("get/");
+    string result("get/");
 
-      result += name;
-      return result;
-    }
-  } /* namespace */
+    result += name;
+    return result;
+}
 
-  size_t write_CB(void *ptr, size_t size, size_t nmemb, FILE *fp)
-  {
+} /* namespace */
+
+size_t write_CB(void *ptr, size_t size, size_t nmemb, FILE *fp)
+{
     return fwrite(ptr, size, nmemb, fp);
-  }
+}
 
-  Rom::Rom(const string &name, const string &path)
+Rom::Rom(const string &name, const string &path)
     : Net(formRequest(name))
     , File(path)
-  {
+{
     setup();
-  }
+}
 
-  Rom::~Rom()
-  {}
+Rom::~Rom()
+{}
 
-  bool Rom::setup()
-  {
+bool Rom::setup()
+{
     if (!Net::setup())
-      return false;
+        return false;
 
     Net::pStatus = curl_easy_setopt(Net::pCurl, CURLOPT_FOLLOWLOCATION, 1L);
-    if (Net::pStatus != CURLE_OK)
-    {
-      LOGE("curl_easy_setopt: %s", curl_easy_strerror(Net::pStatus));
-      return false;
+    if (Net::pStatus != CURLE_OK) {
+        LOGE("curl_easy_setopt: %s", curl_easy_strerror(Net::pStatus));
+        return false;
     }
 
-    if (!open("wb"))
-    {
-      LOGE("could not open file `%s' on disk", name().c_str());
-      return false;
+    if (!open("wb")) {
+        LOGE("could not open file `%s' on disk", name().c_str());
+        return false;
     }
 
     Net::pStatus = curl_easy_setopt(Net::pCurl, CURLOPT_WRITEDATA,
         (void *)File::mStream);
-    if (Net::pStatus != CURLE_OK)
-    {
-      LOGE("curl_easy_setopt: %s", curl_easy_strerror(Net::pStatus));
-      return false;
+    if (Net::pStatus != CURLE_OK) {
+        LOGE("curl_easy_setopt: %s", curl_easy_strerror(Net::pStatus));
+        return false;
     }
 
     Net::pStatus = curl_easy_setopt(Net::pCurl, CURLOPT_WRITEFUNCTION,
         (void *)write_CB);
-    if (Net::pStatus != CURLE_OK)
-    {
-      LOGE("curl_easy_setopt: %s", curl_easy_strerror(Net::pStatus));
-      return false;
+    if (Net::pStatus != CURLE_OK) {
+        LOGE("curl_easy_setopt: %s", curl_easy_strerror(Net::pStatus));
+        return false;
     }
 
     Net::pStatus = curl_easy_setopt(Net::pCurl, CURLOPT_NOPROGRESS, false);
     if (Net::pStatus != CURLE_OK)
     {
-      LOGE("curl_easy_setopt: %s", curl_easy_strerror(Net::pStatus));
-      return false;
+        LOGE("curl_easy_setopt: %s", curl_easy_strerror(Net::pStatus));
+        return false;
     }
 
     Net::pStatus = curl_easy_setopt(Net::pCurl, CURLOPT_PROGRESSFUNCTION,
         progressBar);
 
     if (Net::pStatus != CURLE_OK)
-      LOGE("curl_easy_setopt: %s", curl_easy_strerror(Net::pStatus));
+        LOGE("curl_easy_setopt: %s", curl_easy_strerror(Net::pStatus));
     return Net::pStatus == CURLE_OK;
-  }
+}
 
-  bool Rom::fetch()
-  {
+bool Rom::fetch()
+{
     gStartEpoch = time(0);
     fprintf(stdout, "\n=> %s\n", baseName().c_str());
     Net::pStatus = curl_easy_perform(Net::pCurl);
     close();
     return Net::pStatus == CURLE_OK;
-  }
+}
+
 } /* namespace bacon */
 

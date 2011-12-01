@@ -20,20 +20,21 @@
 
 #include <string>
 
-namespace bacon
-{
-  class Device {
-  public:
+namespace bacon {
+
+class Device {
+public:
     Device(const std::string &id);
-    ~Device();
+   ~Device();
 
     std::string id() const;
     std::string romDir() const;
     void createRomDir() const;
 
-  private:
+private:
     std::string mId;
-  };
+};
+
 } /* namespace bacon */
 
 #endif /* !BACON_DEVICE_H_INCLUDED */

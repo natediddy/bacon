@@ -21,12 +21,12 @@
 #include <string>
 #include <vector>
 
-namespace bacon
-{
-  class Device;
+namespace bacon {
 
-  class Stats {
-  public:
+class Device;
+
+class Stats {
+public:
     Stats(const Device *device, const std::string &deviceType);
     ~Stats();
 
@@ -35,12 +35,13 @@ namespace bacon
     bool isValid(const size_t n) const;
     std::vector<std::string> romNames() const;
 
-  private:
+private:
     const Device *mDevice;
     std::string mType;
     std::vector<std::string> mLatestRomNames;
     std::vector<std::string> mRomPaths;
-  };
+};
+
 } /* namespace bacon */
 
 #endif /* !BACON_STATS_H_INCLUDED */

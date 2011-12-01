@@ -18,13 +18,14 @@
 #ifndef BACON_PROGRESS_H_INCLUDED
 #define BACON_PROGRESS_H_INCLUDED
 
-namespace bacon
-{
-  int progressBar(void *data,
-                  double totalToDownload,
-                  double downloadedSoFar,
-                  double totalToUpload,
-                  double uploadedSoFar);
+namespace bacon {
+
+int progressBar(void *data,
+                double totalToDownload,
+                double downloadedSoFar,
+                double totalToUpload,
+                double uploadedSoFar);
+
 } /* namespace bacon */
 
 #endif /* !BACON_PROGRESS_H_INCLUDED */
