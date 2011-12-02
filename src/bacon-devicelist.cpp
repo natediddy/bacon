@@ -31,6 +31,8 @@
 
 #define APPEND_RANDOM_ID \
     mDeviceIds.push_back(string(BACON_PSEUDO_RANDOM_DEVICE_ID))
+#define APPEND_ALL_ID \
+    mDeviceIds.push_back(string(BACON_PSEUDO_ALL_DEVICE_ID))
 
 #define DATE_LINE_FORMAT "#%A, %B %d, %I:%M%p"
 
@@ -81,26 +83,24 @@ bool DeviceList::update()
     HtmlDoc doc;
 
     if (doc.fetch()) {
-        HtmlParser *parser = new HtmlParser(doc.content());
-        if (parser) {
-            parser->allDeviceIds(mDeviceIds);
-            if (mDeviceIds.size()) {
-                if (exists())
-                    dispose();
-                if (open("w+")) {
-                    writeDateLine();
-                    for (size_t i = 0; i < mDeviceIds.size(); ++i) {
-                        if (mDeviceIds[i] == BACON_PSEUDO_RANDOM_DEVICE_ID)
-                            continue;
-                        writeLine(mDeviceIds[i]);
-                    }
-                    close();
-                }
+        HtmlParser parser(doc.content());
+        parser.allDeviceIds(mDeviceIds);
+        if (exists())
+            dispose();
+        if (open("w+")) {
+            writeDateLine();
+            for (size_t i = 0; i < mDeviceIds.size(); ++i) {
+                if (mDeviceIds[i] == BACON_PSEUDO_RANDOM_DEVICE_ID)
+                    continue;
+                else if (mDeviceIds[i] == BACON_PSEUDO_ALL_DEVICE_ID)
+                    continue;
+                writeLine(mDeviceIds[i]);
             }
-            BACON_FREE(parser);
-            APPEND_RANDOM_ID;
-            return true;
+            close();
         }
+        APPEND_ALL_ID;
+        APPEND_RANDOM_ID;
+        return true;
     }
     return false;
 }
@@ -112,6 +112,7 @@ void DeviceList::getLocal()
             mDeviceIds.push_back(l);
         close();
     }
+    APPEND_ALL_ID;
     APPEND_RANDOM_ID;
 }
 

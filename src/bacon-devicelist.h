@@ -23,6 +23,7 @@
 
 #include "bacon-file.h"
 
+#define BACON_PSEUDO_ALL_DEVICE_ID    "all"
 #define BACON_PSEUDO_RANDOM_DEVICE_ID "random"
 
 namespace bacon {

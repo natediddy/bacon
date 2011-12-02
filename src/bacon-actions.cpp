@@ -276,18 +276,19 @@ ListCompareData::ListCompareData(DeviceList &deviceList,
     vector<string> newList = deviceList.rawList();
 
     mDiffCount = (int)newList.size() - (int)oldList.size();
-    if (mDiffCount) {
-        for (size_t i = 0; i < newList.size(); ++i) {
-            bool noMatch = true;
-            for (size_t j = 0; j < oldList.size(); ++j) {
-                if (newList[i] == oldList[j]) {
-                    noMatch = false;
-                    break;
-                }
+    if (mDiffCount <= 0)
+        return;
+
+    for (size_t i = 0; i < newList.size(); ++i) {
+        bool noMatch = true;
+        for (size_t j = 0; j < oldList.size(); ++j) {
+            if (newList[i] == oldList[j]) {
+                noMatch = false;
+                break;
             }
-            if (noMatch)
-                mDiff.push_back(newList[i]);
         }
+        if (noMatch)
+            mDiff.push_back(newList[i]);
     }
 }
 
@@ -399,6 +400,8 @@ int showDevices()
         fputs(deviceList[i].c_str(), stdout);
         if (deviceList[i] == BACON_PSEUDO_RANDOM_DEVICE_ID)
             fputs("    -> (chooses a device at random)", stdout);
+        else if (deviceList[i] == BACON_PSEUDO_ALL_DEVICE_ID)
+            fputs("       -> (performs action on all devices)", stdout);
         fputc('\n', stdout);
     }
     return EXIT_SUCCESS;

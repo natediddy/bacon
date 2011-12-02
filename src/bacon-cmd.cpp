@@ -24,6 +24,7 @@
 #include "bacon-actions.h"
 #include "bacon-cmd.h"
 #include "bacon-device.h"
+#include "bacon-devicelist.h"
 #include "bacon-env.h"
 #include "bacon-prefs.h"
 #include "bacon-util.h"
@@ -136,6 +137,22 @@ void properProgramName(char *execName)
 
     (void)*++lastSlash;
     gProgramName = lastSlash;
+}
+
+void handlePseudoAllId(vector<Device *> &devices)
+{
+    DeviceList dList;
+
+    if (!dList.exists())
+        dList.update();
+    else
+        dList.getLocal();
+
+    for (size_t i = 0; i < dList.size(); ++i) {
+        if (dList[i] != BACON_PSEUDO_ALL_DEVICE_ID &&
+                dList[i] != BACON_PSEUDO_RANDOM_DEVICE_ID)
+            devices.push_back(new Device(dList[i]));
+    }
 }
 
 } /* namespace */
@@ -347,9 +364,13 @@ void Cmd::analyze()
             size_t i_save = i;
             for (size_t j = i + 1; j < argCount; ++j) {
                 if (mArgs[j][0] != '-') {
-                    devices.push_back(new Device(mArgs[j]));
-                    ++i;
-                    continue;
+                    if (mArgs[j] == BACON_PSEUDO_ALL_DEVICE_ID) {
+                        handlePseudoAllId(devices);
+                    } else {
+                        devices.push_back(new Device(mArgs[j]));
+                        ++i;
+                        continue;
+                    }
                 }
                 break;
             }
