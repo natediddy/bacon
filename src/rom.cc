@@ -19,7 +19,6 @@
 
 #include "env.h"
 #include "file.h"
-#include "log.h"
 #include "progress.h"
 #include "rom.h"
 #include "util.h"

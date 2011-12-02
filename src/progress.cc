@@ -33,7 +33,6 @@
 #include <windows.h>
 #endif
 
-#include "log.h"
 #include "progress.h"
 #include "util.h"
 

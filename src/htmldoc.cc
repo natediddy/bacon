@@ -19,7 +19,6 @@
 #include <cstring>
 
 #include "htmldoc.h"
-#include "log.h"
 
 #define DEVICE_PARAM "device="
 #define TYPE_PARAM "type="

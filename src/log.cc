@@ -34,7 +34,6 @@
 #endif
 
 #include "env.h"
-#include "log.h"
 #include "prefs.h"
 #include "util.h"
 

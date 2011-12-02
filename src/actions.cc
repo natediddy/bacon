@@ -27,7 +27,6 @@
 #include "env.h"
 #include "htmldoc.h"
 #include "htmlparser.h"
-#include "log.h"
 #include "md5.h"
 #include "rom.h"
 #include "stats.h"

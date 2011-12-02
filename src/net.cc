@@ -15,7 +15,6 @@
  * along with bacon.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "log.h"
 #include "net.h"
 #include "prefs.h"
 #include "util.h"

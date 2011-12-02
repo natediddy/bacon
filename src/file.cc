@@ -40,7 +40,6 @@
 
 #include "env.h"
 #include "file.h"
-#include "log.h"
 #include "util.h"
 
 #define REFRESH_FILE_PROPS \

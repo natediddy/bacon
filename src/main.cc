@@ -18,7 +18,6 @@
 #include <cstdlib>
 
 #include "cmd.h"
-#include "log.h"
 #include "prefs.h"
 
 using namespace bacon;

@@ -59,7 +59,6 @@
 
 #include "htmldoc.h"
 #include "htmlparser.h"
-#include "log.h"
 #include "md5.h"
 #include "util.h"
 
