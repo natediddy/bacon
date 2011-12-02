@@ -1,4 +1,6 @@
 0.20.4:
+  - new pseudo device ID 'all'
+  - more code organization/readability changes
   - display current bacon version in log header and footer
   - display machine info in --version
 
@@ -25,6 +27,9 @@
 0.14.2:
   - man page
   - PKGBUILD for ArchLinux
+
+0.14.1:
+  - new pseudo device ID 'random'
 
 0.14:
   - added CMake build system
