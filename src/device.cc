@@ -37,9 +37,16 @@ string getRandomDeviceIndex()
 
     unsigned int index = util::random();
 
-    while (index >= (list.size() - 1) ||
-            list[index] == BACON_PSEUDO_ALL_DEVICE_ID)
+    while (index >= list.size()) {
         index = util::random() / 10000;
+        if (index < list.size() &&
+            (list[index] == BACON_PSEUDO_ALL_DEVICE_ID ||
+             list[index] == BACON_PSEUDO_RANDOM_DEVICE_ID))
+        {
+            index = list.size();
+            continue;
+        }
+    }
     return list[index];
 }
 
