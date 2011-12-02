@@ -33,10 +33,10 @@
 #include <cstdlib>
 #endif
 
-#include "bacon-env.h"
-#include "bacon-log.h"
-#include "bacon-prefs.h"
-#include "bacon-util.h"
+#include "env.h"
+#include "log.h"
+#include "prefs.h"
+#include "util.h"
 
 #define LOG_FILENAME       "bacon.log"
 #define BANNER_DATE_FORMAT "%m/%d/%Y %I:%M:%S%p"

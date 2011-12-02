@@ -21,13 +21,13 @@
 #include <cstdlib>
 #include <cstring>
 
-#include "bacon-actions.h"
-#include "bacon-cmd.h"
-#include "bacon-device.h"
-#include "bacon-devicelist.h"
-#include "bacon-env.h"
-#include "bacon-prefs.h"
-#include "bacon-util.h"
+#include "actions.h"
+#include "cmd.h"
+#include "device.h"
+#include "devicelist.h"
+#include "env.h"
+#include "prefs.h"
+#include "util.h"
 
 using std::string;
 using std::vector;

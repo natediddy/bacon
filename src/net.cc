@@ -15,10 +15,10 @@
  * along with bacon.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "bacon-log.h"
-#include "bacon-net.h"
-#include "bacon-prefs.h"
-#include "bacon-util.h"
+#include "log.h"
+#include "net.h"
+#include "prefs.h"
+#include "util.h"
 
 #ifdef PACKAGE_VERSION
 #define BACON_AGENT "Bacon/"PACKAGE_VERSION

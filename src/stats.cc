@@ -15,14 +15,14 @@
  * along with bacon.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "bacon-device.h"
-#include "bacon-env.h"
-#include "bacon-file.h"
-#include "bacon-htmldoc.h"
-#include "bacon-htmlparser.h"
-#include "bacon-md5.h"
-#include "bacon-stats.h"
-#include "bacon-util.h"
+#include "device.h"
+#include "env.h"
+#include "file.h"
+#include "htmldoc.h"
+#include "htmlparser.h"
+#include "md5.h"
+#include "stats.h"
+#include "util.h"
 
 using std::string;
 using std::vector;

@@ -15,8 +15,8 @@
  * along with bacon.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "bacon-htmldoc.h"
-#include "bacon-htmlparser.h"
+#include "htmldoc.h"
+#include "htmlparser.h"
 
 /* '<li class="bullet"><a href="/?device=' */
 #define DEVICE_BULLET(s, i) \

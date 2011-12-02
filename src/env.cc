@@ -18,7 +18,7 @@
 #include <cstdio>
 #include <cstdlib>
 
-#include "bacon-env.h"
+#include "env.h"
 
 #ifdef _WIN32
 #define HOME_VAR_STR "USERPROFILE"

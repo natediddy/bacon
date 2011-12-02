@@ -15,12 +15,12 @@
  * along with bacon.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "bacon-device.h"
-#include "bacon-devicelist.h"
-#include "bacon-env.h"
-#include "bacon-file.h"
-#include "bacon-prefs.h"
-#include "bacon-util.h"
+#include "device.h"
+#include "devicelist.h"
+#include "env.h"
+#include "file.h"
+#include "prefs.h"
+#include "util.h"
 
 using std::string;
 

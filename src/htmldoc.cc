@@ -18,8 +18,8 @@
 #include <cstdlib>
 #include <cstring>
 
-#include "bacon-htmldoc.h"
-#include "bacon-log.h"
+#include "htmldoc.h"
+#include "log.h"
 
 #define DEVICE_PARAM "device="
 #define TYPE_PARAM "type="

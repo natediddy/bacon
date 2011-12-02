@@ -18,7 +18,7 @@
 #ifndef BACON_MD5_H_INCLUDED
 #define BACON_MD5_H_INCLUDED
 
-#include "bacon-file.h"
+#include "file.h"
 
 namespace bacon {
 

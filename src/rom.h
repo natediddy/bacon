@@ -15,41 +15,31 @@
  * along with bacon.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef BACON_DEVICELIST_H_INCLUDED
-#define BACON_DEVICELIST_H_INCLUDED
+#ifndef BACON_ROM_H_INCLUDED
+#define BACON_ROM_H_INCLUDED
 
-#include <string>
-#include <vector>
+#include "file.h"
+#include "net.h"
 
-#include "bacon-file.h"
-
-#define BACON_PSEUDO_ALL_DEVICE_ID    "all"
-#define BACON_PSEUDO_RANDOM_DEVICE_ID "random"
+#include <cstdio>
 
 namespace bacon {
 
-class DeviceList : public File {
+class Rom : public Net, File {
 public:
-    DeviceList();
-    ~DeviceList();
+    Rom(const std::string &name, const std::string &path);
+    ~Rom();
 
-    bool update();
-    void getLocal();
-    void prep();
-    bool hasMatch(const std::string &id) const;
-    size_t size() const;
-    std::string operator[](const size_t index) const;
-    std::vector<std::string> rawList() const;
-    std::string lastUpdate();
+    bool fetch();
+
+protected:
+    bool setup();
 
 private:
-    void writeDateLine();
-
-private:
-    std::vector<std::string> mDeviceIds;
+    friend size_t write_CB(void *p, size_t s, size_t n, FILE *f);
 };
 
 } /* namespace bacon */
 
-#endif /* !BACON_DEVICELIST_H_INCLUDED */
+#endif /* !BACON_ROM_H_INCLUDED */
 

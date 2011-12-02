@@ -15,24 +15,37 @@
  * along with bacon.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <cstdlib>
+#ifndef BACON_HTMLDOC_H_INCLUDED
+#define BACON_HTMLDOC_H_INCLUDED
 
-#include "bacon-cmd.h"
-#include "bacon-log.h"
-#include "bacon-prefs.h"
+#include "net.h"
 
-using namespace bacon;
+namespace bacon {
 
-int main(int argc, char **argv)
-{
-    prefs::init();
-    Cmd cmd(&argv);
+class HtmlDoc : public Net {
+public:
+    HtmlDoc(const std::string &deviceId = "",
+            const std::string &deviceType = "");
+    ~HtmlDoc();
 
-    if (prefs::check()) {
-        atexit(log::deactivate);
-        log::activate();
-        exit(cmd.exec());
-    }
-    exit(EXIT_FAILURE);
-}
+    std::string content() const;
+    bool fetch();
+
+protected:
+    bool setup();
+
+private:
+    struct MemoryChunk {
+        char *mem;
+        size_t size;
+    } mMemoryChunk;
+
+    std::string mContent;
+
+    friend size_t write_CB(void *b, size_t s, size_t n, void *u);
+};
+
+} /* namespace bacon */
+
+#endif /* !BACON_HTMLDOC_H_INCLUDED */
 

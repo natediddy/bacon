@@ -45,16 +45,14 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
-am_bacon_OBJECTS = bacon-bacon-actions.$(OBJEXT) \
-	bacon-bacon-cmd.$(OBJEXT) bacon-bacon-config.$(OBJEXT) \
-	bacon-bacon-device.$(OBJEXT) bacon-bacon-devicelist.$(OBJEXT) \
-	bacon-bacon-env.$(OBJEXT) bacon-bacon-file.$(OBJEXT) \
-	bacon-bacon-htmldoc.$(OBJEXT) bacon-bacon-htmlparser.$(OBJEXT) \
-	bacon-bacon-log.$(OBJEXT) bacon-bacon-main.$(OBJEXT) \
-	bacon-bacon-md5.$(OBJEXT) bacon-bacon-net.$(OBJEXT) \
-	bacon-bacon-prefs.$(OBJEXT) bacon-bacon-progress.$(OBJEXT) \
-	bacon-bacon-rom.$(OBJEXT) bacon-bacon-stats.$(OBJEXT) \
-	bacon-bacon-util.$(OBJEXT)
+am_bacon_OBJECTS = bacon-actions.$(OBJEXT) bacon-cmd.$(OBJEXT) \
+	bacon-conf.$(OBJEXT) bacon-device.$(OBJEXT) \
+	bacon-devicelist.$(OBJEXT) bacon-env.$(OBJEXT) \
+	bacon-file.$(OBJEXT) bacon-htmldoc.$(OBJEXT) \
+	bacon-htmlparser.$(OBJEXT) bacon-log.$(OBJEXT) \
+	bacon-main.$(OBJEXT) bacon-md5.$(OBJEXT) bacon-net.$(OBJEXT) \
+	bacon-prefs.$(OBJEXT) bacon-progress.$(OBJEXT) \
+	bacon-rom.$(OBJEXT) bacon-stats.$(OBJEXT) bacon-util.$(OBJEXT)
 bacon_OBJECTS = $(am_bacon_OBJECTS)
 bacon_LDADD = $(LDADD)
 bacon_LINK = $(CXXLD) $(bacon_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) \
@@ -176,46 +174,46 @@ bacon_CXXFLAGS = \
 	-DBACON_ROM_HISTORY_MAX=@BACON_ROM_HISTORY_MAX@
 
 bacon_SOURCES = \
-	bacon-actions.cpp \
-	bacon-cmd.cpp \
-	bacon-config.cpp \
-	bacon-device.cpp \
-	bacon-devicelist.cpp \
-	bacon-env.cpp \
-	bacon-file.cpp \
-	bacon-htmldoc.cpp \
-	bacon-htmlparser.cpp \
-	bacon-log.cpp \
-	bacon-main.cpp \
-	bacon-md5.cpp \
-	bacon-net.cpp \
-	bacon-prefs.cpp \
-	bacon-progress.cpp \
-	bacon-rom.cpp \
-	bacon-stats.cpp \
-	bacon-util.cpp  \
-	bacon-actions.h \
-	bacon-cmd.h \
-	bacon-config.h \
-	bacon-device.h \
-	bacon-devicelist.h \
-	bacon-env.h \
-	bacon-file.h \
-	bacon-htmldoc.h \
-	bacon-htmlparser.h \
-	bacon-log.h \
-	bacon-md5.h \
-	bacon-net.h \
-	bacon-prefs.h \
-	bacon-progress.h \
-	bacon-rom.h \
-	bacon-stats.h \
-	bacon-util.h
+	actions.cc \
+	cmd.cc \
+	conf.cc \
+	device.cc \
+	devicelist.cc \
+	env.cc \
+	file.cc \
+	htmldoc.cc \
+	htmlparser.cc \
+	log.cc \
+	main.cc \
+	md5.cc \
+	net.cc \
+	prefs.cc \
+	progress.cc \
+	rom.cc \
+	stats.cc \
+	util.cc \
+	actions.h \
+	cmd.h \
+	conf.h \
+	device.h \
+	devicelist.h \
+	env.h \
+	file.h \
+	htmldoc.h \
+	htmlparser.h \
+	log.h \
+	md5.h \
+	net.h \
+	prefs.h \
+	progress.h \
+	rom.h \
+	stats.h \
+	util.h
 
 all: all-am
 
 .SUFFIXES:
-.SUFFIXES: .cpp .o .obj
+.SUFFIXES: .cc .o .obj
 $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
@@ -293,290 +291,290 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bacon-bacon-actions.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bacon-bacon-cmd.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bacon-bacon-config.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bacon-bacon-device.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bacon-bacon-devicelist.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bacon-bacon-env.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bacon-bacon-file.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bacon-bacon-htmldoc.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bacon-bacon-htmlparser.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bacon-bacon-log.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bacon-bacon-main.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bacon-bacon-md5.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bacon-bacon-net.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bacon-bacon-prefs.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bacon-bacon-progress.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bacon-bacon-rom.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bacon-bacon-stats.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bacon-bacon-util.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bacon-actions.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bacon-cmd.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bacon-conf.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bacon-device.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bacon-devicelist.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bacon-env.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bacon-file.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bacon-htmldoc.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bacon-htmlparser.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bacon-log.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bacon-main.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bacon-md5.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bacon-net.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bacon-prefs.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bacon-progress.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bacon-rom.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bacon-stats.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bacon-util.Po@am__quote@
 
-.cpp.o:
+.cc.o:
 @am__fastdepCXX_TRUE@	$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXXCOMPILE) -c -o $@ $<
 
-.cpp.obj:
+.cc.obj:
 @am__fastdepCXX_TRUE@	$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ `$(CYGPATH_W) '$<'`
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXXCOMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
 
-bacon-bacon-actions.o: bacon-actions.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -MT bacon-bacon-actions.o -MD -MP -MF $(DEPDIR)/bacon-bacon-actions.Tpo -c -o bacon-bacon-actions.o `test -f 'bacon-actions.cpp' || echo '$(srcdir)/'`bacon-actions.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/bacon-bacon-actions.Tpo $(DEPDIR)/bacon-bacon-actions.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='bacon-actions.cpp' object='bacon-bacon-actions.o' libtool=no @AMDEPBACKSLASH@
+bacon-actions.o: actions.cc
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -MT bacon-actions.o -MD -MP -MF $(DEPDIR)/bacon-actions.Tpo -c -o bacon-actions.o `test -f 'actions.cc' || echo '$(srcdir)/'`actions.cc
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/bacon-actions.Tpo $(DEPDIR)/bacon-actions.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='actions.cc' object='bacon-actions.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -c -o bacon-bacon-actions.o `test -f 'bacon-actions.cpp' || echo '$(srcdir)/'`bacon-actions.cpp
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -c -o bacon-actions.o `test -f 'actions.cc' || echo '$(srcdir)/'`actions.cc
 
-bacon-bacon-actions.obj: bacon-actions.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -MT bacon-bacon-actions.obj -MD -MP -MF $(DEPDIR)/bacon-bacon-actions.Tpo -c -o bacon-bacon-actions.obj `if test -f 'bacon-actions.cpp'; then $(CYGPATH_W) 'bacon-actions.cpp'; else $(CYGPATH_W) '$(srcdir)/bacon-actions.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/bacon-bacon-actions.Tpo $(DEPDIR)/bacon-bacon-actions.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='bacon-actions.cpp' object='bacon-bacon-actions.obj' libtool=no @AMDEPBACKSLASH@
+bacon-actions.obj: actions.cc
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -MT bacon-actions.obj -MD -MP -MF $(DEPDIR)/bacon-actions.Tpo -c -o bacon-actions.obj `if test -f 'actions.cc'; then $(CYGPATH_W) 'actions.cc'; else $(CYGPATH_W) '$(srcdir)/actions.cc'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/bacon-actions.Tpo $(DEPDIR)/bacon-actions.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='actions.cc' object='bacon-actions.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -c -o bacon-bacon-actions.obj `if test -f 'bacon-actions.cpp'; then $(CYGPATH_W) 'bacon-actions.cpp'; else $(CYGPATH_W) '$(srcdir)/bacon-actions.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -c -o bacon-actions.obj `if test -f 'actions.cc'; then $(CYGPATH_W) 'actions.cc'; else $(CYGPATH_W) '$(srcdir)/actions.cc'; fi`
 
-bacon-bacon-cmd.o: bacon-cmd.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -MT bacon-bacon-cmd.o -MD -MP -MF $(DEPDIR)/bacon-bacon-cmd.Tpo -c -o bacon-bacon-cmd.o `test -f 'bacon-cmd.cpp' || echo '$(srcdir)/'`bacon-cmd.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/bacon-bacon-cmd.Tpo $(DEPDIR)/bacon-bacon-cmd.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='bacon-cmd.cpp' object='bacon-bacon-cmd.o' libtool=no @AMDEPBACKSLASH@
+bacon-cmd.o: cmd.cc
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -MT bacon-cmd.o -MD -MP -MF $(DEPDIR)/bacon-cmd.Tpo -c -o bacon-cmd.o `test -f 'cmd.cc' || echo '$(srcdir)/'`cmd.cc
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/bacon-cmd.Tpo $(DEPDIR)/bacon-cmd.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='cmd.cc' object='bacon-cmd.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -c -o bacon-bacon-cmd.o `test -f 'bacon-cmd.cpp' || echo '$(srcdir)/'`bacon-cmd.cpp
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -c -o bacon-cmd.o `test -f 'cmd.cc' || echo '$(srcdir)/'`cmd.cc
 
-bacon-bacon-cmd.obj: bacon-cmd.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -MT bacon-bacon-cmd.obj -MD -MP -MF $(DEPDIR)/bacon-bacon-cmd.Tpo -c -o bacon-bacon-cmd.obj `if test -f 'bacon-cmd.cpp'; then $(CYGPATH_W) 'bacon-cmd.cpp'; else $(CYGPATH_W) '$(srcdir)/bacon-cmd.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/bacon-bacon-cmd.Tpo $(DEPDIR)/bacon-bacon-cmd.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='bacon-cmd.cpp' object='bacon-bacon-cmd.obj' libtool=no @AMDEPBACKSLASH@
+bacon-cmd.obj: cmd.cc
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -MT bacon-cmd.obj -MD -MP -MF $(DEPDIR)/bacon-cmd.Tpo -c -o bacon-cmd.obj `if test -f 'cmd.cc'; then $(CYGPATH_W) 'cmd.cc'; else $(CYGPATH_W) '$(srcdir)/cmd.cc'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/bacon-cmd.Tpo $(DEPDIR)/bacon-cmd.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='cmd.cc' object='bacon-cmd.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -c -o bacon-bacon-cmd.obj `if test -f 'bacon-cmd.cpp'; then $(CYGPATH_W) 'bacon-cmd.cpp'; else $(CYGPATH_W) '$(srcdir)/bacon-cmd.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -c -o bacon-cmd.obj `if test -f 'cmd.cc'; then $(CYGPATH_W) 'cmd.cc'; else $(CYGPATH_W) '$(srcdir)/cmd.cc'; fi`
 
-bacon-bacon-config.o: bacon-config.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -MT bacon-bacon-config.o -MD -MP -MF $(DEPDIR)/bacon-bacon-config.Tpo -c -o bacon-bacon-config.o `test -f 'bacon-config.cpp' || echo '$(srcdir)/'`bacon-config.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/bacon-bacon-config.Tpo $(DEPDIR)/bacon-bacon-config.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='bacon-config.cpp' object='bacon-bacon-config.o' libtool=no @AMDEPBACKSLASH@
+bacon-conf.o: conf.cc
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -MT bacon-conf.o -MD -MP -MF $(DEPDIR)/bacon-conf.Tpo -c -o bacon-conf.o `test -f 'conf.cc' || echo '$(srcdir)/'`conf.cc
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/bacon-conf.Tpo $(DEPDIR)/bacon-conf.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='conf.cc' object='bacon-conf.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -c -o bacon-bacon-config.o `test -f 'bacon-config.cpp' || echo '$(srcdir)/'`bacon-config.cpp
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -c -o bacon-conf.o `test -f 'conf.cc' || echo '$(srcdir)/'`conf.cc
 
-bacon-bacon-config.obj: bacon-config.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -MT bacon-bacon-config.obj -MD -MP -MF $(DEPDIR)/bacon-bacon-config.Tpo -c -o bacon-bacon-config.obj `if test -f 'bacon-config.cpp'; then $(CYGPATH_W) 'bacon-config.cpp'; else $(CYGPATH_W) '$(srcdir)/bacon-config.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/bacon-bacon-config.Tpo $(DEPDIR)/bacon-bacon-config.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='bacon-config.cpp' object='bacon-bacon-config.obj' libtool=no @AMDEPBACKSLASH@
+bacon-conf.obj: conf.cc
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -MT bacon-conf.obj -MD -MP -MF $(DEPDIR)/bacon-conf.Tpo -c -o bacon-conf.obj `if test -f 'conf.cc'; then $(CYGPATH_W) 'conf.cc'; else $(CYGPATH_W) '$(srcdir)/conf.cc'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/bacon-conf.Tpo $(DEPDIR)/bacon-conf.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='conf.cc' object='bacon-conf.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -c -o bacon-bacon-config.obj `if test -f 'bacon-config.cpp'; then $(CYGPATH_W) 'bacon-config.cpp'; else $(CYGPATH_W) '$(srcdir)/bacon-config.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -c -o bacon-conf.obj `if test -f 'conf.cc'; then $(CYGPATH_W) 'conf.cc'; else $(CYGPATH_W) '$(srcdir)/conf.cc'; fi`
 
-bacon-bacon-device.o: bacon-device.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -MT bacon-bacon-device.o -MD -MP -MF $(DEPDIR)/bacon-bacon-device.Tpo -c -o bacon-bacon-device.o `test -f 'bacon-device.cpp' || echo '$(srcdir)/'`bacon-device.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/bacon-bacon-device.Tpo $(DEPDIR)/bacon-bacon-device.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='bacon-device.cpp' object='bacon-bacon-device.o' libtool=no @AMDEPBACKSLASH@
+bacon-device.o: device.cc
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -MT bacon-device.o -MD -MP -MF $(DEPDIR)/bacon-device.Tpo -c -o bacon-device.o `test -f 'device.cc' || echo '$(srcdir)/'`device.cc
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/bacon-device.Tpo $(DEPDIR)/bacon-device.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='device.cc' object='bacon-device.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -c -o bacon-bacon-device.o `test -f 'bacon-device.cpp' || echo '$(srcdir)/'`bacon-device.cpp
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -c -o bacon-device.o `test -f 'device.cc' || echo '$(srcdir)/'`device.cc
 
-bacon-bacon-device.obj: bacon-device.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -MT bacon-bacon-device.obj -MD -MP -MF $(DEPDIR)/bacon-bacon-device.Tpo -c -o bacon-bacon-device.obj `if test -f 'bacon-device.cpp'; then $(CYGPATH_W) 'bacon-device.cpp'; else $(CYGPATH_W) '$(srcdir)/bacon-device.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/bacon-bacon-device.Tpo $(DEPDIR)/bacon-bacon-device.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='bacon-device.cpp' object='bacon-bacon-device.obj' libtool=no @AMDEPBACKSLASH@
+bacon-device.obj: device.cc
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -MT bacon-device.obj -MD -MP -MF $(DEPDIR)/bacon-device.Tpo -c -o bacon-device.obj `if test -f 'device.cc'; then $(CYGPATH_W) 'device.cc'; else $(CYGPATH_W) '$(srcdir)/device.cc'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/bacon-device.Tpo $(DEPDIR)/bacon-device.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='device.cc' object='bacon-device.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -c -o bacon-bacon-device.obj `if test -f 'bacon-device.cpp'; then $(CYGPATH_W) 'bacon-device.cpp'; else $(CYGPATH_W) '$(srcdir)/bacon-device.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -c -o bacon-device.obj `if test -f 'device.cc'; then $(CYGPATH_W) 'device.cc'; else $(CYGPATH_W) '$(srcdir)/device.cc'; fi`
 
-bacon-bacon-devicelist.o: bacon-devicelist.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -MT bacon-bacon-devicelist.o -MD -MP -MF $(DEPDIR)/bacon-bacon-devicelist.Tpo -c -o bacon-bacon-devicelist.o `test -f 'bacon-devicelist.cpp' || echo '$(srcdir)/'`bacon-devicelist.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/bacon-bacon-devicelist.Tpo $(DEPDIR)/bacon-bacon-devicelist.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='bacon-devicelist.cpp' object='bacon-bacon-devicelist.o' libtool=no @AMDEPBACKSLASH@
+bacon-devicelist.o: devicelist.cc
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -MT bacon-devicelist.o -MD -MP -MF $(DEPDIR)/bacon-devicelist.Tpo -c -o bacon-devicelist.o `test -f 'devicelist.cc' || echo '$(srcdir)/'`devicelist.cc
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/bacon-devicelist.Tpo $(DEPDIR)/bacon-devicelist.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='devicelist.cc' object='bacon-devicelist.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -c -o bacon-bacon-devicelist.o `test -f 'bacon-devicelist.cpp' || echo '$(srcdir)/'`bacon-devicelist.cpp
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -c -o bacon-devicelist.o `test -f 'devicelist.cc' || echo '$(srcdir)/'`devicelist.cc
 
-bacon-bacon-devicelist.obj: bacon-devicelist.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -MT bacon-bacon-devicelist.obj -MD -MP -MF $(DEPDIR)/bacon-bacon-devicelist.Tpo -c -o bacon-bacon-devicelist.obj `if test -f 'bacon-devicelist.cpp'; then $(CYGPATH_W) 'bacon-devicelist.cpp'; else $(CYGPATH_W) '$(srcdir)/bacon-devicelist.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/bacon-bacon-devicelist.Tpo $(DEPDIR)/bacon-bacon-devicelist.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='bacon-devicelist.cpp' object='bacon-bacon-devicelist.obj' libtool=no @AMDEPBACKSLASH@
+bacon-devicelist.obj: devicelist.cc
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -MT bacon-devicelist.obj -MD -MP -MF $(DEPDIR)/bacon-devicelist.Tpo -c -o bacon-devicelist.obj `if test -f 'devicelist.cc'; then $(CYGPATH_W) 'devicelist.cc'; else $(CYGPATH_W) '$(srcdir)/devicelist.cc'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/bacon-devicelist.Tpo $(DEPDIR)/bacon-devicelist.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='devicelist.cc' object='bacon-devicelist.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -c -o bacon-bacon-devicelist.obj `if test -f 'bacon-devicelist.cpp'; then $(CYGPATH_W) 'bacon-devicelist.cpp'; else $(CYGPATH_W) '$(srcdir)/bacon-devicelist.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -c -o bacon-devicelist.obj `if test -f 'devicelist.cc'; then $(CYGPATH_W) 'devicelist.cc'; else $(CYGPATH_W) '$(srcdir)/devicelist.cc'; fi`
 
-bacon-bacon-env.o: bacon-env.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -MT bacon-bacon-env.o -MD -MP -MF $(DEPDIR)/bacon-bacon-env.Tpo -c -o bacon-bacon-env.o `test -f 'bacon-env.cpp' || echo '$(srcdir)/'`bacon-env.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/bacon-bacon-env.Tpo $(DEPDIR)/bacon-bacon-env.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='bacon-env.cpp' object='bacon-bacon-env.o' libtool=no @AMDEPBACKSLASH@
+bacon-env.o: env.cc
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -MT bacon-env.o -MD -MP -MF $(DEPDIR)/bacon-env.Tpo -c -o bacon-env.o `test -f 'env.cc' || echo '$(srcdir)/'`env.cc
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/bacon-env.Tpo $(DEPDIR)/bacon-env.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='env.cc' object='bacon-env.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -c -o bacon-bacon-env.o `test -f 'bacon-env.cpp' || echo '$(srcdir)/'`bacon-env.cpp
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -c -o bacon-env.o `test -f 'env.cc' || echo '$(srcdir)/'`env.cc
 
-bacon-bacon-env.obj: bacon-env.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -MT bacon-bacon-env.obj -MD -MP -MF $(DEPDIR)/bacon-bacon-env.Tpo -c -o bacon-bacon-env.obj `if test -f 'bacon-env.cpp'; then $(CYGPATH_W) 'bacon-env.cpp'; else $(CYGPATH_W) '$(srcdir)/bacon-env.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/bacon-bacon-env.Tpo $(DEPDIR)/bacon-bacon-env.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='bacon-env.cpp' object='bacon-bacon-env.obj' libtool=no @AMDEPBACKSLASH@
+bacon-env.obj: env.cc
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -MT bacon-env.obj -MD -MP -MF $(DEPDIR)/bacon-env.Tpo -c -o bacon-env.obj `if test -f 'env.cc'; then $(CYGPATH_W) 'env.cc'; else $(CYGPATH_W) '$(srcdir)/env.cc'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/bacon-env.Tpo $(DEPDIR)/bacon-env.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='env.cc' object='bacon-env.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -c -o bacon-bacon-env.obj `if test -f 'bacon-env.cpp'; then $(CYGPATH_W) 'bacon-env.cpp'; else $(CYGPATH_W) '$(srcdir)/bacon-env.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -c -o bacon-env.obj `if test -f 'env.cc'; then $(CYGPATH_W) 'env.cc'; else $(CYGPATH_W) '$(srcdir)/env.cc'; fi`
 
-bacon-bacon-file.o: bacon-file.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -MT bacon-bacon-file.o -MD -MP -MF $(DEPDIR)/bacon-bacon-file.Tpo -c -o bacon-bacon-file.o `test -f 'bacon-file.cpp' || echo '$(srcdir)/'`bacon-file.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/bacon-bacon-file.Tpo $(DEPDIR)/bacon-bacon-file.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='bacon-file.cpp' object='bacon-bacon-file.o' libtool=no @AMDEPBACKSLASH@
+bacon-file.o: file.cc
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -MT bacon-file.o -MD -MP -MF $(DEPDIR)/bacon-file.Tpo -c -o bacon-file.o `test -f 'file.cc' || echo '$(srcdir)/'`file.cc
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/bacon-file.Tpo $(DEPDIR)/bacon-file.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='file.cc' object='bacon-file.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -c -o bacon-bacon-file.o `test -f 'bacon-file.cpp' || echo '$(srcdir)/'`bacon-file.cpp
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -c -o bacon-file.o `test -f 'file.cc' || echo '$(srcdir)/'`file.cc
 
-bacon-bacon-file.obj: bacon-file.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -MT bacon-bacon-file.obj -MD -MP -MF $(DEPDIR)/bacon-bacon-file.Tpo -c -o bacon-bacon-file.obj `if test -f 'bacon-file.cpp'; then $(CYGPATH_W) 'bacon-file.cpp'; else $(CYGPATH_W) '$(srcdir)/bacon-file.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/bacon-bacon-file.Tpo $(DEPDIR)/bacon-bacon-file.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='bacon-file.cpp' object='bacon-bacon-file.obj' libtool=no @AMDEPBACKSLASH@
+bacon-file.obj: file.cc
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -MT bacon-file.obj -MD -MP -MF $(DEPDIR)/bacon-file.Tpo -c -o bacon-file.obj `if test -f 'file.cc'; then $(CYGPATH_W) 'file.cc'; else $(CYGPATH_W) '$(srcdir)/file.cc'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/bacon-file.Tpo $(DEPDIR)/bacon-file.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='file.cc' object='bacon-file.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -c -o bacon-bacon-file.obj `if test -f 'bacon-file.cpp'; then $(CYGPATH_W) 'bacon-file.cpp'; else $(CYGPATH_W) '$(srcdir)/bacon-file.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -c -o bacon-file.obj `if test -f 'file.cc'; then $(CYGPATH_W) 'file.cc'; else $(CYGPATH_W) '$(srcdir)/file.cc'; fi`
 
-bacon-bacon-htmldoc.o: bacon-htmldoc.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -MT bacon-bacon-htmldoc.o -MD -MP -MF $(DEPDIR)/bacon-bacon-htmldoc.Tpo -c -o bacon-bacon-htmldoc.o `test -f 'bacon-htmldoc.cpp' || echo '$(srcdir)/'`bacon-htmldoc.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/bacon-bacon-htmldoc.Tpo $(DEPDIR)/bacon-bacon-htmldoc.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='bacon-htmldoc.cpp' object='bacon-bacon-htmldoc.o' libtool=no @AMDEPBACKSLASH@
+bacon-htmldoc.o: htmldoc.cc
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -MT bacon-htmldoc.o -MD -MP -MF $(DEPDIR)/bacon-htmldoc.Tpo -c -o bacon-htmldoc.o `test -f 'htmldoc.cc' || echo '$(srcdir)/'`htmldoc.cc
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/bacon-htmldoc.Tpo $(DEPDIR)/bacon-htmldoc.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='htmldoc.cc' object='bacon-htmldoc.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -c -o bacon-bacon-htmldoc.o `test -f 'bacon-htmldoc.cpp' || echo '$(srcdir)/'`bacon-htmldoc.cpp
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -c -o bacon-htmldoc.o `test -f 'htmldoc.cc' || echo '$(srcdir)/'`htmldoc.cc
 
-bacon-bacon-htmldoc.obj: bacon-htmldoc.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -MT bacon-bacon-htmldoc.obj -MD -MP -MF $(DEPDIR)/bacon-bacon-htmldoc.Tpo -c -o bacon-bacon-htmldoc.obj `if test -f 'bacon-htmldoc.cpp'; then $(CYGPATH_W) 'bacon-htmldoc.cpp'; else $(CYGPATH_W) '$(srcdir)/bacon-htmldoc.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/bacon-bacon-htmldoc.Tpo $(DEPDIR)/bacon-bacon-htmldoc.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='bacon-htmldoc.cpp' object='bacon-bacon-htmldoc.obj' libtool=no @AMDEPBACKSLASH@
+bacon-htmldoc.obj: htmldoc.cc
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -MT bacon-htmldoc.obj -MD -MP -MF $(DEPDIR)/bacon-htmldoc.Tpo -c -o bacon-htmldoc.obj `if test -f 'htmldoc.cc'; then $(CYGPATH_W) 'htmldoc.cc'; else $(CYGPATH_W) '$(srcdir)/htmldoc.cc'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/bacon-htmldoc.Tpo $(DEPDIR)/bacon-htmldoc.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='htmldoc.cc' object='bacon-htmldoc.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -c -o bacon-bacon-htmldoc.obj `if test -f 'bacon-htmldoc.cpp'; then $(CYGPATH_W) 'bacon-htmldoc.cpp'; else $(CYGPATH_W) '$(srcdir)/bacon-htmldoc.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -c -o bacon-htmldoc.obj `if test -f 'htmldoc.cc'; then $(CYGPATH_W) 'htmldoc.cc'; else $(CYGPATH_W) '$(srcdir)/htmldoc.cc'; fi`
 
-bacon-bacon-htmlparser.o: bacon-htmlparser.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -MT bacon-bacon-htmlparser.o -MD -MP -MF $(DEPDIR)/bacon-bacon-htmlparser.Tpo -c -o bacon-bacon-htmlparser.o `test -f 'bacon-htmlparser.cpp' || echo '$(srcdir)/'`bacon-htmlparser.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/bacon-bacon-htmlparser.Tpo $(DEPDIR)/bacon-bacon-htmlparser.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='bacon-htmlparser.cpp' object='bacon-bacon-htmlparser.o' libtool=no @AMDEPBACKSLASH@
+bacon-htmlparser.o: htmlparser.cc
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -MT bacon-htmlparser.o -MD -MP -MF $(DEPDIR)/bacon-htmlparser.Tpo -c -o bacon-htmlparser.o `test -f 'htmlparser.cc' || echo '$(srcdir)/'`htmlparser.cc
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/bacon-htmlparser.Tpo $(DEPDIR)/bacon-htmlparser.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='htmlparser.cc' object='bacon-htmlparser.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -c -o bacon-bacon-htmlparser.o `test -f 'bacon-htmlparser.cpp' || echo '$(srcdir)/'`bacon-htmlparser.cpp
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -c -o bacon-htmlparser.o `test -f 'htmlparser.cc' || echo '$(srcdir)/'`htmlparser.cc
 
-bacon-bacon-htmlparser.obj: bacon-htmlparser.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -MT bacon-bacon-htmlparser.obj -MD -MP -MF $(DEPDIR)/bacon-bacon-htmlparser.Tpo -c -o bacon-bacon-htmlparser.obj `if test -f 'bacon-htmlparser.cpp'; then $(CYGPATH_W) 'bacon-htmlparser.cpp'; else $(CYGPATH_W) '$(srcdir)/bacon-htmlparser.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/bacon-bacon-htmlparser.Tpo $(DEPDIR)/bacon-bacon-htmlparser.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='bacon-htmlparser.cpp' object='bacon-bacon-htmlparser.obj' libtool=no @AMDEPBACKSLASH@
+bacon-htmlparser.obj: htmlparser.cc
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -MT bacon-htmlparser.obj -MD -MP -MF $(DEPDIR)/bacon-htmlparser.Tpo -c -o bacon-htmlparser.obj `if test -f 'htmlparser.cc'; then $(CYGPATH_W) 'htmlparser.cc'; else $(CYGPATH_W) '$(srcdir)/htmlparser.cc'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/bacon-htmlparser.Tpo $(DEPDIR)/bacon-htmlparser.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='htmlparser.cc' object='bacon-htmlparser.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -c -o bacon-bacon-htmlparser.obj `if test -f 'bacon-htmlparser.cpp'; then $(CYGPATH_W) 'bacon-htmlparser.cpp'; else $(CYGPATH_W) '$(srcdir)/bacon-htmlparser.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -c -o bacon-htmlparser.obj `if test -f 'htmlparser.cc'; then $(CYGPATH_W) 'htmlparser.cc'; else $(CYGPATH_W) '$(srcdir)/htmlparser.cc'; fi`
 
-bacon-bacon-log.o: bacon-log.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -MT bacon-bacon-log.o -MD -MP -MF $(DEPDIR)/bacon-bacon-log.Tpo -c -o bacon-bacon-log.o `test -f 'bacon-log.cpp' || echo '$(srcdir)/'`bacon-log.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/bacon-bacon-log.Tpo $(DEPDIR)/bacon-bacon-log.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='bacon-log.cpp' object='bacon-bacon-log.o' libtool=no @AMDEPBACKSLASH@
+bacon-log.o: log.cc
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -MT bacon-log.o -MD -MP -MF $(DEPDIR)/bacon-log.Tpo -c -o bacon-log.o `test -f 'log.cc' || echo '$(srcdir)/'`log.cc
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/bacon-log.Tpo $(DEPDIR)/bacon-log.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='log.cc' object='bacon-log.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -c -o bacon-bacon-log.o `test -f 'bacon-log.cpp' || echo '$(srcdir)/'`bacon-log.cpp
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -c -o bacon-log.o `test -f 'log.cc' || echo '$(srcdir)/'`log.cc
 
-bacon-bacon-log.obj: bacon-log.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -MT bacon-bacon-log.obj -MD -MP -MF $(DEPDIR)/bacon-bacon-log.Tpo -c -o bacon-bacon-log.obj `if test -f 'bacon-log.cpp'; then $(CYGPATH_W) 'bacon-log.cpp'; else $(CYGPATH_W) '$(srcdir)/bacon-log.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/bacon-bacon-log.Tpo $(DEPDIR)/bacon-bacon-log.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='bacon-log.cpp' object='bacon-bacon-log.obj' libtool=no @AMDEPBACKSLASH@
+bacon-log.obj: log.cc
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -MT bacon-log.obj -MD -MP -MF $(DEPDIR)/bacon-log.Tpo -c -o bacon-log.obj `if test -f 'log.cc'; then $(CYGPATH_W) 'log.cc'; else $(CYGPATH_W) '$(srcdir)/log.cc'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/bacon-log.Tpo $(DEPDIR)/bacon-log.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='log.cc' object='bacon-log.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -c -o bacon-bacon-log.obj `if test -f 'bacon-log.cpp'; then $(CYGPATH_W) 'bacon-log.cpp'; else $(CYGPATH_W) '$(srcdir)/bacon-log.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -c -o bacon-log.obj `if test -f 'log.cc'; then $(CYGPATH_W) 'log.cc'; else $(CYGPATH_W) '$(srcdir)/log.cc'; fi`
 
-bacon-bacon-main.o: bacon-main.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -MT bacon-bacon-main.o -MD -MP -MF $(DEPDIR)/bacon-bacon-main.Tpo -c -o bacon-bacon-main.o `test -f 'bacon-main.cpp' || echo '$(srcdir)/'`bacon-main.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/bacon-bacon-main.Tpo $(DEPDIR)/bacon-bacon-main.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='bacon-main.cpp' object='bacon-bacon-main.o' libtool=no @AMDEPBACKSLASH@
+bacon-main.o: main.cc
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -MT bacon-main.o -MD -MP -MF $(DEPDIR)/bacon-main.Tpo -c -o bacon-main.o `test -f 'main.cc' || echo '$(srcdir)/'`main.cc
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/bacon-main.Tpo $(DEPDIR)/bacon-main.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='main.cc' object='bacon-main.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -c -o bacon-bacon-main.o `test -f 'bacon-main.cpp' || echo '$(srcdir)/'`bacon-main.cpp
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -c -o bacon-main.o `test -f 'main.cc' || echo '$(srcdir)/'`main.cc
 
-bacon-bacon-main.obj: bacon-main.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -MT bacon-bacon-main.obj -MD -MP -MF $(DEPDIR)/bacon-bacon-main.Tpo -c -o bacon-bacon-main.obj `if test -f 'bacon-main.cpp'; then $(CYGPATH_W) 'bacon-main.cpp'; else $(CYGPATH_W) '$(srcdir)/bacon-main.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/bacon-bacon-main.Tpo $(DEPDIR)/bacon-bacon-main.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='bacon-main.cpp' object='bacon-bacon-main.obj' libtool=no @AMDEPBACKSLASH@
+bacon-main.obj: main.cc
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -MT bacon-main.obj -MD -MP -MF $(DEPDIR)/bacon-main.Tpo -c -o bacon-main.obj `if test -f 'main.cc'; then $(CYGPATH_W) 'main.cc'; else $(CYGPATH_W) '$(srcdir)/main.cc'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/bacon-main.Tpo $(DEPDIR)/bacon-main.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='main.cc' object='bacon-main.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -c -o bacon-bacon-main.obj `if test -f 'bacon-main.cpp'; then $(CYGPATH_W) 'bacon-main.cpp'; else $(CYGPATH_W) '$(srcdir)/bacon-main.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -c -o bacon-main.obj `if test -f 'main.cc'; then $(CYGPATH_W) 'main.cc'; else $(CYGPATH_W) '$(srcdir)/main.cc'; fi`
 
-bacon-bacon-md5.o: bacon-md5.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -MT bacon-bacon-md5.o -MD -MP -MF $(DEPDIR)/bacon-bacon-md5.Tpo -c -o bacon-bacon-md5.o `test -f 'bacon-md5.cpp' || echo '$(srcdir)/'`bacon-md5.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/bacon-bacon-md5.Tpo $(DEPDIR)/bacon-bacon-md5.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='bacon-md5.cpp' object='bacon-bacon-md5.o' libtool=no @AMDEPBACKSLASH@
+bacon-md5.o: md5.cc
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -MT bacon-md5.o -MD -MP -MF $(DEPDIR)/bacon-md5.Tpo -c -o bacon-md5.o `test -f 'md5.cc' || echo '$(srcdir)/'`md5.cc
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/bacon-md5.Tpo $(DEPDIR)/bacon-md5.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='md5.cc' object='bacon-md5.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -c -o bacon-bacon-md5.o `test -f 'bacon-md5.cpp' || echo '$(srcdir)/'`bacon-md5.cpp
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -c -o bacon-md5.o `test -f 'md5.cc' || echo '$(srcdir)/'`md5.cc
 
-bacon-bacon-md5.obj: bacon-md5.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -MT bacon-bacon-md5.obj -MD -MP -MF $(DEPDIR)/bacon-bacon-md5.Tpo -c -o bacon-bacon-md5.obj `if test -f 'bacon-md5.cpp'; then $(CYGPATH_W) 'bacon-md5.cpp'; else $(CYGPATH_W) '$(srcdir)/bacon-md5.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/bacon-bacon-md5.Tpo $(DEPDIR)/bacon-bacon-md5.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='bacon-md5.cpp' object='bacon-bacon-md5.obj' libtool=no @AMDEPBACKSLASH@
+bacon-md5.obj: md5.cc
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -MT bacon-md5.obj -MD -MP -MF $(DEPDIR)/bacon-md5.Tpo -c -o bacon-md5.obj `if test -f 'md5.cc'; then $(CYGPATH_W) 'md5.cc'; else $(CYGPATH_W) '$(srcdir)/md5.cc'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/bacon-md5.Tpo $(DEPDIR)/bacon-md5.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='md5.cc' object='bacon-md5.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -c -o bacon-bacon-md5.obj `if test -f 'bacon-md5.cpp'; then $(CYGPATH_W) 'bacon-md5.cpp'; else $(CYGPATH_W) '$(srcdir)/bacon-md5.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -c -o bacon-md5.obj `if test -f 'md5.cc'; then $(CYGPATH_W) 'md5.cc'; else $(CYGPATH_W) '$(srcdir)/md5.cc'; fi`
 
-bacon-bacon-net.o: bacon-net.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -MT bacon-bacon-net.o -MD -MP -MF $(DEPDIR)/bacon-bacon-net.Tpo -c -o bacon-bacon-net.o `test -f 'bacon-net.cpp' || echo '$(srcdir)/'`bacon-net.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/bacon-bacon-net.Tpo $(DEPDIR)/bacon-bacon-net.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='bacon-net.cpp' object='bacon-bacon-net.o' libtool=no @AMDEPBACKSLASH@
+bacon-net.o: net.cc
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -MT bacon-net.o -MD -MP -MF $(DEPDIR)/bacon-net.Tpo -c -o bacon-net.o `test -f 'net.cc' || echo '$(srcdir)/'`net.cc
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/bacon-net.Tpo $(DEPDIR)/bacon-net.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='net.cc' object='bacon-net.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -c -o bacon-bacon-net.o `test -f 'bacon-net.cpp' || echo '$(srcdir)/'`bacon-net.cpp
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -c -o bacon-net.o `test -f 'net.cc' || echo '$(srcdir)/'`net.cc
 
-bacon-bacon-net.obj: bacon-net.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -MT bacon-bacon-net.obj -MD -MP -MF $(DEPDIR)/bacon-bacon-net.Tpo -c -o bacon-bacon-net.obj `if test -f 'bacon-net.cpp'; then $(CYGPATH_W) 'bacon-net.cpp'; else $(CYGPATH_W) '$(srcdir)/bacon-net.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/bacon-bacon-net.Tpo $(DEPDIR)/bacon-bacon-net.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='bacon-net.cpp' object='bacon-bacon-net.obj' libtool=no @AMDEPBACKSLASH@
+bacon-net.obj: net.cc
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -MT bacon-net.obj -MD -MP -MF $(DEPDIR)/bacon-net.Tpo -c -o bacon-net.obj `if test -f 'net.cc'; then $(CYGPATH_W) 'net.cc'; else $(CYGPATH_W) '$(srcdir)/net.cc'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/bacon-net.Tpo $(DEPDIR)/bacon-net.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='net.cc' object='bacon-net.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -c -o bacon-bacon-net.obj `if test -f 'bacon-net.cpp'; then $(CYGPATH_W) 'bacon-net.cpp'; else $(CYGPATH_W) '$(srcdir)/bacon-net.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -c -o bacon-net.obj `if test -f 'net.cc'; then $(CYGPATH_W) 'net.cc'; else $(CYGPATH_W) '$(srcdir)/net.cc'; fi`
 
-bacon-bacon-prefs.o: bacon-prefs.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -MT bacon-bacon-prefs.o -MD -MP -MF $(DEPDIR)/bacon-bacon-prefs.Tpo -c -o bacon-bacon-prefs.o `test -f 'bacon-prefs.cpp' || echo '$(srcdir)/'`bacon-prefs.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/bacon-bacon-prefs.Tpo $(DEPDIR)/bacon-bacon-prefs.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='bacon-prefs.cpp' object='bacon-bacon-prefs.o' libtool=no @AMDEPBACKSLASH@
+bacon-prefs.o: prefs.cc
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -MT bacon-prefs.o -MD -MP -MF $(DEPDIR)/bacon-prefs.Tpo -c -o bacon-prefs.o `test -f 'prefs.cc' || echo '$(srcdir)/'`prefs.cc
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/bacon-prefs.Tpo $(DEPDIR)/bacon-prefs.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='prefs.cc' object='bacon-prefs.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -c -o bacon-bacon-prefs.o `test -f 'bacon-prefs.cpp' || echo '$(srcdir)/'`bacon-prefs.cpp
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -c -o bacon-prefs.o `test -f 'prefs.cc' || echo '$(srcdir)/'`prefs.cc
 
-bacon-bacon-prefs.obj: bacon-prefs.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -MT bacon-bacon-prefs.obj -MD -MP -MF $(DEPDIR)/bacon-bacon-prefs.Tpo -c -o bacon-bacon-prefs.obj `if test -f 'bacon-prefs.cpp'; then $(CYGPATH_W) 'bacon-prefs.cpp'; else $(CYGPATH_W) '$(srcdir)/bacon-prefs.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/bacon-bacon-prefs.Tpo $(DEPDIR)/bacon-bacon-prefs.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='bacon-prefs.cpp' object='bacon-bacon-prefs.obj' libtool=no @AMDEPBACKSLASH@
+bacon-prefs.obj: prefs.cc
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -MT bacon-prefs.obj -MD -MP -MF $(DEPDIR)/bacon-prefs.Tpo -c -o bacon-prefs.obj `if test -f 'prefs.cc'; then $(CYGPATH_W) 'prefs.cc'; else $(CYGPATH_W) '$(srcdir)/prefs.cc'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/bacon-prefs.Tpo $(DEPDIR)/bacon-prefs.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='prefs.cc' object='bacon-prefs.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -c -o bacon-bacon-prefs.obj `if test -f 'bacon-prefs.cpp'; then $(CYGPATH_W) 'bacon-prefs.cpp'; else $(CYGPATH_W) '$(srcdir)/bacon-prefs.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -c -o bacon-prefs.obj `if test -f 'prefs.cc'; then $(CYGPATH_W) 'prefs.cc'; else $(CYGPATH_W) '$(srcdir)/prefs.cc'; fi`
 
-bacon-bacon-progress.o: bacon-progress.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -MT bacon-bacon-progress.o -MD -MP -MF $(DEPDIR)/bacon-bacon-progress.Tpo -c -o bacon-bacon-progress.o `test -f 'bacon-progress.cpp' || echo '$(srcdir)/'`bacon-progress.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/bacon-bacon-progress.Tpo $(DEPDIR)/bacon-bacon-progress.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='bacon-progress.cpp' object='bacon-bacon-progress.o' libtool=no @AMDEPBACKSLASH@
+bacon-progress.o: progress.cc
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -MT bacon-progress.o -MD -MP -MF $(DEPDIR)/bacon-progress.Tpo -c -o bacon-progress.o `test -f 'progress.cc' || echo '$(srcdir)/'`progress.cc
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/bacon-progress.Tpo $(DEPDIR)/bacon-progress.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='progress.cc' object='bacon-progress.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -c -o bacon-bacon-progress.o `test -f 'bacon-progress.cpp' || echo '$(srcdir)/'`bacon-progress.cpp
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -c -o bacon-progress.o `test -f 'progress.cc' || echo '$(srcdir)/'`progress.cc
 
-bacon-bacon-progress.obj: bacon-progress.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -MT bacon-bacon-progress.obj -MD -MP -MF $(DEPDIR)/bacon-bacon-progress.Tpo -c -o bacon-bacon-progress.obj `if test -f 'bacon-progress.cpp'; then $(CYGPATH_W) 'bacon-progress.cpp'; else $(CYGPATH_W) '$(srcdir)/bacon-progress.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/bacon-bacon-progress.Tpo $(DEPDIR)/bacon-bacon-progress.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='bacon-progress.cpp' object='bacon-bacon-progress.obj' libtool=no @AMDEPBACKSLASH@
+bacon-progress.obj: progress.cc
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -MT bacon-progress.obj -MD -MP -MF $(DEPDIR)/bacon-progress.Tpo -c -o bacon-progress.obj `if test -f 'progress.cc'; then $(CYGPATH_W) 'progress.cc'; else $(CYGPATH_W) '$(srcdir)/progress.cc'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/bacon-progress.Tpo $(DEPDIR)/bacon-progress.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='progress.cc' object='bacon-progress.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -c -o bacon-bacon-progress.obj `if test -f 'bacon-progress.cpp'; then $(CYGPATH_W) 'bacon-progress.cpp'; else $(CYGPATH_W) '$(srcdir)/bacon-progress.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -c -o bacon-progress.obj `if test -f 'progress.cc'; then $(CYGPATH_W) 'progress.cc'; else $(CYGPATH_W) '$(srcdir)/progress.cc'; fi`
 
-bacon-bacon-rom.o: bacon-rom.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -MT bacon-bacon-rom.o -MD -MP -MF $(DEPDIR)/bacon-bacon-rom.Tpo -c -o bacon-bacon-rom.o `test -f 'bacon-rom.cpp' || echo '$(srcdir)/'`bacon-rom.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/bacon-bacon-rom.Tpo $(DEPDIR)/bacon-bacon-rom.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='bacon-rom.cpp' object='bacon-bacon-rom.o' libtool=no @AMDEPBACKSLASH@
+bacon-rom.o: rom.cc
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -MT bacon-rom.o -MD -MP -MF $(DEPDIR)/bacon-rom.Tpo -c -o bacon-rom.o `test -f 'rom.cc' || echo '$(srcdir)/'`rom.cc
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/bacon-rom.Tpo $(DEPDIR)/bacon-rom.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='rom.cc' object='bacon-rom.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -c -o bacon-bacon-rom.o `test -f 'bacon-rom.cpp' || echo '$(srcdir)/'`bacon-rom.cpp
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -c -o bacon-rom.o `test -f 'rom.cc' || echo '$(srcdir)/'`rom.cc
 
-bacon-bacon-rom.obj: bacon-rom.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -MT bacon-bacon-rom.obj -MD -MP -MF $(DEPDIR)/bacon-bacon-rom.Tpo -c -o bacon-bacon-rom.obj `if test -f 'bacon-rom.cpp'; then $(CYGPATH_W) 'bacon-rom.cpp'; else $(CYGPATH_W) '$(srcdir)/bacon-rom.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/bacon-bacon-rom.Tpo $(DEPDIR)/bacon-bacon-rom.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='bacon-rom.cpp' object='bacon-bacon-rom.obj' libtool=no @AMDEPBACKSLASH@
+bacon-rom.obj: rom.cc
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -MT bacon-rom.obj -MD -MP -MF $(DEPDIR)/bacon-rom.Tpo -c -o bacon-rom.obj `if test -f 'rom.cc'; then $(CYGPATH_W) 'rom.cc'; else $(CYGPATH_W) '$(srcdir)/rom.cc'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/bacon-rom.Tpo $(DEPDIR)/bacon-rom.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='rom.cc' object='bacon-rom.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -c -o bacon-bacon-rom.obj `if test -f 'bacon-rom.cpp'; then $(CYGPATH_W) 'bacon-rom.cpp'; else $(CYGPATH_W) '$(srcdir)/bacon-rom.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -c -o bacon-rom.obj `if test -f 'rom.cc'; then $(CYGPATH_W) 'rom.cc'; else $(CYGPATH_W) '$(srcdir)/rom.cc'; fi`
 
-bacon-bacon-stats.o: bacon-stats.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -MT bacon-bacon-stats.o -MD -MP -MF $(DEPDIR)/bacon-bacon-stats.Tpo -c -o bacon-bacon-stats.o `test -f 'bacon-stats.cpp' || echo '$(srcdir)/'`bacon-stats.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/bacon-bacon-stats.Tpo $(DEPDIR)/bacon-bacon-stats.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='bacon-stats.cpp' object='bacon-bacon-stats.o' libtool=no @AMDEPBACKSLASH@
+bacon-stats.o: stats.cc
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -MT bacon-stats.o -MD -MP -MF $(DEPDIR)/bacon-stats.Tpo -c -o bacon-stats.o `test -f 'stats.cc' || echo '$(srcdir)/'`stats.cc
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/bacon-stats.Tpo $(DEPDIR)/bacon-stats.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='stats.cc' object='bacon-stats.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -c -o bacon-bacon-stats.o `test -f 'bacon-stats.cpp' || echo '$(srcdir)/'`bacon-stats.cpp
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -c -o bacon-stats.o `test -f 'stats.cc' || echo '$(srcdir)/'`stats.cc
 
-bacon-bacon-stats.obj: bacon-stats.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -MT bacon-bacon-stats.obj -MD -MP -MF $(DEPDIR)/bacon-bacon-stats.Tpo -c -o bacon-bacon-stats.obj `if test -f 'bacon-stats.cpp'; then $(CYGPATH_W) 'bacon-stats.cpp'; else $(CYGPATH_W) '$(srcdir)/bacon-stats.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/bacon-bacon-stats.Tpo $(DEPDIR)/bacon-bacon-stats.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='bacon-stats.cpp' object='bacon-bacon-stats.obj' libtool=no @AMDEPBACKSLASH@
+bacon-stats.obj: stats.cc
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -MT bacon-stats.obj -MD -MP -MF $(DEPDIR)/bacon-stats.Tpo -c -o bacon-stats.obj `if test -f 'stats.cc'; then $(CYGPATH_W) 'stats.cc'; else $(CYGPATH_W) '$(srcdir)/stats.cc'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/bacon-stats.Tpo $(DEPDIR)/bacon-stats.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='stats.cc' object='bacon-stats.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -c -o bacon-bacon-stats.obj `if test -f 'bacon-stats.cpp'; then $(CYGPATH_W) 'bacon-stats.cpp'; else $(CYGPATH_W) '$(srcdir)/bacon-stats.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -c -o bacon-stats.obj `if test -f 'stats.cc'; then $(CYGPATH_W) 'stats.cc'; else $(CYGPATH_W) '$(srcdir)/stats.cc'; fi`
 
-bacon-bacon-util.o: bacon-util.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -MT bacon-bacon-util.o -MD -MP -MF $(DEPDIR)/bacon-bacon-util.Tpo -c -o bacon-bacon-util.o `test -f 'bacon-util.cpp' || echo '$(srcdir)/'`bacon-util.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/bacon-bacon-util.Tpo $(DEPDIR)/bacon-bacon-util.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='bacon-util.cpp' object='bacon-bacon-util.o' libtool=no @AMDEPBACKSLASH@
+bacon-util.o: util.cc
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -MT bacon-util.o -MD -MP -MF $(DEPDIR)/bacon-util.Tpo -c -o bacon-util.o `test -f 'util.cc' || echo '$(srcdir)/'`util.cc
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/bacon-util.Tpo $(DEPDIR)/bacon-util.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='util.cc' object='bacon-util.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -c -o bacon-bacon-util.o `test -f 'bacon-util.cpp' || echo '$(srcdir)/'`bacon-util.cpp
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -c -o bacon-util.o `test -f 'util.cc' || echo '$(srcdir)/'`util.cc
 
-bacon-bacon-util.obj: bacon-util.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -MT bacon-bacon-util.obj -MD -MP -MF $(DEPDIR)/bacon-bacon-util.Tpo -c -o bacon-bacon-util.obj `if test -f 'bacon-util.cpp'; then $(CYGPATH_W) 'bacon-util.cpp'; else $(CYGPATH_W) '$(srcdir)/bacon-util.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/bacon-bacon-util.Tpo $(DEPDIR)/bacon-bacon-util.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='bacon-util.cpp' object='bacon-bacon-util.obj' libtool=no @AMDEPBACKSLASH@
+bacon-util.obj: util.cc
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -MT bacon-util.obj -MD -MP -MF $(DEPDIR)/bacon-util.Tpo -c -o bacon-util.obj `if test -f 'util.cc'; then $(CYGPATH_W) 'util.cc'; else $(CYGPATH_W) '$(srcdir)/util.cc'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/bacon-util.Tpo $(DEPDIR)/bacon-util.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='util.cc' object='bacon-util.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -c -o bacon-bacon-util.obj `if test -f 'bacon-util.cpp'; then $(CYGPATH_W) 'bacon-util.cpp'; else $(CYGPATH_W) '$(srcdir)/bacon-util.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(bacon_CXXFLAGS) $(CXXFLAGS) -c -o bacon-util.obj `if test -f 'util.cc'; then $(CYGPATH_W) 'util.cc'; else $(CYGPATH_W) '$(srcdir)/util.cc'; fi`
 
 ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
 	list='$(SOURCES) $(HEADERS) $(LISP) $(TAGS_FILES)'; \

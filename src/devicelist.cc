@@ -20,12 +20,12 @@
 #include <windows.h>
 #endif
 
-#include "bacon-devicelist.h"
-#include "bacon-env.h"
-#include "bacon-htmldoc.h"
-#include "bacon-htmlparser.h"
-#include "bacon-prefs.h"
-#include "bacon-util.h"
+#include "devicelist.h"
+#include "env.h"
+#include "htmldoc.h"
+#include "htmlparser.h"
+#include "prefs.h"
+#include "util.h"
 
 #define LIST_CONFIG_FILENAME "device_list"
 

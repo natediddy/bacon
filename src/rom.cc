@@ -17,12 +17,12 @@
 
 #include <time.h>
 
-#include "bacon-env.h"
-#include "bacon-file.h"
-#include "bacon-log.h"
-#include "bacon-progress.h"
-#include "bacon-rom.h"
-#include "bacon-util.h"
+#include "env.h"
+#include "file.h"
+#include "log.h"
+#include "progress.h"
+#include "rom.h"
+#include "util.h"
 
 using std::string;
 

@@ -38,10 +38,10 @@
 #include <windows.h>
 #endif
 
-#include "bacon-env.h"
-#include "bacon-file.h"
-#include "bacon-log.h"
-#include "bacon-util.h"
+#include "env.h"
+#include "file.h"
+#include "log.h"
+#include "util.h"
 
 #define REFRESH_FILE_PROPS \
     do { \

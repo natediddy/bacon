@@ -57,11 +57,11 @@
 
 #include <cstdio>
 
-#include "bacon-htmldoc.h"
-#include "bacon-htmlparser.h"
-#include "bacon-log.h"
-#include "bacon-md5.h"
-#include "bacon-util.h"
+#include "htmldoc.h"
+#include "htmlparser.h"
+#include "log.h"
+#include "md5.h"
+#include "util.h"
 
 #define S11 7
 #define S12 12

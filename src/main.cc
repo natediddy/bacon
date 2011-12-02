@@ -15,31 +15,24 @@
  * along with bacon.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef BACON_ROM_H_INCLUDED
-#define BACON_ROM_H_INCLUDED
+#include <cstdlib>
 
-#include "bacon-file.h"
-#include "bacon-net.h"
+#include "cmd.h"
+#include "log.h"
+#include "prefs.h"
 
-#include <cstdio>
+using namespace bacon;
 
-namespace bacon {
+int main(int argc, char **argv)
+{
+    prefs::init();
+    Cmd cmd(&argv);
 
-class Rom : public Net, File {
-public:
-    Rom(const std::string &name, const std::string &path);
-    ~Rom();
-
-    bool fetch();
-
-protected:
-    bool setup();
-
-private:
-    friend size_t write_CB(void *p, size_t s, size_t n, FILE *f);
-};
-
-} /* namespace bacon */
-
-#endif /* !BACON_ROM_H_INCLUDED */
+    if (prefs::check()) {
+        atexit(log::deactivate);
+        log::activate();
+        exit(cmd.exec());
+    }
+    exit(EXIT_FAILURE);
+}
 

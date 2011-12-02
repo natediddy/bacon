@@ -18,8 +18,8 @@
 #include <cstdio>
 #include <ctime>
 
-#include "bacon-env.h"
-#include "bacon-util.h"
+#include "env.h"
+#include "util.h"
 
 #define KB_FACTOR 1024L
 #define MB_FACTOR (KB_FACTOR * KB_FACTOR)

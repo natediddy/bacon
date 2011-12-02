@@ -33,9 +33,9 @@
 #include <windows.h>
 #endif
 
-#include "bacon-log.h"
-#include "bacon-progress.h"
-#include "bacon-util.h"
+#include "log.h"
+#include "progress.h"
+#include "util.h"
 
 #define DEFAULT_PROGRESSBAR_WIDTH 40
 

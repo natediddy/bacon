@@ -15,11 +15,11 @@
  * along with bacon.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "bacon-config.h"
-#include "bacon-env.h"
-#include "bacon-file.h"
-#include "bacon-prefs.h"
-#include "bacon-util.h"
+#include "conf.h"
+#include "env.h"
+#include "file.h"
+#include "prefs.h"
+#include "util.h"
 
 #define BASE_DIR_KEY_STRING       "BACON_BASE_DIR"
 #define LOG_PATH_KEY_STRING       "BACON_LOG_PATH"

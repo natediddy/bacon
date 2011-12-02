@@ -21,17 +21,17 @@
 #include <cstdlib>
 #include <string>
 
-#include "bacon-actions.h"
-#include "bacon-device.h"
-#include "bacon-devicelist.h"
-#include "bacon-env.h"
-#include "bacon-htmldoc.h"
-#include "bacon-htmlparser.h"
-#include "bacon-log.h"
-#include "bacon-md5.h"
-#include "bacon-rom.h"
-#include "bacon-stats.h"
-#include "bacon-util.h"
+#include "actions.h"
+#include "device.h"
+#include "devicelist.h"
+#include "env.h"
+#include "htmldoc.h"
+#include "htmlparser.h"
+#include "log.h"
+#include "md5.h"
+#include "rom.h"
+#include "stats.h"
+#include "util.h"
 
 using std::string;
 using std::vector;
