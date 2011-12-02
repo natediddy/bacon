@@ -263,54 +263,57 @@ int perform(const Action &action, const vector<Device *> &devices)
 
 class ListCompareData {
 public:
-    ListCompareData(DeviceList &deviceList, const vector<string> &oldList)
-    {
-        vector<string> newList = deviceList.rawList();
-
-        mDiffCount = (int)newList.size() - (int)oldList.size();
-        if (mDiffCount) {
-            for (size_t i = 0; i < newList.size(); ++i) {
-                bool noMatch = true;
-                for (size_t j = 0; j < oldList.size(); ++j) {
-                    if (newList[i] == oldList[j]) {
-                        noMatch = false;
-                        break;
-                    }
-                }
-                if (noMatch)
-                    mDiff.push_back(newList[i]);
-            }
-        }
-    }
-
-    void printDiff()
-    {
-        if (mDiffCount <= 0) {
-            fputs("No new devices since last update\n", stdout);
-            return;
-        }
-
-        fputs("There ", stdout);
-        if (mDiffCount > 1)
-            fputs("are ", stdout);
-        else
-            fputs("is ", stdout);
-
-        fprintf(stdout, "%d new device", mDiffCount);
-        if (mDiffCount > 1)
-            fputc('s', stdout);
-
-        fputs(":\n", stdout);
-        for (size_t i = 0; i < mDiff.size(); ++i) {
-            alignPrintNumber(i);
-            fprintf(stdout, "%s\n", mDiff[i].c_str());
-        }
-    }
-
+    ListCompareData(DeviceList &deviceList, const vector<string> &oldList);
+    void printDiff();
 private:
     int mDiffCount;
     vector<string> mDiff;
 };
+
+ListCompareData::ListCompareData(DeviceList &deviceList,
+                                 const vector<string> &oldList)
+{
+    vector<string> newList = deviceList.rawList();
+
+    mDiffCount = (int)newList.size() - (int)oldList.size();
+    if (mDiffCount) {
+        for (size_t i = 0; i < newList.size(); ++i) {
+            bool noMatch = true;
+            for (size_t j = 0; j < oldList.size(); ++j) {
+                if (newList[i] == oldList[j]) {
+                    noMatch = false;
+                    break;
+                }
+            }
+            if (noMatch)
+                mDiff.push_back(newList[i]);
+        }
+    }
+}
+
+void ListCompareData::printDiff()
+{
+    if (mDiffCount <= 0) {
+        fputs("No new devices since last update\n", stdout);
+        return;
+    }
+
+    fputs("There ", stdout);
+    if (mDiffCount > 1)
+        fputs("are ", stdout);
+    else
+        fputs("is ", stdout);
+
+    fprintf(stdout, "%d new device", mDiffCount);
+    if (mDiffCount > 1)
+        fputc('s', stdout);
+
+    fputs(":\n", stdout);
+    for (size_t i = 0; i < mDiff.size(); ++i) {
+        alignPrintNumber(i);
+        fprintf(stdout, "%s\n", mDiff[i].c_str());
+    }
+}
 
 } /* namespace */
 

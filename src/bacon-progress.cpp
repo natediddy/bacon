@@ -53,88 +53,92 @@ namespace {
 
 class ProgressBar {
 public:
-    ProgressBar()
-        : count(0)
-        , width(0)
-        , mBuffer("")
-    {
-        updateWidth();
-        mSpaceTilEnd = width;
-    }
-
-    ~ProgressBar()
-    {}
-
-    void updateWidth()
-    {
-#ifdef _WIN32
-        CONSOLE_SCREEN_BUFFER_INFO cb;
-
-        if (GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &cb))
-            width = cb.dwSize.X;
-#else
-#if HAVE_SYS_IOCTL_H && HAVE_UNISTD_H
-        struct winsize ws;
-
-        ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws);
-        width = ws.ws_col;
-#else
-        width = 0;
-#endif
-#endif
-
-        if (width <= 0)
-            width = DEFAULT_PROGRESSBAR_WIDTH;
-    }
-
-    void add(const char c, const bool space = true)
-    {
-        mBuffer += c;
-        --mSpaceTilEnd;
-
-        if (space) {
-            mBuffer += ' ';
-            --mSpaceTilEnd;
-        }
-    }
-
+    ProgressBar();
+    void updateWidth();
+    void add(const char c, const bool space = true);
     void add(const string &s,
              const bool space = true,
-             const bool last = false)
-    {
-        if (last) {
-            for (int i = 0; i < (mSpaceTilEnd - 4); ++i)
-                mBuffer += ' ';
-        }
-
-        mBuffer += s;
-        mSpaceTilEnd -= s.size();
-
-        if (space) {
-            mBuffer += ' ';
-            --mSpaceTilEnd;
-        }
-      }
-
-    void display(FILE *stream = stdout)
-    {
-        if (mBuffer.empty())
-            return;
-
-        mBuffer += '\r';
-        fprintf(stream, "%s", mBuffer.c_str());
-        fflush(stream);
-        mBuffer = "";
-        mSpaceTilEnd = width;
-    }
-
+             const bool last = false);
+    void display(FILE *stream = stdout);
+public:
     unsigned int count;
     int width;
-
 private:
     int mSpaceTilEnd;
     string mBuffer;
 } *pBar = NULL;
+
+ProgressBar::ProgressBar()
+    : count(0)
+    , width(0)
+    , mBuffer("")
+{
+    updateWidth();
+    mSpaceTilEnd = width;
+}
+
+void ProgressBar::updateWidth()
+{
+#ifdef _WIN32
+    CONSOLE_SCREEN_BUFFER_INFO cb;
+
+    if (GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &cb))
+        width = cb.dwSize.X;
+#else
+#if HAVE_SYS_IOCTL_H && HAVE_UNISTD_H
+    struct winsize ws;
+
+    ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws);
+    width = ws.ws_col;
+#else
+    width = 0;
+#endif
+#endif
+
+    if (width <= 0)
+        width = DEFAULT_PROGRESSBAR_WIDTH;
+}
+
+void ProgressBar::add(const char c, const bool space)
+{
+    mBuffer += c;
+    --mSpaceTilEnd;
+
+    if (space) {
+        mBuffer += ' ';
+        --mSpaceTilEnd;
+    }
+}
+
+void ProgressBar::add(const string &s,
+                      const bool space,
+                      const bool last)
+{
+    if (last) {
+        for (int i = 0; i < (mSpaceTilEnd - 4); ++i)
+            mBuffer += ' ';
+    }
+
+    mBuffer += s;
+    mSpaceTilEnd -= s.size();
+
+    if (space) {
+        mBuffer += ' ';
+        --mSpaceTilEnd;
+    }
+}
+
+void ProgressBar::display(FILE *stream)
+{
+    if (mBuffer.empty())
+        return;
+
+    mBuffer += '\r';
+    fprintf(stream, "%s", mBuffer.c_str());
+    fflush(stream);
+    mBuffer = "";
+    mSpaceTilEnd = width;
+}
 
 int roundFraction(const double fraction)
 {

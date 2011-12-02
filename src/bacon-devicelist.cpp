@@ -30,7 +30,7 @@
 #define LIST_CONFIG_FILENAME "device_list"
 
 #define APPEND_RANDOM_ID \
-    mDeviceIds.push_back(string(PSEUDO_RANDOM_DEVICE_ID))
+    mDeviceIds.push_back(string(BACON_PSEUDO_RANDOM_DEVICE_ID))
 
 #define DATE_LINE_FORMAT "#%A, %B %d, %I:%M%p"
 

@@ -57,54 +57,11 @@ namespace bacon {
 
 class File::FilePropImpl {
 public:
-    FilePropImpl(const char * name)
-        : mIsDir(false)
-        , mIsFile(false)
-        , mSizeInBytes(0)
-    {
-#if HAVE_SYS_STAT_H
-        memset(&mStatBuf, 0, sizeof (struct stat));
-
-        if (!stat(name, &mStatBuf)) {
-            if (S_ISDIR(mStatBuf.st_mode))
-                mIsDir = true;
-            else if (S_ISREG(mStatBuf.st_mode))
-                mIsFile = true;
-            else
-                LOGW("`%s' is neither a file nor directory", name);
-            if (mIsDir || mIsFile)
-                mSizeInBytes = mStatBuf.st_size;
-        } else {
-            LOGW("stat: `%s': %s", name, strerror(errno));
-        }
-#endif
-    }
-
-    ~FilePropImpl()
-    {}
-
-    bool exists() const
-    {
-        if (mIsDir || mIsFile)
-            return true;
-        return false;
-    }
-
-    bool isDir() const
-    {
-        return mIsDir;
-    }
-
-    bool isFile() const
-    {
-        return mIsFile;
-    }
-
-    size_t sizeInBytes() const
-    {
-        return mSizeInBytes;
-    }
-
+    FilePropImpl(const char *name);
+    bool exists() const;
+    bool isDir() const;
+    bool isFile() const;
+    size_t sizeInBytes() const;
 private:
 #if HAVE_SYS_STAT_H
     struct stat mStatBuf;
@@ -113,6 +70,51 @@ private:
     bool mIsFile;
     size_t mSizeInBytes;
 };
+
+File::FilePropImpl::FilePropImpl(const char *name)
+    : mIsDir(false)
+    , mIsFile(false)
+    , mSizeInBytes(0)
+{
+#if HAVE_SYS_STAT_H
+    memset(&mStatBuf, 0, sizeof (struct stat));
+
+    if (!stat(name, &mStatBuf)) {
+        if (S_ISDIR(mStatBuf.st_mode))
+            mIsDir = true;
+        else if (S_ISREG(mStatBuf.st_mode))
+            mIsFile = true;
+        else
+            LOGW("`%s' is neither a file nor directory", name);
+        if (mIsDir || mIsFile)
+            mSizeInBytes = mStatBuf.st_size;
+    } else {
+        LOGW("stat: `%s': %s", name, strerror(errno));
+    }
+#endif
+}
+
+bool File::FilePropImpl::exists() const
+{
+    if (mIsDir || mIsFile)
+        return true;
+    return false;
+}
+
+bool File::FilePropImpl::isDir() const
+{
+    return mIsDir;
+}
+
+bool File::FilePropImpl::isFile() const
+{
+    return mIsFile;
+}
+
+size_t File::FilePropImpl::sizeInBytes() const
+{
+    return mSizeInBytes;
+}
 
 File::File(const string &name)
     : mStream(NULL)

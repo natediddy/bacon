@@ -142,143 +142,153 @@ void properProgramName(char *execName)
 
 class Cmd::ConfigCmdUtilImpl {
 public:
-    ConfigCmdUtilImpl()
-    {
-        for (prefs::Key key = 0; key < KEY_TOTAL; ++key)
-            mVals[key] = "";
-    }
-
-    void addNew(const string &arg, const string &val)
-    {
-        if (arg == "-b" || arg == "--basedir"
-#ifdef _WIN32
-                || arg == "/b"
-#endif
-           )
-            mVals[KEY_BASE_DIR] = val;
-        else if (arg == "-l" || arg == "--logpath"
-#ifdef _WIN32
-                || arg == "/l"
-#endif
-           )
-            mVals[KEY_LOG_PATH] = val;
-        else if (arg == "-c" || arg == "--cmserver"
-#ifdef _WIN32
-                || arg == "/c"
-#endif
-           )
-            mVals[KEY_CM_ROOT_SERVER] = val;
-    }
-
-    void set()
-    {
-        for (prefs::Key key = 0; key < KEY_TOTAL; ++key) {
-            if (!mVals[key].empty())
-                prefs::override(key, mVals[key]);
-        }
-    }
-
+    ConfigCmdUtilImpl();
+    void addNew(const string &arg, const string &val);
+    void set();
 private:
     string mVals[KEY_TOTAL];
 };
 
 class Cmd::BasicCmdUtilImpl {
 public:
-    BasicCmdUtilImpl()
-        : mFun(showUsage)
-    {}
-
-    BasicCmdUtilImpl(const string &basic)
-    {
-        if (basic == "-h" || basic == "-?" || basic == "--help"
-#ifdef _WIN32
-                || basic == "/h"
-#endif
-           )
-            mFun = showHelp;
-        else if (basic == "-v" || basic == "--version"
-#ifdef _WIN32
-                || basic == "/v"
-#endif
-           )
-            mFun = showVersion;
-        else if (basic == "-d" || basic == "--devices"
-#ifdef _WIN32
-                || basic == "/d"
-#endif
-           )
-            mFun = showDevices;
-        else if (basic == "-u" || basic == "--update-devices"
-#ifdef _WIN32
-                || basic == "/u"
-#endif
-           )
-            mFun = updateDeviceList;
-    }
-
-    int perform() const
-    {
-        return (*mFun)();
-    }
-
+    BasicCmdUtilImpl();
+    BasicCmdUtilImpl(const string &basic);
+    int perform() const;
 private:
     int (*mFun)();
 };
 
 class Cmd::ActionCmdUtilImpl {
 public:
-    ActionCmdUtilImpl(const string &action, vector<Device *> &devices)
-        : mDevices(devices)
-    {
-        if (action == "-S" || action == "--show"
-#ifdef _WIN32
-                || action == "/S"
-#endif
-           )
-        {
-            mFun = showAllRoms;
-        } else if (action == "-s" || action == "--stable"
-#ifdef _WIN32
-                || action == "/s"
-#endif
-           )
-        {
-            mFun = downloadLatestStableRom;
-            dlReq = true;
-        } else if (action == "-n" || action == "--nightly"
-#ifdef _WIN32
-                || action == "/n"
-#endif
-           )
-        {
-            mFun = downloadLatestNightlyRom;
-            dlReq = true;
-        } else if (action == "-r" || action == "--release-candidate"
-#ifdef _WIN32
-                || action == "/r"
-#endif
-           )
-        {
-            mFun = downloadLatestRcRom;
-            dlReq = true;
-        }
-    }
-
-    ~ActionCmdUtilImpl()
-    {
-        for (size_t i = 0; i < mDevices.size(); i++)
-            BACON_FREE(mDevices[i]);
-    }
-
-    int perform() const
-    {
-        return (*mFun)(mDevices);
-    }
-
+    ActionCmdUtilImpl(const string &action, vector<Device *> &devices);
+    ~ActionCmdUtilImpl();
+    int perform() const;
 private:
     vector<Device *> mDevices;
     int (*mFun)(const vector<Device *> &devices);
 };
+
+Cmd::ConfigCmdUtilImpl::ConfigCmdUtilImpl()
+{
+    for (prefs::Key key = 0; key < KEY_TOTAL; ++key)
+        mVals[key] = "";
+}
+
+void Cmd::ConfigCmdUtilImpl::addNew(const string &arg, const string &val)
+{
+    if (arg == "-b" || arg == "--basedir"
+#ifdef _WIN32
+            || arg == "/b"
+#endif
+       )
+        mVals[KEY_BASE_DIR] = val;
+    else if (arg == "-l" || arg == "--logpath"
+#ifdef _WIN32
+            || arg == "/l"
+#endif
+       )
+        mVals[KEY_LOG_PATH] = val;
+    else if (arg == "-c" || arg == "--cmserver"
+#ifdef _WIN32
+            || arg == "/c"
+#endif
+       )
+        mVals[KEY_CM_ROOT_SERVER] = val;
+}
+
+void Cmd::ConfigCmdUtilImpl::set()
+{
+    for (prefs::Key key = 0; key < KEY_TOTAL; ++key) {
+        if (!mVals[key].empty())
+            prefs::override(key, mVals[key]);
+    }
+}
+
+Cmd::BasicCmdUtilImpl::BasicCmdUtilImpl()
+    : mFun(showUsage)
+{}
+
+Cmd::BasicCmdUtilImpl::BasicCmdUtilImpl(const string &basic)
+{
+    if (basic == "-h" || basic == "-?" || basic == "--help"
+#ifdef _WIN32
+            || basic == "/h"
+#endif
+       )
+        mFun = showHelp;
+    else if (basic == "-v" || basic == "--version"
+#ifdef _WIN32
+            || basic == "/v"
+#endif
+       )
+        mFun = showVersion;
+    else if (basic == "-d" || basic == "--devices"
+#ifdef _WIN32
+            || basic == "/d"
+#endif
+       )
+        mFun = showDevices;
+    else if (basic == "-u" || basic == "--update-devices"
+#ifdef _WIN32
+            || basic == "/u"
+#endif
+       )
+        mFun = updateDeviceList;
+}
+
+int Cmd::BasicCmdUtilImpl::perform() const
+{
+    return (*mFun)();
+}
+
+Cmd::ActionCmdUtilImpl::ActionCmdUtilImpl(const string &action,
+                                          vector<Device *> &devices)
+    : mDevices(devices)
+{
+    if (action == "-S" || action == "--show"
+#ifdef _WIN32
+            || action == "/S"
+#endif
+       )
+    {
+        mFun = showAllRoms;
+    } else if (action == "-s" || action == "--stable"
+#ifdef _WIN32
+            || action == "/s"
+#endif
+       )
+    {
+        mFun = downloadLatestStableRom;
+        dlReq = true;
+    } else if (action == "-n" || action == "--nightly"
+#ifdef _WIN32
+            || action == "/n"
+#endif
+       )
+    {
+        mFun = downloadLatestNightlyRom;
+        dlReq = true;
+    } else if (action == "-r" || action == "--release-candidate"
+#ifdef _WIN32
+            || action == "/r"
+#endif
+       )
+    {
+        mFun = downloadLatestRcRom;
+        dlReq = true;
+    }
+}
+
+Cmd::ActionCmdUtilImpl::~ActionCmdUtilImpl()
+{
+    for (size_t i = 0; i < mDevices.size(); i++)
+        BACON_FREE(mDevices[i]);
+}
+
+int Cmd::ActionCmdUtilImpl::perform() const
+{
+    return (*mFun)(mDevices);
+}
 
 Cmd::Cmd(char ***argv)
     : mConf(NULL)
