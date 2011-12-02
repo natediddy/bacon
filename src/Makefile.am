@@ -25,6 +25,7 @@ bacon_SOURCES = \
 	stats.cc \
 	util.cc \
 	actions.h \
+	bacon.h \
 	cmd.h \
 	conf.h \
 	device.h \
