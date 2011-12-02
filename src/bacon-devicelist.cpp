@@ -116,6 +116,14 @@ void DeviceList::getLocal()
     APPEND_RANDOM_ID;
 }
 
+void DeviceList::prep()
+{
+    if (!exists())
+        update();
+    else
+        getLocal();
+}
+
 size_t DeviceList::size() const
 {
     return mDeviceIds.size();

@@ -35,6 +35,7 @@ public:
 
     bool update();
     void getLocal();
+    void prep();
     bool hasMatch(const std::string &id) const;
     size_t size() const;
     std::string operator[](const size_t index) const;

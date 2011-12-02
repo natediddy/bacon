@@ -143,11 +143,7 @@ void handlePseudoAllId(vector<Device *> &devices)
 {
     DeviceList dList;
 
-    if (!dList.exists())
-        dList.update();
-    else
-        dList.getLocal();
-
+    dList.prep();
     for (size_t i = 0; i < dList.size(); ++i) {
         if (dList[i] != BACON_PSEUDO_ALL_DEVICE_ID &&
                 dList[i] != BACON_PSEUDO_RANDOM_DEVICE_ID)

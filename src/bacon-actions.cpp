@@ -66,10 +66,7 @@ bool validDevice(const string &id)
 {
     DeviceList deviceList;
 
-    if (!deviceList.exists())
-        deviceList.update();
-    else
-        deviceList.getLocal();
+    deviceList.prep();
     return deviceList.hasMatch(id);
 }
 
