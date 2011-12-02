@@ -21,12 +21,13 @@
 #include <string>
 #include <vector>
 
+#include "bacon.h"
 #include "file.h"
 
 #define BACON_PSEUDO_ALL_DEVICE_ID    "all"
 #define BACON_PSEUDO_RANDOM_DEVICE_ID "random"
 
-namespace bacon {
+BACON_NAMESPACE_BEGIN
 
 class DeviceList : public File {
 public:
@@ -49,7 +50,7 @@ private:
     std::vector<std::string> mDeviceIds;
 };
 
-} /* namespace bacon */
+BACON_NAMESPACE_END
 
 #endif /* !BACON_DEVICELIST_H_INCLUDED */
 

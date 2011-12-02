@@ -20,7 +20,7 @@
 
 #include "file.h"
 
-namespace bacon {
+BACON_NAMESPACE_BEGIN
 
 class Config : public File {
 public:
@@ -36,7 +36,7 @@ private:
     File *mUser;
 };
 
-} /* namespace bacon */
+BACON_NAMESPACE_END
 
 #endif /* !BACON_CONF_H_INCLUDED */
 

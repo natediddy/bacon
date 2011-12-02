@@ -29,9 +29,10 @@
 #define DIVDBL(x) (((double)bytes) / ((double)(x)))
 #define DIVLNG(x) (bytes / ((long)(x)))
 
+BACON_NAMESPACE_BEGIN
+
 using std::string;
 
-namespace bacon {
 namespace util {
 
 namespace {
@@ -185,7 +186,7 @@ string convertShellSymbols(const string &val)
 
 #ifdef _WIN32
     if (totalVars % 2 != 0) {
-        LOGW("syntax error shell string `%s'", val.c_str());
+        BACON_LOGW("syntax error shell string `%s'", val.c_str());
         return string(val);
     }
     totalVars /= 2;
@@ -307,5 +308,6 @@ string properNumber(const int num)
 }
 
 } /* namespace util */
-} /* namespace bacon */
+
+BACON_NAMESPACE_END
 

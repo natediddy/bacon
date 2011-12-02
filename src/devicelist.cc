@@ -36,10 +36,11 @@
 
 #define DATE_LINE_FORMAT "#%A, %B %d, %I:%M%p"
 
+BACON_NAMESPACE_BEGIN
+
 using std::string;
 using std::vector;
 
-namespace bacon {
 namespace {
 
 string prepareListFile()
@@ -177,5 +178,5 @@ string DeviceList::lastUpdate()
     return result;
 }
 
-} /* namespace bacon */
+BACON_NAMESPACE_END
 

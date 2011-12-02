@@ -24,9 +24,10 @@
 #define DEVICE_PARAM "device="
 #define TYPE_PARAM "type="
 
+BACON_NAMESPACE_BEGIN
+
 using std::string;
 
-namespace bacon {
 namespace {
 
 string formRequest(const string &deviceId, const string &deviceType)
@@ -96,7 +97,7 @@ bool HtmlDoc::setup()
             (void *)&mMemoryChunk);
 
     if (Net::pStatus != CURLE_OK) {
-        LOGE("curl_easy_setopt: %s", curl_easy_strerror(Net::pStatus));
+        BACON_LOGE("curl_easy_setopt: %s", curl_easy_strerror(Net::pStatus));
         return false;
     }
 
@@ -104,7 +105,7 @@ bool HtmlDoc::setup()
             write_CB);
 
     if (Net::pStatus != CURLE_OK)
-        LOGE("curl_easy_setopt: %s", curl_easy_strerror(Net::pStatus));
+        BACON_LOGE("curl_easy_setopt: %s", curl_easy_strerror(Net::pStatus));
     return Net::pStatus == CURLE_OK;
 }
 
@@ -116,7 +117,7 @@ bool HtmlDoc::fetch()
         mContent = mMemoryChunk.mem;
 
     if (Net::pStatus != CURLE_OK)
-        LOGE("curl_easy_perform: %s", curl_easy_strerror(Net::pStatus));
+        BACON_LOGE("curl_easy_perform: %s", curl_easy_strerror(Net::pStatus));
     return Net::pStatus == CURLE_OK;
 }
 
@@ -125,5 +126,5 @@ string HtmlDoc::content() const
     return mContent;
 }
 
-} /* namespace bacon */
+BACON_NAMESPACE_END
 

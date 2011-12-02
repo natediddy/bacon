@@ -20,7 +20,9 @@
 
 #include <vector>
 
-namespace bacon {
+#include "bacon.h"
+
+BACON_NAMESPACE_BEGIN
 
 int showUsage();
 int showHelp();
@@ -35,7 +37,7 @@ int downloadLatestStableRom(const std::vector<Device *> &devices);
 int downloadLatestNightlyRom(const std::vector<Device *> &devices);
 int downloadLatestRcRom(const std::vector<Device *> &devices);
 
-} /* namespace bacon */
+BACON_NAMESPACE_END
 
 #endif /* !BACON_ACTIONS_H_INCLUDED */
 

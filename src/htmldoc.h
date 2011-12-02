@@ -18,9 +18,10 @@
 #ifndef BACON_HTMLDOC_H_INCLUDED
 #define BACON_HTMLDOC_H_INCLUDED
 
+#include "bacon.h"
 #include "net.h"
 
-namespace bacon {
+BACON_NAMESPACE_BEGIN
 
 class HtmlDoc : public Net {
 public:
@@ -45,7 +46,7 @@ private:
     friend size_t write_CB(void *b, size_t s, size_t n, void *u);
 };
 
-} /* namespace bacon */
+BACON_NAMESPACE_END
 
 #endif /* !BACON_HTMLDOC_H_INCLUDED */
 

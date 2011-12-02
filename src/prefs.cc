@@ -25,11 +25,12 @@
 #define LOG_PATH_KEY_STRING       "BACON_LOG_PATH"
 #define CM_ROOT_SERVER_KEY_STRING "BACON_CM_ROOT_SERVER"
 
+BACON_NAMESPACE_BEGIN
+
 using std::string;
 
 extern string gProgramName;
 
-namespace bacon {
 namespace prefs {
 
 namespace {
@@ -128,5 +129,6 @@ bool check()
 }
 
 } /* namespace prefs */
-} /* namespace bacon */
+
+BACON_NAMESPACE_END
 

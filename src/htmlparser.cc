@@ -44,12 +44,13 @@
     && s[i+4] == 'u' && s[i+5] == 'm' && s[i+6] == ':' && s[i+7] == ' '
 #define MD5_CLASS_SIZE 8
 
+BACON_NAMESPACE_BEGIN
+
 using std::string;
 using std::vector;
 
 extern int gRomHistory;
 
-namespace bacon {
 namespace {
 
 bool filenameMatch(const string &s, const string &n, const size_t i)
@@ -134,5 +135,5 @@ string HtmlParser::currentContent() const
     return mContent;
 }
 
-} /* namespace bacon */
+BACON_NAMESPACE_END
 

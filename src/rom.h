@@ -18,12 +18,13 @@
 #ifndef BACON_ROM_H_INCLUDED
 #define BACON_ROM_H_INCLUDED
 
+#include <cstdio>
+
+#include "bacon.h"
 #include "file.h"
 #include "net.h"
 
-#include <cstdio>
-
-namespace bacon {
+BACON_NAMESPACE_BEGIN
 
 class Rom : public Net, File {
 public:
@@ -39,7 +40,7 @@ private:
     friend size_t write_CB(void *p, size_t s, size_t n, FILE *f);
 };
 
-} /* namespace bacon */
+BACON_NAMESPACE_END
 
 #endif /* !BACON_ROM_H_INCLUDED */
 

@@ -20,12 +20,15 @@
 
 #include <string>
 
+#include "bacon.h"
+
 #define KEY_BASE_DIR       0
 #define KEY_LOG_PATH       1
 #define KEY_CM_ROOT_SERVER 2
 #define KEY_TOTAL          3
 
-namespace bacon {
+BACON_NAMESPACE_BEGIN
+
 namespace prefs {
 
 typedef unsigned int Key;
@@ -36,7 +39,7 @@ std::string get(const Key key);
 bool check();
 
 } /* namespace prefs */
-} /* namespace bacon */
 
+BACON_NAMESPACE_END
 #endif /* !BACON_PREFS_H_INCLUDED */
 

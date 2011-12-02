@@ -80,9 +80,10 @@
 #define S43 15
 #define S44 21
 
+BACON_NAMESPACE_BEGIN
+
 using std::string;
 
-namespace bacon {
 namespace {
 
 inline unsigned int rotateLeft(unsigned int x, unsigned int n)
@@ -422,7 +423,8 @@ Md5::Md5(const string &path,
         Md5Impl impl(File::mStream);
         mLocalHash = impl.toString();
     } else {
-        LOGW("could not read `%s' to generate MD5 hash!", name().c_str());
+        BACON_LOGW("could not read `%s' to generate MD5 hash!",
+                name().c_str());
     }
 
     HtmlDoc doc(deviceId, deviceType);
@@ -438,5 +440,5 @@ bool Md5::verify()
     return mLocalHash == mRemoteHash;
 }
 
-} /* namespace bacon */
+BACON_NAMESPACE_END
 

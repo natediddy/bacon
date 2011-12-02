@@ -20,7 +20,9 @@
 
 #include <string>
 
-namespace bacon {
+#include "bacon.h"
+
+BACON_NAMESPACE_BEGIN
 
 class Device {
 public:
@@ -35,7 +37,7 @@ private:
     std::string mId;
 };
 
-} /* namespace bacon */
+BACON_NAMESPACE_END
 
 #endif /* !BACON_DEVICE_H_INCLUDED */
 

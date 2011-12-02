@@ -51,9 +51,9 @@
 
 #define PATH_SEPARATORS "/\\"
 
-using std::string;
+BACON_NAMESPACE_BEGIN
 
-namespace bacon {
+using std::string;
 
 class File::FilePropImpl {
 public:
@@ -85,11 +85,11 @@ File::FilePropImpl::FilePropImpl(const char *name)
         else if (S_ISREG(mStatBuf.st_mode))
             mIsFile = true;
         else
-            LOGW("`%s' is neither a file nor directory", name);
+            BACON_LOGW("`%s' is neither a file nor directory", name);
         if (mIsDir || mIsFile)
             mSizeInBytes = mStatBuf.st_size;
     } else {
-        LOGW("stat: `%s': %s", name, strerror(errno));
+        BACON_LOGW("stat: `%s': %s", name, strerror(errno));
     }
 #endif
 }
@@ -292,5 +292,5 @@ string File::readLine()
     return line;
 }
 
-} /* namespace bacon */
+BACON_NAMESPACE_END
 

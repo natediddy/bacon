@@ -41,9 +41,10 @@
 #define LOG_FILENAME       "bacon.log"
 #define BANNER_DATE_FORMAT "%m/%d/%Y %I:%M:%S%p"
 
+BACON_NAMESPACE_BEGIN
+
 using std::string;
 
-namespace bacon {
 namespace log {
 
 namespace {
@@ -147,5 +148,6 @@ char *_prefix(const char *tag, const char *file, const int line)
 }
 
 } /* namespace log */
-} /* namespace bacon */
+
+BACON_NAMESPACE_END
 

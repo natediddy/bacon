@@ -24,11 +24,12 @@
 #include "rom.h"
 #include "util.h"
 
+BACON_NAMESPACE_BEGIN
+
 using std::string;
 
 long gStartEpoch = 0;
 
-namespace bacon {
 namespace {
 
 string formRequest(const string &name)
@@ -63,32 +64,32 @@ bool Rom::setup()
 
     Net::pStatus = curl_easy_setopt(Net::pCurl, CURLOPT_FOLLOWLOCATION, 1L);
     if (Net::pStatus != CURLE_OK) {
-        LOGE("curl_easy_setopt: %s", curl_easy_strerror(Net::pStatus));
+        BACON_LOGE("curl_easy_setopt: %s", curl_easy_strerror(Net::pStatus));
         return false;
     }
 
     if (!open("wb")) {
-        LOGE("could not open file `%s' on disk", name().c_str());
+        BACON_LOGE("could not open file `%s' on disk", name().c_str());
         return false;
     }
 
     Net::pStatus = curl_easy_setopt(Net::pCurl, CURLOPT_WRITEDATA,
         (void *)File::mStream);
     if (Net::pStatus != CURLE_OK) {
-        LOGE("curl_easy_setopt: %s", curl_easy_strerror(Net::pStatus));
+        BACON_LOGE("curl_easy_setopt: %s", curl_easy_strerror(Net::pStatus));
         return false;
     }
 
     Net::pStatus = curl_easy_setopt(Net::pCurl, CURLOPT_WRITEFUNCTION,
         (void *)write_CB);
     if (Net::pStatus != CURLE_OK) {
-        LOGE("curl_easy_setopt: %s", curl_easy_strerror(Net::pStatus));
+        BACON_LOGE("curl_easy_setopt: %s", curl_easy_strerror(Net::pStatus));
         return false;
     }
 
     Net::pStatus = curl_easy_setopt(Net::pCurl, CURLOPT_NOPROGRESS, false);
     if (Net::pStatus != CURLE_OK) {
-        LOGE("curl_easy_setopt: %s", curl_easy_strerror(Net::pStatus));
+        BACON_LOGE("curl_easy_setopt: %s", curl_easy_strerror(Net::pStatus));
         return false;
     }
 
@@ -96,7 +97,7 @@ bool Rom::setup()
         progressBar);
 
     if (Net::pStatus != CURLE_OK)
-        LOGE("curl_easy_setopt: %s", curl_easy_strerror(Net::pStatus));
+        BACON_LOGE("curl_easy_setopt: %s", curl_easy_strerror(Net::pStatus));
     return Net::pStatus == CURLE_OK;
 }
 
@@ -109,5 +110,5 @@ bool Rom::fetch()
     return Net::pStatus == CURLE_OK;
 }
 
-} /* namespace bacon */
+BACON_NAMESPACE_END
 

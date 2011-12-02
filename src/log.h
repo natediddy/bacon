@@ -30,18 +30,5 @@ char *_prefix(const char *tag, const char *file, const int line);
 } /* namespace log */
 } /* namespace bacon */
 
-#define LOG_MSG__(tag, msg, ...) \
-  do { \
-      if (bacon::log::_isActive()) { \
-          bacon::log::_write( \
-          bacon::log::_prefix(tag, __FILE__, __LINE__), \
-          msg, __VA_ARGS__); \
-      } \
-  } while (0)
-
-#define LOGI(msg, ...) LOG_MSG__("INFO", msg, __VA_ARGS__)
-#define LOGW(msg, ...) LOG_MSG__("WARNING", msg, __VA_ARGS__)
-#define LOGE(msg, ...) LOG_MSG__("ERROR", msg, __VA_ARGS__)
-
 #endif /* !BACON_LOG_H_INCLUDED */
 

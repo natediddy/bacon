@@ -44,11 +44,12 @@
 #define PROGRESSBAR_HAS_CHAR   '#'
 #define PROGRESSBAR_NOT_CHAR   '.'
 
+BACON_NAMESPACE_BEGIN
+
 using std::string;
 
 extern long gStartEpoch;
 
-namespace bacon {
 namespace {
 
 class ProgressBar {
@@ -156,7 +157,7 @@ bool isNaN(const double d)
     volatile double check = d;
 
     if (check != check) {
-        LOGW("NaN value detected", NULL);
+        BACON_LOGW("NaN value detected", NULL);
         return true;
     }
     return false;
@@ -251,5 +252,5 @@ int progressBar(void * data,
     return 0;
 }
 
-} /* namespace bacon */
+BACON_NAMESPACE_END
 

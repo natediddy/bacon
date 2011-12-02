@@ -29,6 +29,8 @@
 #include "prefs.h"
 #include "util.h"
 
+BACON_NAMESPACE_BEGIN
+
 using std::string;
 using std::vector;
 
@@ -36,7 +38,6 @@ string gProgramName;
 int gRomHistory = BACON_ROM_HISTORY_DEFAULT;
 bool gRomHistExplicit = false;
 
-namespace bacon {
 namespace {
 
 bool dlReq = false;
@@ -412,5 +413,5 @@ int Cmd::exec() const
     return retval;
 }
 
-} /* namespace bacon */
+BACON_NAMESPACE_END
 

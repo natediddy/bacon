@@ -21,7 +21,9 @@
 #include <string>
 #include <vector>
 
-namespace bacon {
+#include "bacon.h"
+
+BACON_NAMESPACE_BEGIN
 
 class HtmlParser {
 public:
@@ -37,7 +39,7 @@ private:
     std::string mContent;
 };
 
-} /* namespace bacon */
+BACON_NAMESPACE_END
 
 #endif /* !BACON_HTMLPARSER_H_INCLUDED */
 

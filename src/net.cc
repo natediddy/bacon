@@ -26,16 +26,16 @@
 #define BACON_AGENT "Bacon/0.00-test"
 #endif
 
-using std::string;
+BACON_NAMESPACE_BEGIN
 
-namespace bacon {
+using std::string;
 
 Net::Net(const string &request)
     : pCurl(curl_easy_init())
     , pStatus(CURLE_OK)
     , mUrl(prefs::get(KEY_CM_ROOT_SERVER) + request)
 {
-    LOGI("connecting to: %s", mUrl.c_str());
+    BACON_LOGI("connecting to: %s", mUrl.c_str());
 }
 
 Net::~Net()
@@ -54,15 +54,15 @@ bool Net::setup()
 {
     pStatus = curl_easy_setopt(pCurl, CURLOPT_URL, mUrl.c_str());
     if (pStatus != CURLE_OK) {
-        LOGE("curl_easy_setopt: %s", curl_easy_strerror(pStatus));
+        BACON_LOGE("curl_easy_setopt: %s", curl_easy_strerror(pStatus));
         return false;
     }
 
     pStatus = curl_easy_setopt(pCurl, CURLOPT_USERAGENT, BACON_AGENT);
     if (pStatus != CURLE_OK)
-        LOGE("curl_easy_setopt: %s", curl_easy_strerror(pStatus));
+        BACON_LOGE("curl_easy_setopt: %s", curl_easy_strerror(pStatus));
     return pStatus == CURLE_OK;
 }
 
-} /* namespace bacon */
+BACON_NAMESPACE_END
 

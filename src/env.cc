@@ -30,9 +30,10 @@
 #define PATH_SEP_CHAR '/'
 #endif
 
+BACON_NAMESPACE_BEGIN
+
 using std::string;
 
-namespace bacon {
 namespace env {
 
 string variableValue(const string &key)
@@ -83,5 +84,6 @@ char dirSeparator()
 }
 
 } /* namespace env */
-} /* namespace bacon */
+
+BACON_NAMESPACE_END
 

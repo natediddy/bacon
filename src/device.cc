@@ -22,9 +22,10 @@
 #include "prefs.h"
 #include "util.h"
 
+BACON_NAMESPACE_BEGIN
+
 using std::string;
 
-namespace bacon {
 namespace {
 
 string getRandomDeviceIndex()
@@ -74,5 +75,5 @@ void Device::createRomDir() const
     myDir.makeDir();
 }
 
-} /* namespace bacon */
+BACON_NAMESPACE_END
 

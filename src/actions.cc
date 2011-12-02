@@ -33,6 +33,8 @@
 #include "stats.h"
 #include "util.h"
 
+BACON_NAMESPACE_BEGIN
+
 using std::string;
 using std::vector;
 
@@ -40,7 +42,6 @@ extern string gProgramName;
 extern int gRomHistory;
 extern bool gRomHistExplicit;
 
-namespace bacon {
 namespace {
 
 void alignPrintNumber(const size_t n)
@@ -81,7 +82,7 @@ bool romExists(const string &path,
         Md5 md5(path, deviceId, deviceType);
         ret = md5.verify();
     } else if (fp.isDir()) {
-        LOGW("`%s' is a directory, not a file!", fp.name().c_str());
+        BACON_LOGW("`%s' is a directory, not a file!", fp.name().c_str());
     }
     return ret;
 }
@@ -173,7 +174,7 @@ bool prepRomDownload(const string &type, const Device *device)
 bool performShowOnly(const Device *device)
 {
     string types[3] = {
-        "stable", "nightly", "rc"
+        "stable", "nightly", "release candidate"
     };
 
     fprintf(stdout, "%s:\n", device->id().c_str());
@@ -455,5 +456,5 @@ int downloadLatestRcRom(const vector<Device *> &devices)
     return perform(DOWNLOAD_RC, devices);
 }
 
-} /* namespace bacon */
+BACON_NAMESPACE_END
 

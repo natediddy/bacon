@@ -24,10 +24,11 @@
 #define SYSTEM_WIDE_CONF_FILE "bacon.conf"
 #define USER_CONF_FILE        ".baconrc"
 
+BACON_NAMESPACE_BEGIN
+
 using std::string;
 
-namespace bacon {
-namespace DEFAULTS {
+namespace defaults {
 
 /* These are the values used if these 3 conditions are met:
      1) the system wide config file doesn't exist
@@ -55,10 +56,10 @@ string cmRootUrl()
     return string("http://get.cm");
 }
 
-} /* namespace DEFAULTS */
+} /* namespace defaults */
 
 Config::Config()
-    : File(DEFAULTS::systemConfig())
+    : File(defaults::systemConfig())
     , mUser(NULL)
 {
     string p[] = {
@@ -136,13 +137,13 @@ string Config::valueOf(const string &key)
         }
     } else {
         if (key == "BACON_BASE_DIR")
-            return DEFAULTS::baseDir();
+            return defaults::baseDir();
         else if (key == "BACON_CM_ROOT_SERVER")
-            return DEFAULTS::cmRootUrl();
+            return defaults::cmRootUrl();
     }
     value = util::convertShellSymbols(value);
     return value;
 }
 
-} /* namespace bacon */
+BACON_NAMESPACE_END
 

@@ -18,7 +18,9 @@
 #ifndef BACON_PROGRESS_H_INCLUDED
 #define BACON_PROGRESS_H_INCLUDED
 
-namespace bacon {
+#include "bacon.h"
+
+BACON_NAMESPACE_BEGIN
 
 int progressBar(void *data,
                 double totalToDownload,
@@ -26,7 +28,7 @@ int progressBar(void *data,
                 double totalToUpload,
                 double uploadedSoFar);
 
-} /* namespace bacon */
+BACON_NAMESPACE_END
 
 #endif /* !BACON_PROGRESS_H_INCLUDED */
 

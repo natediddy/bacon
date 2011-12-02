@@ -18,9 +18,10 @@
 #ifndef BACON_MD5_H_INCLUDED
 #define BACON_MD5_H_INCLUDED
 
+#include "bacon.h"
 #include "file.h"
 
-namespace bacon {
+BACON_NAMESPACE_BEGIN
 
 class Md5 : public File {
 public:
@@ -35,7 +36,7 @@ private:
     std::string mRemoteHash;
 };
 
-} /* namespace bacon */
+BACON_NAMESPACE_END
 
 #endif /* !BACON_MD5_H_INCLUDED */
 

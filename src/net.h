@@ -21,7 +21,9 @@
 #include <string>
 #include <curl/curl.h>
 
-namespace bacon {
+#include "bacon.h"
+
+BACON_NAMESPACE_BEGIN
 
 class Net {
 public:
@@ -41,7 +43,7 @@ private:
     std::string mUrl;
 };
 
-} /* namespace bacon */
+BACON_NAMESPACE_END
 
 #endif /* !BACON_NET_H_INCLUDED */
 

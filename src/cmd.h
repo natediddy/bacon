@@ -21,7 +21,9 @@
 #include <string>
 #include <vector>
 
-namespace bacon {
+#include "bacon.h"
+
+BACON_NAMESPACE_BEGIN
 
 class Cmd {
 public:
@@ -46,7 +48,7 @@ private:
     std::vector<ActionCmdUtilImpl *> mActions;
 };
 
-} /* namespace bacon */
+BACON_NAMESPACE_END
 
 #endif /* !BACON_CMD_H_INCLUDED */
 

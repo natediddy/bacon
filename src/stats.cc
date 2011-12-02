@@ -24,10 +24,10 @@
 #include "stats.h"
 #include "util.h"
 
+BACON_NAMESPACE_BEGIN
+
 using std::string;
 using std::vector;
-
-namespace bacon {
 
 Stats::Stats(const Device *device, const string &deviceType)
     : mDevice(device)
@@ -77,5 +77,5 @@ vector<string> Stats::romNames() const
     return mLatestRomNames;
 }
 
-} /* namespace bacon */
+BACON_NAMESPACE_END
 

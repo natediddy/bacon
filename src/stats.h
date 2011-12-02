@@ -21,7 +21,9 @@
 #include <string>
 #include <vector>
 
-namespace bacon {
+#include "bacon.h"
+
+BACON_NAMESPACE_BEGIN
 
 class Device;
 
@@ -42,7 +44,7 @@ private:
     std::vector<std::string> mRomPaths;
 };
 
-} /* namespace bacon */
+BACON_NAMESPACE_END
 
 #endif /* !BACON_STATS_H_INCLUDED */
 

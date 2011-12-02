@@ -20,7 +20,10 @@
 
 #include <string>
 
-namespace bacon {
+#include "bacon.h"
+
+BACON_NAMESPACE_BEGIN
+
 namespace env {
 
 std::string variableValue(const std::string &key);
@@ -31,7 +34,8 @@ char variableSymbol();
 char dirSeparator();
 
 } /* namespace env */
-} /* namespace bacon */
+
+BACON_NAMESPACE_END
 
 #endif /* !BACON_ENV_H_INCLUDED */
 

@@ -21,7 +21,9 @@
 #include <cstdio>
 #include <string>
 
-namespace bacon {
+#include "bacon.h"
+
+BACON_NAMESPACE_BEGIN
 
 class File {
 public:
@@ -56,7 +58,7 @@ private:
     FilePropImpl *mProp;
 };
 
-} /* namespace bacon */
+BACON_NAMESPACE_END
 
 #endif /* !BACON_FILE_H_INCLUDED */
 

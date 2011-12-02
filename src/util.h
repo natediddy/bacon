@@ -20,23 +20,10 @@
 
 #include <string>
 
-#define BACON_FREE(p) \
-    do { \
-        if ((p)) { \
-            delete (p); \
-            (p) = NULL; \
-        } \
-    } while (0)
+#include "bacon.h"
 
-#define BACON_FREE_ARRAY(p) \
-    do { \
-        if ((p)) { \
-            delete [](p); \
-            (p) = NULL; \
-        } \
-  } while (0)
+BACON_NAMESPACE_BEGIN
 
-namespace bacon {
 namespace util {
 
 std::string toUpperCase(const std::string &str);
@@ -59,7 +46,7 @@ int stringToInt(const std::string &str);
 std::string properNumber(const int num);
 
 } /* namespace util */
-} /* namespace bacon */
 
+BACON_NAMESPACE_END
 #endif /* !BACON_UTIL_H_INCLUDED */
 
