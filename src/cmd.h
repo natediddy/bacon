@@ -29,21 +29,15 @@ class Cmd {
 public:
     Cmd(char ***argv);
     ~Cmd();
-
     int exec() const;
-
 private:
     void analyze();
-
 private:
     std::vector<std::string> mArgs;
-
     class ConfigCmdUtilImpl;
     ConfigCmdUtilImpl *mConf;
-
     class BasicCmdUtilImpl;
     BasicCmdUtilImpl *mBasic;
-
     class ActionCmdUtilImpl;
     std::vector<ActionCmdUtilImpl *> mActions;
 };

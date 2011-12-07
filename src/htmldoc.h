@@ -28,21 +28,16 @@ public:
     HtmlDoc(const std::string &deviceId = "",
             const std::string &deviceType = "");
     ~HtmlDoc();
-
     std::string content() const;
     bool fetch();
-
 protected:
     bool setup();
-
 private:
     struct MemoryChunk {
         char *mem;
         size_t size;
     } mMemoryChunk;
-
     std::string mContent;
-
     friend size_t write_CB(void *b, size_t s, size_t n, void *u);
 };
 

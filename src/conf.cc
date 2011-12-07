@@ -57,7 +57,7 @@ string cmRootUrl()
 
 } /* namespace defaults */
 
-Config::Config()
+Conf::Conf()
     : File(defaults::systemConfig())
     , mUser(NULL)
 {
@@ -80,12 +80,12 @@ Config::Config()
     }
 }
 
-Config::~Config()
+Conf::~Conf()
 {
     BACON_FREE(mUser);
 }
 
-string Config::userDefined(const string &key)
+string Conf::userDefined(const string &key)
 {
     if (!mUser)
         return string("");
@@ -111,7 +111,7 @@ string Config::userDefined(const string &key)
     return value;
 }
 
-string Config::valueOf(const string &key)
+string Conf::valueOf(const string &key)
 {
     string value;
 

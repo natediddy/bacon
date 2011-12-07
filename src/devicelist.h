@@ -33,7 +33,6 @@ class DeviceList : public File {
 public:
     DeviceList();
     ~DeviceList();
-
     bool update();
     void getLocal();
     void prep();
@@ -42,10 +41,8 @@ public:
     std::string operator[](const size_t index) const;
     std::vector<std::string> rawList() const;
     std::string lastUpdate();
-
 private:
     void writeDateLine();
-
 private:
     std::vector<std::string> mDeviceIds;
 };

@@ -160,7 +160,7 @@ public:
     void addNew(const string &arg, const string &val);
     void set();
 private:
-    string mVals[KEY_TOTAL];
+    string mVals[BACON_PREFS_KEY_TOTAL];
 };
 
 class Cmd::BasicCmdUtilImpl {
@@ -184,7 +184,7 @@ private:
 
 Cmd::ConfigCmdUtilImpl::ConfigCmdUtilImpl()
 {
-    for (prefs::Key key = 0; key < KEY_TOTAL; ++key)
+    for (prefs::Key key = 0; key < BACON_PREFS_KEY_TOTAL; ++key)
         mVals[key] = "";
 }
 
@@ -195,24 +195,24 @@ void Cmd::ConfigCmdUtilImpl::addNew(const string &arg, const string &val)
             || arg == "/b"
 #endif
        )
-        mVals[KEY_BASE_DIR] = val;
+        mVals[BACON_PREFS_KEY_BASE_DIR] = val;
     else if (arg == "-l" || arg == "--logpath"
 #ifdef _WIN32
             || arg == "/l"
 #endif
        )
-        mVals[KEY_LOG_PATH] = val;
+        mVals[BACON_PREFS_KEY_LOG_PATH] = val;
     else if (arg == "-c" || arg == "--cmserver"
 #ifdef _WIN32
             || arg == "/c"
 #endif
        )
-        mVals[KEY_CM_ROOT_SERVER] = val;
+        mVals[BACON_PREFS_KEY_CM_ROOT_SERVER] = val;
 }
 
 void Cmd::ConfigCmdUtilImpl::set()
 {
-    for (prefs::Key key = 0; key < KEY_TOTAL; ++key) {
+    for (prefs::Key key = 0; key < BACON_PREFS_KEY_TOTAL; ++key) {
         if (!mVals[key].empty())
             prefs::override(key, mVals[key]);
     }

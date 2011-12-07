@@ -22,16 +22,13 @@
 
 BACON_NAMESPACE_BEGIN
 
-class Config : public File {
+class Conf : public File {
 public:
-    Config();
-    ~Config();
-
+    Conf();
+    ~Conf();
     std::string valueOf(const std::string &key);
-
 private:
     std::string userDefined(const std::string &key);
-
 private:
     File *mUser;
 };

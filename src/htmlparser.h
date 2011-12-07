@@ -29,12 +29,10 @@ class HtmlParser {
 public:
     HtmlParser(const std::string &content);
     ~HtmlParser();
-
     void allDeviceIds(std::vector<std::string> &vec) const;
     std::string checksumStringForFile(const std::string &filename) const;
     std::vector<std::string> latestRomsForDevice() const;
     std::string currentContent() const;
-
 private:
     std::string mContent;
 };

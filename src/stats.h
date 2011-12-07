@@ -31,12 +31,10 @@ class Stats {
 public:
     Stats(const Device *device, const std::string &deviceType);
     ~Stats();
-
     bool init();
     bool existsLocally(const size_t n) const;
     bool isValid(const size_t n) const;
     std::vector<std::string> romNames() const;
-
 private:
     const Device *mDevice;
     std::string mType;

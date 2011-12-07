@@ -35,20 +35,20 @@ namespace prefs {
 
 namespace {
 
-string values[KEY_TOTAL];
+string values[BACON_PREFS_KEY_TOTAL];
 
-string keyToString(const prefs::Key key)
+string keyToString(const Key key)
 {
     string result;
 
     switch (key) {
-    case KEY_BASE_DIR:
+    case BACON_PREFS_KEY_BASE_DIR:
         result = BASE_DIR_KEY_STRING;
         break;
-    case KEY_LOG_PATH:
+    case BACON_PREFS_KEY_LOG_PATH:
         result = LOG_PATH_KEY_STRING;
         break;
-    case KEY_CM_ROOT_SERVER:
+    case BACON_PREFS_KEY_CM_ROOT_SERVER:
         result = CM_ROOT_SERVER_KEY_STRING;
         break;
     default:
@@ -61,10 +61,10 @@ string keyToString(const prefs::Key key)
 
 void init()
 {
-    Config cfg;
+    Conf conf;
 
-    for (Key key = 0; key < KEY_TOTAL; ++key)
-        values[key] = cfg.valueOf(keyToString(key));
+    for (Key key = 0; key < BACON_PREFS_KEY_TOTAL; ++key)
+        values[key] = conf.valueOf(keyToString(key));
 }
 
 void override(const Key key, const string &val)
@@ -81,8 +81,8 @@ bool check()
 {
     bool result = true;
 
-    for (Key key = 0; key < KEY_TOTAL; ++key) {
-        if (key == KEY_BASE_DIR) {
+    for (Key key = 0; key < BACON_PREFS_KEY_TOTAL; ++key) {
+        if (key == BACON_PREFS_KEY_BASE_DIR) {
             File p(get(key));
             if (!p.exists()) {
                 if (!p.makeDirs()) {
@@ -92,10 +92,10 @@ bool check()
                         result = false;
                 }
             }
-        } else if (key == KEY_LOG_PATH) {
+        } else if (key == BACON_PREFS_KEY_LOG_PATH) {
             if (values[key].empty()) {
                 string p[] = {
-                    values[KEY_BASE_DIR], ".log", "bacon.log", ""
+                    values[BACON_PREFS_KEY_BASE_DIR], ".log", "bacon.log", ""
                 };
                 values[key] = env::pathJoin(p);
             }
@@ -115,7 +115,7 @@ bool check()
                 if (result)
                     result = false;
             }
-        } else if (key == KEY_CM_ROOT_SERVER) {
+        } else if (key == BACON_PREFS_KEY_CM_ROOT_SERVER) {
             string url(get(key));
             if (!util::isValidUrl(url)) {
                 fprintf(stderr, "%s: error: `%s' is not a valid URL\n",

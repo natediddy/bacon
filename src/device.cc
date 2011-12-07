@@ -70,7 +70,7 @@ string Device::id() const
 string Device::romDir() const
 {
     string p[] = {
-        prefs::get(KEY_BASE_DIR), mId, ""
+        prefs::get(BACON_PREFS_KEY_BASE_DIR), mId, ""
     };
 
     return env::pathJoin(p);

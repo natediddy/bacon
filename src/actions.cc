@@ -240,7 +240,7 @@ int perform(const Action &action, const vector<Device *> &devices)
         if (action != SHOWONLY && gRomHistExplicit)
             fprintf(stdout, "%s to ",
                 util::properNumber(gRomHistory).c_str());
-        else if (action == SHOWONLY)
+        else if (action == SHOWONLY && gRomHistory > 1)
             fprintf(stdout, "%d ", gRomHistory);
         fputs("latest ", stdout);
         if (action != SHOWONLY)

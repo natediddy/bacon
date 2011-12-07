@@ -29,16 +29,12 @@ class Net {
 public:
     Net(const std::string &request = "");
     ~Net();
-
     virtual bool fetch();
-
 protected:
     bool setup();
-
 protected:
     CURL *pCurl;
     CURLcode pStatus;
-
 private:
     std::string mUrl;
 };

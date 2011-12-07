@@ -28,9 +28,7 @@ public:
     Md5(const std::string &path,
         const std::string &deviceId,
         const std::string &deviceType);
-
     bool verify();
-
 private:
     std::string mLocalHash;
     std::string mRemoteHash;

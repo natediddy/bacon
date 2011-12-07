@@ -32,7 +32,7 @@ using std::string;
 Net::Net(const string &request)
     : pCurl(curl_easy_init())
     , pStatus(CURLE_OK)
-    , mUrl(prefs::get(KEY_CM_ROOT_SERVER) + request)
+    , mUrl(prefs::get(BACON_PREFS_KEY_CM_ROOT_SERVER) + request)
 {
     BACON_LOGI("connecting to: %s", mUrl.c_str());
 }

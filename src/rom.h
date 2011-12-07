@@ -30,12 +30,9 @@ class Rom : public Net, File {
 public:
     Rom(const std::string &name, const std::string &path);
     ~Rom();
-
     bool fetch();
-
 protected:
     bool setup();
-
 private:
     friend size_t write_CB(void *p, size_t s, size_t n, FILE *f);
 };

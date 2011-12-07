@@ -56,7 +56,7 @@ string prepareListFile()
 #endif
 
     string p[] = {
-        prefs::get(KEY_BASE_DIR), name, ""
+        prefs::get(BACON_PREFS_KEY_BASE_DIR), name, ""
     };
     string path(env::pathJoin(p));
 

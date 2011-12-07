@@ -22,10 +22,10 @@
 
 #include "bacon.h"
 
-#define KEY_BASE_DIR       0
-#define KEY_LOG_PATH       1
-#define KEY_CM_ROOT_SERVER 2
-#define KEY_TOTAL          3
+#define BACON_PREFS_KEY_BASE_DIR       0
+#define BACON_PREFS_KEY_LOG_PATH       1
+#define BACON_PREFS_KEY_CM_ROOT_SERVER 2
+#define BACON_PREFS_KEY_TOTAL          3
 
 BACON_NAMESPACE_BEGIN
 

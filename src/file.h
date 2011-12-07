@@ -29,7 +29,6 @@ class File {
 public:
     File(const std::string &name);
     ~File();
-
     std::string name() const;
     std::string dirName() const;
     std::string baseName() const;
@@ -47,13 +46,10 @@ public:
     void change(const std::string &name);
     void writeLine(const std::string &line);
     std::string readLine();
-
 protected:
     FILE *mStream;
-
 private:
     std::string mName;
-
     class FilePropImpl;
     FilePropImpl *mProp;
 };

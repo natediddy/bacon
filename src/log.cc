@@ -93,7 +93,7 @@ void activate()
     myPid = (int)getpid();
 #endif
     if (!stream)
-        stream = fopen(prefs::get(KEY_LOG_PATH).c_str(), "a+");
+        stream = fopen(prefs::get(BACON_PREFS_KEY_LOG_PATH).c_str(), "a+");
     writeBanner(HEADER);
 }
 
