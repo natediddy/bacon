@@ -43,6 +43,14 @@ namespace {
 bool dlReq = false;
 bool wantsSpec = false;
 
+const string cleanOptions[] = {
+    "-C", "--clean",
+#ifdef _WIN32
+    "/C",
+#endif
+    ""
+};
+
 const string configOptions[] = {
     "-b", "-l", "-c",
 #ifdef _WIN32
@@ -69,6 +77,15 @@ const string actionOptions[] = {
     "--show", "--stable", "--nightly", "--release-candidate",
     ""
 };
+
+bool isCleanCmd(const string &arg)
+{
+    for (size_t i = 0; !cleanOptions[i].empty(); ++i) {
+        if (arg.find(cleanOptions[i]) != string::npos)
+            return true;
+    }
+    return false;
+}
 
 bool isConfigCmd(const string &arg)
 {
@@ -337,7 +354,19 @@ void Cmd::analyze()
     }
 
     for (size_t i = 0; i < argCount; ++i) {
-        if (isConfigCmd(mArgs[i])) {
+        if (isCleanCmd(mArgs[i])) {
+            string name("");
+            if (mArgs[i][0] == '-' && mArgs[i][1] == '-') {
+                name = mArgs[i].substr(mArgs[i].find_first_of('=') + 1,
+                        mArgs[i].size());
+            } else if (mArgs[i].size() > 2) {
+                name = mArgs[i].substr(2, mArgs[i].size());
+            } else if ((i + 1) < argCount) {
+                name = mArgs[i + 1];
+                ++i;
+            }
+            cleanRomDir(name);
+        } else if (isConfigCmd(mArgs[i])) {
             if (!mConf)
                 mConf = new ConfigCmdUtilImpl;
             if (mArgs[i][0] == '-' && mArgs[i][1] == '-') {

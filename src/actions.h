@@ -18,6 +18,7 @@
 #ifndef BACON_ACTIONS_H_INCLUDED
 #define BACON_ACTIONS_H_INCLUDED
 
+#include <string>
 #include <vector>
 
 #include "bacon.h"
@@ -36,6 +37,7 @@ int showAllRoms(const std::vector<Device *> &devices);
 int downloadLatestStableRom(const std::vector<Device *> &devices);
 int downloadLatestNightlyRom(const std::vector<Device *> &devices);
 int downloadLatestRcRom(const std::vector<Device *> &devices);
+void cleanRomDir(const std::string &name);
 
 BACON_NAMESPACE_END
 

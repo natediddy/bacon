@@ -313,6 +313,46 @@ void ListCompareData::printDiff()
     }
 }
 
+void cleanAllRomDirs()
+{
+    DeviceList list;
+
+    list.prep();
+    for (size_t i = 0; i < list.size(); ++i) {
+        if (list[i] == BACON_PSEUDO_RANDOM_DEVICE_ID ||
+                list[i] == BACON_PSEUDO_ALL_DEVICE_ID)
+            continue;
+        Device device(list[i]);
+        File fp(device.romDir());
+        if (fp.isDir()) {
+            fprintf(stdout, "Disposing of directory: `%s'...\n",
+                    fp.name().c_str());
+            fp.dispose();
+        }
+    }
+}
+
+void cleanSpecificRomDir(const string &id)
+{
+    if (!validDevice(id)) {
+        fprintf(stderr, "%s: unknown device `%s'\n",
+                gProgramName.c_str(), id.c_str());
+        return;
+    }
+
+    Device device(id);
+    File fp(device.romDir());
+
+    if (fp.isDir()) {
+        fprintf(stdout, "Disposing of directory: `%s'...\n",
+                fp.name().c_str());
+        fp.dispose();
+    } else {
+        fprintf(stdout, "Not cleaning because directory does not "
+                "exist: `%s'\n", fp.name().c_str());
+    }
+}
+
 } /* namespace */
 
 int showUsage()
@@ -340,6 +380,8 @@ int showHelp()
         "  -u, --update-devices     update the current DEVICE list and exit\n"
         "  -h, -?, --help           display this message and exit\n"
         "  -v, --version            display version information and exit\n"
+        "  -C DEVICE_ID, --clean=DEVICE_ID\n"
+        "                           delete ROM directory for DEVICE_ID\n"
         "  -H INTEGER, --rom-history=INTEGER\n"
         "                           set the number of latest ROMs to search "
           "for\n"
@@ -453,6 +495,25 @@ int downloadLatestNightlyRom(const vector<Device *> &devices)
 int downloadLatestRcRom(const vector<Device *> &devices)
 {
     return perform(DOWNLOAD_RC, devices);
+}
+
+void cleanRomDir(const string &name)
+{
+    bool allDevices = false;
+
+    if (name == "all")
+        allDevices = true;
+
+    if (!allDevices && !validDevice(name)) {
+        fprintf(stderr, "%s: unknown device `%s'\n",
+                gProgramName.c_str(), name.c_str());
+        return;
+    }
+
+    if (allDevices)
+        cleanAllRomDirs();
+    else
+        cleanSpecificRomDir(name);
 }
 
 BACON_NAMESPACE_END

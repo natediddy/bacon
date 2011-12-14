@@ -20,11 +20,7 @@
 #include <cerrno>
 #include <cstring>
 
-#if HAVE_MALLOC_H
-#include <malloc.h>
-#else
-#include <cstdlib>
-#endif
+#include <dirent.h>
 
 #if HAVE_SYS_TYPES_H
 #include <sys/types.h>
@@ -38,9 +34,25 @@
 #include <windows.h>
 #endif
 
+#if HAVE_UNISTD_H
+#include <unistd.h>
+#endif
+
 #include "env.h"
 #include "file.h"
 #include "util.h"
+
+#if HAVE_UNISTD_H
+#define DELETE_FILE(fn) unlink(fn)
+#define DELETE_DIR(dn)  rmdir(dn)
+#define MAKE_DIR(dn)    mkdir(dn, S_IRWXU)
+#else
+#ifdef _WIN32
+#define DELETE_FILE(fn)
+#define DELETE_DIR(dn)
+#define MAKE_DIR(dn)    CreateDirectory(dn, NULL)
+#endif
+#endif
 
 #define REFRESH_FILE_PROPS \
     do { \
@@ -48,11 +60,55 @@
         mProp = new FilePropImpl(mName.c_str()); \
     } while (0)
 
+#define SET_ERRNO_COPY \
+    do { \
+        if (errno != 0) \
+            mErrNo = errno; \
+        else if (mErrNo != 0) \
+            mErrNo = 0; \
+    } while (0)
+
 #define PATH_SEPARATORS "/\\"
 
 BACON_NAMESPACE_BEGIN
 
 using std::string;
+
+namespace {
+
+inline string pathAppend(const string &path, const char *suffix)
+{
+    string result(path);
+
+    result += env::dirSeparator();
+    result += suffix;
+    return result;
+}
+
+void treeDispose(const string &name)
+{
+#if HAVE_SYS_STAT_H
+    DIR *dir = opendir(name.c_str());
+    struct dirent *entry = NULL;
+
+    while ((entry = readdir(dir))) {
+        if (!strcmp(entry->d_name, ".") || !strcmp(entry->d_name, ".."))
+            continue;
+        string path(pathAppend(name, entry->d_name));
+        struct stat statBuf;
+        memset(&statBuf, 0, sizeof(struct stat));
+        if (!stat(path.c_str(), &statBuf)) {
+            if (S_ISDIR(statBuf.st_mode))
+                treeDispose(path);
+            else
+                DELETE_FILE(path.c_str());
+        }
+    }
+#endif
+    DELETE_DIR(name.c_str());
+}
+
+} /* namespace */
 
 class File::FilePropImpl {
 public:
@@ -118,8 +174,11 @@ size_t File::FilePropImpl::sizeInBytes() const
 File::File(const string &name)
     : mStream(NULL)
     , mName(name)
+    , mErrNo(0)
     , mProp(new File::FilePropImpl(name.c_str()))
-{}
+{
+    SET_ERRNO_COPY;
+}
 
 File::~File()
 {
@@ -147,9 +206,10 @@ bool File::isOpen() const
     return !!mStream;
 }
 
-bool File::open(const char *mode /*= "r"*/)
+bool File::open(const char *mode)
 {
     mStream = fopen(mName.c_str(), mode);
+    SET_ERRNO_COPY;
 
     if (!mStream)
         return false;
@@ -164,36 +224,29 @@ bool File::close()
 
     if (mStream && (ret = !fclose(mStream)))
         mStream = NULL;
+
+    SET_ERRNO_COPY;
     REFRESH_FILE_PROPS;
     return ret;
 }
 
 bool File::dispose()
 {
-    bool ret = false;
-
-    if (exists())
-        ret = !remove(mName.c_str());
+    if (isFile())
+        DELETE_FILE(mName.c_str());
+    else if (isDir())
+        treeDispose(mName);
+    SET_ERRNO_COPY;
     REFRESH_FILE_PROPS;
-    return ret;
+    return !mErrNo;
 }
 
 bool File::makeDir()
 {
-    bool ret = true;
-
-    if (!exists())
-        ret =
-#if HAVE_MKDIR
-            !mkdir(mName.c_str(), S_IRWXU)
-#else
-#ifdef _WIN32
-            CreateDirectory(mName.c_str(), NULL)
-#endif
-#endif
-        ;
+    MAKE_DIR(mName.c_str());
+    SET_ERRNO_COPY;
     REFRESH_FILE_PROPS;
-    return ret;
+    return !mErrNo;
 }
 
 bool File::makeDirs()
@@ -219,10 +272,9 @@ bool File::makeDirs()
         }
     }
 
-    if (ret && !makeDir())
-        ret = false;
+    makeDir();
     REFRESH_FILE_PROPS;
-    return ret;
+    return !mErrNo;
 }
 
 bool File::exists() const
@@ -259,8 +311,9 @@ void File::change(const string &name)
 
 void File::writeLine(const string &line)
 {
-    if (isOpen())
-        fprintf(mStream, "%s\n", line.c_str());
+    if (!isOpen())
+        return;
+    fputs(line.c_str(), mStream);
 }
 
 string File::readLine()

@@ -50,6 +50,7 @@ protected:
     FILE *mStream;
 private:
     std::string mName;
+    int mErrNo;
     class FilePropImpl;
     FilePropImpl *mProp;
 };
