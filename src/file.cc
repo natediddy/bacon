@@ -330,6 +330,7 @@ void File::writeLine(const string &line)
     if (!isOpen())
         return;
     fputs(line.c_str(), mStream);
+    fputc('\n', mStream);
 }
 
 string File::readLine()
