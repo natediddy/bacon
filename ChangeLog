@@ -1,4 +1,5 @@
 0.20.4:
+  - new option -C/--clean to delete device rom directories
   - new pseudo device ID 'all'
   - more code organization/readability changes
   - display current bacon version in log header and footer
