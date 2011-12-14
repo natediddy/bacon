@@ -1,5 +1,5 @@
 AC_PREREQ([2.50])
-AC_INIT(bacon, 0.20.5)
+AC_INIT(bacon, 0.20.6)
 AC_CONFIG_SRCDIR([src])
 
 AC_CONFIG_HEADERS([config.h])
