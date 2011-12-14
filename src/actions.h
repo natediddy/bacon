@@ -37,7 +37,7 @@ int showAllRoms(const std::vector<Device *> &devices);
 int downloadLatestStableRom(const std::vector<Device *> &devices);
 int downloadLatestNightlyRom(const std::vector<Device *> &devices);
 int downloadLatestRcRom(const std::vector<Device *> &devices);
-void cleanRomDir(const std::string &name);
+void cleanRomDir(const std::vector<std::string> &names);
 
 BACON_NAMESPACE_END
 

@@ -332,24 +332,24 @@ void cleanAllRomDirs()
     }
 }
 
-void cleanSpecificRomDir(const string &id)
+void cleanSpecificRomDir(const vector<string> &names)
 {
-    if (!validDevice(id)) {
-        fprintf(stderr, "%s: unknown device `%s'\n",
-                gProgramName.c_str(), id.c_str());
-        return;
-    }
-
-    Device device(id);
-    File fp(device.romDir());
-
-    if (fp.isDir()) {
-        fprintf(stdout, "Disposing of directory: `%s'...\n",
-                fp.name().c_str());
-        fp.dispose();
-    } else {
-        fprintf(stdout, "Not cleaning because directory does not "
-                "exist: `%s'\n", fp.name().c_str());
+    for (size_t i = 0; i < names.size(); ++i) {
+        if (!validDevice(names[i])) {
+            fprintf(stderr, "%s: unknown device `%s', skipping...\n",
+                    gProgramName.c_str(), names[i].c_str());
+            continue;
+        }
+        Device device(names[i]);
+        File fp(device.romDir());
+        if (fp.isDir()) {
+            fprintf(stdout, "Deleting directory: `%s'...\n",
+                    fp.name().c_str());
+            fp.dispose();
+        } else {
+            fprintf(stdout, "Not deleting because directory does not exist: "
+                    "`%s'\n", fp.name().c_str());
+        }
     }
 }
 
@@ -497,23 +497,12 @@ int downloadLatestRcRom(const vector<Device *> &devices)
     return perform(DOWNLOAD_RC, devices);
 }
 
-void cleanRomDir(const string &name)
+void cleanRomDir(const vector<string> &names)
 {
-    bool allDevices = false;
-
-    if (name == "all")
-        allDevices = true;
-
-    if (!allDevices && !validDevice(name)) {
-        fprintf(stderr, "%s: unknown device `%s'\n",
-                gProgramName.c_str(), name.c_str());
-        return;
-    }
-
-    if (allDevices)
+    if (names[0] == "all")
         cleanAllRomDirs();
     else
-        cleanSpecificRomDir(name);
+        cleanSpecificRomDir(names);
 }
 
 BACON_NAMESPACE_END

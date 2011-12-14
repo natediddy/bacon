@@ -34,6 +34,8 @@ private:
     void analyze();
 private:
     std::vector<std::string> mArgs;
+    class CleanCmdUtilImpl;
+    CleanCmdUtilImpl *mClean;
     class ConfigCmdUtilImpl;
     ConfigCmdUtilImpl *mConf;
     class BasicCmdUtilImpl;

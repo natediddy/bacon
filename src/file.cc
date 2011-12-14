@@ -48,8 +48,8 @@
 #define MAKE_DIR(dn)    mkdir(dn, S_IRWXU)
 #else
 #ifdef _WIN32
-#define DELETE_FILE(fn)
-#define DELETE_DIR(dn)
+#define DELETE_FILE(fn) DeleteFile(fn)
+#define DELETE_DIR(dn)  DeleteDirectory(dn)
 #define MAKE_DIR(dn)    CreateDirectory(dn, NULL)
 #endif
 #endif
@@ -58,14 +58,6 @@
     do { \
         BACON_FREE(mProp); \
         mProp = new FilePropImpl(mName.c_str()); \
-    } while (0)
-
-#define SET_ERRNO_COPY \
-    do { \
-        if (errno != 0) \
-            mErrNo = errno; \
-        else if (mErrNo != 0) \
-            mErrNo = 0; \
     } while (0)
 
 #define PATH_SEPARATORS "/\\"
@@ -85,8 +77,9 @@ inline string pathAppend(const string &path, const char *suffix)
     return result;
 }
 
-void treeDispose(const string &name)
+bool treeDispose(const string &name)
 {
+    bool result = false;
 #if HAVE_SYS_STAT_H
     DIR *dir = opendir(name.c_str());
     struct dirent *entry = NULL;
@@ -98,14 +91,30 @@ void treeDispose(const string &name)
         struct stat statBuf;
         memset(&statBuf, 0, sizeof(struct stat));
         if (!stat(path.c_str(), &statBuf)) {
-            if (S_ISDIR(statBuf.st_mode))
-                treeDispose(path);
-            else
-                DELETE_FILE(path.c_str());
+            if (S_ISDIR(statBuf.st_mode)) {
+                BACON_LOGI("reading subdirectory: %s", path.c_str());
+                result = treeDispose(path);
+            } else {
+                BACON_LOGI("deleting file: %s", path.c_str());
+                result = DELETE_FILE(path.c_str())
+#if HAVE_UNISTD_H
+                    == 0
+#endif
+                    ;
+            }
         }
     }
 #endif
-    DELETE_DIR(name.c_str());
+
+    if (!result) {
+        BACON_LOGW("failed to delete file", NULL);
+        return result;
+    }
+    result = DELETE_DIR(name.c_str())
+#if HAVE_UNISTD_H
+        == 0
+#endif
+        ;
 }
 
 } /* namespace */
@@ -176,9 +185,7 @@ File::File(const string &name)
     , mName(name)
     , mErrNo(0)
     , mProp(new File::FilePropImpl(name.c_str()))
-{
-    SET_ERRNO_COPY;
-}
+{}
 
 File::~File()
 {
@@ -209,7 +216,6 @@ bool File::isOpen() const
 bool File::open(const char *mode)
 {
     mStream = fopen(mName.c_str(), mode);
-    SET_ERRNO_COPY;
 
     if (!mStream)
         return false;
@@ -225,28 +231,37 @@ bool File::close()
     if (mStream && (ret = !fclose(mStream)))
         mStream = NULL;
 
-    SET_ERRNO_COPY;
     REFRESH_FILE_PROPS;
     return ret;
 }
 
 bool File::dispose()
 {
+    bool ret = false;
+
     if (isFile())
-        DELETE_FILE(mName.c_str());
+        ret = DELETE_FILE(mName.c_str())
+#if HAVE_UNISTD_H
+            == 0
+#endif
+            ;
     else if (isDir())
-        treeDispose(mName);
-    SET_ERRNO_COPY;
+        ret = treeDispose(mName);
+
     REFRESH_FILE_PROPS;
-    return !mErrNo;
+    return ret;
 }
 
 bool File::makeDir()
 {
-    MAKE_DIR(mName.c_str());
-    SET_ERRNO_COPY;
+    bool ret = MAKE_DIR(mName.c_str())
+#if HAVE_UNISTD_H
+        == 0
+#endif
+        ;
+
     REFRESH_FILE_PROPS;
-    return !mErrNo;
+    return ret;
 }
 
 bool File::makeDirs()
@@ -272,9 +287,10 @@ bool File::makeDirs()
         }
     }
 
-    makeDir();
+    if (ret && !makeDir())
+        ret = false;
     REFRESH_FILE_PROPS;
-    return !mErrNo;
+    return ret;
 }
 
 bool File::exists() const

@@ -171,6 +171,14 @@ void handlePseudoAllId(vector<Device *> &devices)
 
 } /* namespace */
 
+class Cmd::CleanCmdUtilImpl {
+public:
+    CleanCmdUtilImpl(vector<string> ids);
+    void perform() const;
+private:
+    vector<string> mIds;
+};
+
 class Cmd::ConfigCmdUtilImpl {
 public:
     ConfigCmdUtilImpl();
@@ -198,6 +206,15 @@ private:
     vector<Device *> mDevices;
     int (*mFun)(const vector<Device *> &devices);
 };
+
+Cmd::CleanCmdUtilImpl::CleanCmdUtilImpl(vector<string> ids)
+    : mIds(ids)
+{}
+
+void Cmd::CleanCmdUtilImpl::perform() const
+{
+    cleanRomDir(mIds);
+}
 
 Cmd::ConfigCmdUtilImpl::ConfigCmdUtilImpl()
 {
@@ -322,7 +339,8 @@ int Cmd::ActionCmdUtilImpl::perform() const
 }
 
 Cmd::Cmd(char ***argv)
-    : mConf(NULL)
+    : mClean(NULL)
+    , mConf(NULL)
     , mBasic(NULL)
 {
     properProgramName(**argv);
@@ -355,17 +373,22 @@ void Cmd::analyze()
 
     for (size_t i = 0; i < argCount; ++i) {
         if (isCleanCmd(mArgs[i])) {
-            string name("");
-            if (mArgs[i][0] == '-' && mArgs[i][1] == '-') {
-                name = mArgs[i].substr(mArgs[i].find_first_of('=') + 1,
-                        mArgs[i].size());
-            } else if (mArgs[i].size() > 2) {
-                name = mArgs[i].substr(2, mArgs[i].size());
-            } else if ((i + 1) < argCount) {
-                name = mArgs[i + 1];
-                ++i;
+            vector<string> names;
+            if (mArgs[i][0] == '-' && mArgs[i][1] == '-')
+                names.push_back(mArgs[i].substr(
+                        mArgs[i].find_first_of('=') + 1,
+                        mArgs[i].size()));
+            else if (mArgs[i].size() > 2)
+                names.push_back(mArgs[i].substr(2, mArgs[i].size()));
+            if ((i + 1) < argCount) {
+                for (size_t j = i + 1; j < argCount; ++j) {
+                    if (mArgs[j][0] != '-') {
+                        names.push_back(mArgs[j]);
+                        ++i;
+                    }
+                }
+                mClean = new CleanCmdUtilImpl(names);
             }
-            cleanRomDir(name);
         } else if (isConfigCmd(mArgs[i])) {
             if (!mConf)
                 mConf = new ConfigCmdUtilImpl;
@@ -398,7 +421,6 @@ void Cmd::analyze()
                         continue;
                     }
                 }
-                break;
             }
             mActions.push_back(new ActionCmdUtilImpl(mArgs[i_save], devices));
         } else if (isRomHistCmd(mArgs[i])) {
@@ -424,6 +446,9 @@ int Cmd::exec() const
 {
     int retval = EXIT_SUCCESS;
     bool error = false;
+
+    if (mClean)
+        mClean->perform();
 
     if (mBasic) {
         retval = mBasic->perform();
