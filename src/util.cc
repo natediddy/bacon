@@ -35,14 +35,14 @@ using std::string;
 
 namespace util {
 
-namespace {
+BACON_PRIVATE_NAMESPACE_BEGIN
 
 unsigned int rSeed;
 const string urlPrefixes[] = {
     "http://", "https://", "ftp://", "git://", "ssh://", ""
 };
 
-} /* namespace */
+BACON_PRIVATE_NAMESPACE_END
 
 string toUpperCase(const string &str)
 {

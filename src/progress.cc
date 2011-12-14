@@ -49,7 +49,7 @@ using std::string;
 
 extern long gStartEpoch;
 
-namespace {
+BACON_PRIVATE_NAMESPACE_BEGIN
 
 class ProgressBar {
 public:
@@ -188,7 +188,7 @@ string etaString(const int bytesRemaining, const int speed)
     return result;
 }
 
-} /* namespace */
+BACON_PRIVATE_NAMESPACE_END
 
 int progressBar(void * data,
                 double totalToDownload,

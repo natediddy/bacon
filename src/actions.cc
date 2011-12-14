@@ -41,7 +41,7 @@ extern string gProgramName;
 extern int gRomHistory;
 extern bool gRomHistExplicit;
 
-namespace {
+BACON_PRIVATE_NAMESPACE_BEGIN
 
 void alignPrintNumber(const size_t n)
 {
@@ -353,7 +353,7 @@ void cleanSpecificRomDir(const vector<string> &names)
     }
 }
 
-} /* namespace */
+BACON_PRIVATE_NAMESPACE_END
 
 int showUsage()
 {

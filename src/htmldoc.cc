@@ -27,7 +27,7 @@ BACON_NAMESPACE_BEGIN
 
 using std::string;
 
-namespace {
+BACON_PRIVATE_NAMESPACE_BEGIN
 
 string formRequest(const string &deviceId, const string &deviceType)
 {
@@ -51,7 +51,7 @@ string formRequest(const string &deviceId, const string &deviceType)
     return result;
 }
 
-} /* namespace */
+BACON_PRIVATE_NAMESPACE_END
 
 size_t write_CB(void *buf, size_t size, size_t nmemb, void *userp)
 {

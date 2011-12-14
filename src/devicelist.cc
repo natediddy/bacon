@@ -41,7 +41,7 @@ BACON_NAMESPACE_BEGIN
 using std::string;
 using std::vector;
 
-namespace {
+BACON_PRIVATE_NAMESPACE_BEGIN
 
 string prepareListFile()
 {
@@ -67,7 +67,7 @@ string prepareListFile()
     return path;
 }
 
-} /* namespace */
+BACON_PRIVATE_NAMESPACE_END
 
 DeviceList::DeviceList()
     : File(prepareListFile())

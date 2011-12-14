@@ -26,7 +26,7 @@ BACON_NAMESPACE_BEGIN
 
 using std::string;
 
-namespace {
+BACON_PRIVATE_NAMESPACE_BEGIN
 
 string getRandomDeviceIndex()
 {
@@ -50,7 +50,7 @@ string getRandomDeviceIndex()
     return list[index];
 }
 
-} /* namespace */
+BACON_PRIVATE_NAMESPACE_END
 
 Device::Device(const string &deviceId)
     : mId(deviceId)

@@ -33,7 +33,7 @@ extern string gProgramName;
 
 namespace prefs {
 
-namespace {
+BACON_PRIVATE_NAMESPACE_BEGIN
 
 string values[BACON_PREFS_KEY_TOTAL];
 
@@ -57,7 +57,7 @@ string keyToString(const Key key)
     return result;
 }
 
-} /* namespace */
+BACON_PRIVATE_NAMESPACE_END
 
 void init()
 {

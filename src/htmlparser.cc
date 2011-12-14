@@ -51,7 +51,7 @@ using std::vector;
 
 extern int gRomHistory;
 
-namespace {
+BACON_PRIVATE_NAMESPACE_BEGIN
 
 bool filenameMatch(const string &s, const string &n, const size_t i)
 {
@@ -62,7 +62,7 @@ bool filenameMatch(const string &s, const string &n, const size_t i)
     return true;
 }
 
-} /* namespace */
+BACON_PRIVATE_NAMESPACE_END
 
 HtmlParser::HtmlParser(const string &content)
     : mContent(content)

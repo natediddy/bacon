@@ -83,7 +83,7 @@ BACON_NAMESPACE_BEGIN
 
 using std::string;
 
-namespace {
+BACON_PRIVATE_NAMESPACE_BEGIN
 
 inline unsigned int rotateLeft(unsigned int x, unsigned int n)
 {
@@ -409,7 +409,7 @@ void Md5Impl::finalize()
     mFinalized = true;
 }
 
-} /* namespace */
+BACON_PRIVATE_NAMESPACE_END
 
 Md5::Md5(const string &path,
          const string &deviceId,

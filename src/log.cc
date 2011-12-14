@@ -46,7 +46,7 @@ using std::string;
 
 namespace log {
 
-namespace {
+BACON_PRIVATE_NAMESPACE_BEGIN
 
 #if HAVE_UNISTD_H
 int myPid = 0;
@@ -80,7 +80,7 @@ void writeBanner(const BannerType &type)
             util::timeString(BANNER_DATE_FORMAT).c_str());
 }
 
-} /* namespace */
+BACON_PRIVATE_NAMESPACE_END
 
 bool _isActive()
 {

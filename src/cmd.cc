@@ -38,7 +38,7 @@ string gProgramName;
 int gRomHistory = BACON_ROM_HISTORY_DEFAULT;
 bool gRomHistExplicit = false;
 
-namespace {
+BACON_PRIVATE_NAMESPACE_BEGIN
 
 bool dlReq = false;
 bool wantsSpec = false;
@@ -169,7 +169,7 @@ void handlePseudoAllId(vector<Device *> &devices)
     }
 }
 
-} /* namespace */
+BACON_PRIVATE_NAMESPACE_END
 
 class Cmd::CleanCmdUtilImpl {
 public:

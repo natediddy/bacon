@@ -66,7 +66,7 @@ BACON_NAMESPACE_BEGIN
 
 using std::string;
 
-namespace {
+BACON_PRIVATE_NAMESPACE_BEGIN
 
 inline string pathAppend(const string &path, const char *suffix)
 {
@@ -117,7 +117,7 @@ bool treeDispose(const string &name)
         ;
 }
 
-} /* namespace */
+BACON_PRIVATE_NAMESPACE_END
 
 class File::FilePropImpl {
 public:

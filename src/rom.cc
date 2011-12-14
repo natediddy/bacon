@@ -29,7 +29,7 @@ using std::string;
 
 long gStartEpoch = 0;
 
-namespace {
+BACON_PRIVATE_NAMESPACE_BEGIN
 
 string formRequest(const string &name)
 {
@@ -39,7 +39,7 @@ string formRequest(const string &name)
     return result;
 }
 
-} /* namespace */
+BACON_PRIVATE_NAMESPACE_END
 
 size_t write_CB(void *ptr, size_t size, size_t nmemb, FILE *fp)
 {

@@ -54,5 +54,8 @@
 #define BACON_NAMESPACE_BEGIN namespace bacon {
 #define BACON_NAMESPACE_END   }
 
+#define BACON_PRIVATE_NAMESPACE_BEGIN namespace {
+#define BACON_PRIVATE_NAMESPACE_END   }
+
 #endif /* !BACON_H_INCLUDED */
 
