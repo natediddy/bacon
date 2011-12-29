@@ -278,7 +278,7 @@ bool File::makeDirs()
         while ((p = strchr(pn, env::dirSeparator()))) {
             *p = '\0';
             File f(path);
-            if (!f.makeDir()) {
+            if (!f.exists() && !f.makeDir()) {
                 ret = false;
                 break;
             }
