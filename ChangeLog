@@ -1,3 +1,6 @@
+0.20.7:
+  - fixed bug when creating directory tree
+
 0.20.4:
   - new option -C/--clean to delete device rom directories
   - new pseudo device ID 'all'
