@@ -13,9 +13,9 @@ AC_PROG_CC
 AC_SYS_LARGEFILE
 
 AC_CHECK_LIB(curl, curl_easy_init, [LIBS="$LIBS -lcurl"], [
-  AC_ERROR(libcurl is required to build bacon, if you do not have it,
+  AC_ERROR([libcurl is required to build bacon, if you do not have it,
            you can get it from http://curl.haxx.se/download.html/ or
-           from your system package manager (if you have one))
+           from your system package manager (if you have one)])
 ])
 
 AC_ARG_VAR(BACON_ROM_HISTORY_DEFAULT,
