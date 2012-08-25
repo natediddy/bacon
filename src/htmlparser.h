@@ -31,6 +31,8 @@ public:
     ~HtmlParser();
     void allDeviceIds(std::vector<std::string> &vec) const;
     std::string checksumStringForFile(const std::string &filename) const;
+    std::string sizeForFile(const std::string &filename) const;
+    std::string dateForFile(const std::string &filename) const;
     std::vector<std::string> latestRomsForDevice() const;
     std::string currentContent() const;
 private:

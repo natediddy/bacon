@@ -34,6 +34,7 @@
 
 BACON_NAMESPACE_BEGIN
 
+using std::map;
 using std::string;
 using std::vector;
 
@@ -179,10 +180,26 @@ bool performShowOnly(const Device *device)
     fprintf(stdout, "%s:\n", device->id().c_str());
     for (size_t i = 0; i < 3; ++i) {
         Stats stats(device, types[i]);
-        fprintf(stdout, "  %s:\n", types[i].c_str());
+        fprintf(stdout, "  %s:\n\t", types[i].c_str());
         if (stats.init()) {
-            vector<string> romNames = stats.romNames();
-            for (size_t j = 0; j < romNames.size(); ++j) {
+            map<string, vector<string> > nfo = stats.romInfo();
+            for (map<string, vector<string> >::const_iterator j = nfo.begin();
+                 j != nfo.end();
+                 ++j)
+            {
+                fprintf(stdout, "%s (%s) -- ",
+                        j->second[1].c_str(), j->second[0].c_str());
+                if (stats.existsLocally(j->first)) {
+                    if (stats.isValid(j->first))
+                        fputs("already downloaded", stdout);
+                    else
+                        fputs("partially downloaded and/or corrupt", stdout);
+                } else {
+                    fputs("not downloaded", stdout);
+                }
+                fputc('\n', stdout);
+            }
+            /*for (size_t j = 0; j < romNames.size(); ++j) {
                 fputc('\t', stdout);
                 if (types[i] == "nightly")
                     fputs(util::nightlyBuildNo(romNames[j]).c_str(), stdout);
@@ -198,9 +215,9 @@ bool performShowOnly(const Device *device)
                     fputs("not downloaded", stdout);
                 }
                 fputc('\n', stdout);
-            }
+            }*/
         } else {
-            fputs("\t(none found)\n", stdout);
+            fputs("(none found)\n", stdout);
         }
     }
 }

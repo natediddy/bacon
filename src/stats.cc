@@ -26,6 +26,7 @@
 
 BACON_NAMESPACE_BEGIN
 
+using std::map;
 using std::string;
 using std::vector;
 
@@ -43,38 +44,60 @@ bool Stats::init()
 
     if (doc.fetch()) {
         HtmlParser parser(doc.content());
-        mLatestRomNames = parser.latestRomsForDevice();
-        for (size_t i = 0; i < mLatestRomNames.size(); ++i) {
+        vector<string> names = parser.latestRomsForDevice();
+        for (size_t i = 0; i < names.size(); ++i) {
+            vector<string> nfo;
+            nfo.push_back(parser.sizeForFile(names[i]));
+            nfo.push_back(parser.dateForFile(names[i]));
             string p[] = {
-                mDevice->romDir(), mLatestRomNames[i], ""
+                mDevice->romDir(), names[i], ""
             };
-            mRomPaths.push_back(env::pathJoin(p));
+            nfo.push_back(env::pathJoin(p));
+            mInfo[names[i]] = nfo;
+        }
+        return true;
+    }
+    return false;
+}
+
+bool Stats::existsLocally(const string &name) const
+{
+    for (map<string, vector<string> >::const_iterator i = mInfo.begin();
+         i != mInfo.end();
+         ++i)
+    {
+        if (i->first != name)
+            continue;
+        File p(i->second[2]);
+        return p.isFile();
+    }
+    return false;
+}
+
+bool Stats::isValid(const string &name) const
+{
+    string path("");
+
+    for (map<string, vector<string> >::const_iterator i = mInfo.begin();
+         i != mInfo.end();
+         ++i)
+    {
+        if (i->first == name) {
+            path = i->second[2];
+            break;
         }
     }
-    return mLatestRomNames.size() && mRomPaths.size();
+
+    if (!path.empty()) {
+        Md5 md5(path, mDevice->id(), mType);
+        return md5.verify();
+    }
+    return false;
 }
 
-bool Stats::existsLocally(const size_t n) const
+map<string, vector<string> > Stats::romInfo() const
 {
-    if (n >= mRomPaths.size())
-        return false;
-
-    File p(mRomPaths[n]);
-    return p.isFile();
-}
-
-bool Stats::isValid(const size_t n) const
-{
-    if (n >= mRomPaths.size())
-        return false;
-
-    Md5 md5(mRomPaths[n], mDevice->id(), mType);
-    return md5.verify();
-}
-
-vector<string> Stats::romNames() const
-{
-    return mLatestRomNames;
+    return mInfo;
 }
 
 BACON_NAMESPACE_END

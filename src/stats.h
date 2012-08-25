@@ -18,6 +18,7 @@
 #ifndef BACON_STATS_H_INCLUDED
 #define BACON_STATS_H_INCLUDED
 
+#include <map>
 #include <string>
 #include <vector>
 
@@ -32,14 +33,15 @@ public:
     Stats(const Device *device, const std::string &deviceType);
     ~Stats();
     bool init();
-    bool existsLocally(const size_t n) const;
-    bool isValid(const size_t n) const;
-    std::vector<std::string> romNames() const;
+    bool existsLocally(const std::string &name) const;
+    bool isValid(const std::string &name) const;
+    std::map<std::string, std::vector<std::string> > romInfo() const;
 private:
     const Device *mDevice;
     std::string mType;
-    std::vector<std::string> mLatestRomNames;
-    std::vector<std::string> mRomPaths;
+
+    /* key=ROMNAME, value=[SIZE,DATE,PATH] */
+    std::map<std::string, std::vector<std::string> > mInfo;
 };
 
 BACON_NAMESPACE_END
