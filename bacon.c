@@ -518,14 +518,12 @@ bacon_download_rom (BaconDevice *device, BaconRom *rom)
                    output_download);
       return;
     }
-    else
-      bacon_msg ("resuming download of `%s'", output_download);
+    bacon_msg ("resuming download of `%s'", output_download);
+    offset = bacon_env_size_of (output_download);
   }
 
   success = true;
-  if (bacon_net_init_for_rom (rom->get,
-                              bacon_env_size_of (output_download),
-                              output_download))
+  if (bacon_net_init_for_rom (rom->get, offset, output_download))
   {
     if (!bacon_net_get_rom ())
       success = false;
