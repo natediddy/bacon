@@ -73,22 +73,22 @@
 #define BACON_MIN_SECS  60
 #define BACON_MOD_SEC   60
 
-int    console_width  = BACON_FALLBACK_CONSOLE_WIDTH;
-int    output_pos     = 0;
-int    output_rem     = 0;
-long   per_sec        = -1;
-time_t start_time     = -1;
-time_t end_time       = -1;
-size_t propeller_pos  = 0;
+static int    console_width  = BACON_FALLBACK_CONSOLE_WIDTH;
+static int    output_pos     = 0;
+static int    output_rem     = 0;
+static long   per_sec        = -1;
+static time_t start_time     = -1;
+static time_t end_time       = -1;
+static size_t propeller_pos  = 0;
 
-char   output_buffer  [BACON_OUTPUT_MAX];
-char   current_buffer [BACON_SIZE_MAX];
-char   total_buffer   [BACON_SIZE_MAX];
-char   percent_buffer [BACON_PERCENT_MAX];
-char   eta_buffer     [BACON_ETA_MAX];
-char   speed_buffer   [BACON_SPEED_MAX];
+static char   output_buffer  [BACON_OUTPUT_MAX];
+static char   current_buffer [BACON_SIZE_MAX];
+static char   total_buffer   [BACON_SIZE_MAX];
+static char   percent_buffer [BACON_PERCENT_MAX];
+static char   eta_buffer     [BACON_ETA_MAX];
+static char   speed_buffer   [BACON_SPEED_MAX];
 
-const char propeller[BACON_PROPELLER_SIZE] =
+static const char propeller[BACON_PROPELLER_SIZE] =
 {
   BACON_PROPELLER_0,
   BACON_PROPELLER_1,

@@ -26,7 +26,7 @@
 
 #define BACON_DEVICE_LIST_LOCAL_FILENAME "devicelist.txt"
 
-char *local_device_list_path = NULL;
+static char *local_device_list_path = NULL;
 
 static void
 bacon_set_local_device_list_path (void)

@@ -32,29 +32,29 @@
 
 const char *g_program_name;
 
-struct
+static struct
 {
   char id[BACON_DEVICE_NAME_MAX];
 } devices[BACON_DEVICES_MAX];
 
-BaconDeviceList *device_list        = NULL;
-char *           output_download    = NULL;
-int              max_roms           = BACON_DEFAULT_MAX_ROMS;
-int              rom_type           = BACON_ROM_TYPE_NONE;
-bool             list_all_devices   = false;
-bool             update_device_list = false;
-bool             latest             = false;
-bool             downloading        = false;
-bool             showing            = false;
-bool             show_hash          = false;
-bool             show_url           = false;
-bool             interactive        = false;
-bool             all_types          = false;
-bool             experimental_type  = false;
-bool             snapshot_type      = false;
-bool             nightly_type       = false;
-bool             rc_type            = false;
-bool             stable_type        = false;
+static BaconDeviceList *device_list        = NULL;
+static char *           output_download    = NULL;
+static int              max_roms           = BACON_DEFAULT_MAX_ROMS;
+static int              rom_type           = BACON_ROM_TYPE_NONE;
+static bool             list_all_devices   = false;
+static bool             update_device_list = false;
+static bool             latest             = false;
+static bool             downloading        = false;
+static bool             showing            = false;
+static bool             show_hash          = false;
+static bool             show_url           = false;
+static bool             interactive        = false;
+static bool             all_types          = false;
+static bool             experimental_type  = false;
+static bool             snapshot_type      = false;
+static bool             nightly_type       = false;
+static bool             rc_type            = false;
+static bool             stable_type        = false;
 
 static void
 bacon_usage (bool error)

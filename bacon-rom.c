@@ -39,7 +39,7 @@
 
 #define BACON_REQUEST_MAX 128
 
-char request[BACON_REQUEST_MAX];
+static char request[BACON_REQUEST_MAX];
 
 static void
 bacon_form_request (const char *codename, int id)

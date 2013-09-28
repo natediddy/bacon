@@ -70,7 +70,7 @@ typedef struct
   void *res;
 } BaconNetInstance;
 
-BaconNetInstance *net = NULL;
+static BaconNetInstance *net = NULL;
 
 static size_t
 bacon_file_write (void *p, size_t size, size_t nmemb, FILE *fp)
