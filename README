@@ -1,68 +1,26 @@
-Bacon
-==========
-Use this command line tool to download CyanogenMod ROMs for any CM-supported
-Android device.
-
-Bacon will probably currently only build and run properly on Linux machines,
-but aims to be cross-platform very soon.
-
-
-
-Note about Arch Linux
-=====================
-If you are an Arch Linux user, the latest version of bacon can always be
-found in the Arch User Repository (AUR).
-
-
-
-Building
-============
-First, obtain the latest source with Git:
-    git clone git://github.com/natediddy/bacon.git bacon
-
-Change to the source directory:
-    cd bacon
-
-Build and install:
-    ./configure --prefix=/usr --sysconfdir=/etc
-    make
-    # And optionally to install on your system:
-    sudo make install
-
-To build for installation with `pacman' (Arch Linux only):
-    git clone git://github.com/natediddy/bacon.git bacon
-    cd bacon/linux/arch
-    makepkg
-    sudo pacman -U bacon-${pkgver}-${pkgrel}-${arch}.pkg.tar.xz
-
-
-
-Usage
-===========
-More than one DEVICE can be given, but only ONE option per DEVICE list.
-
-For more usage information, view the man page after installing with:
-    man bacon
-
-Contact me at me@nathanforbes.com
-
-Usage: bacon [option] [DEVICE] ...
+Usage: bacon [OPTION...] [DEVICE...]
 Options:
-  -S, --show               show stats for latest builds for DEVICE(s)
-  -s, --stable             download latest stable build for DEVICE(s)
-  -n, --nightly            download latest nightly build for DEVICE(s)
-  -r, --release-candidate  download latest release candidate for DEVICE(s)
-  -d, --devices            display all available DEVICEs and exit
-  -u, --update-devices     update the current DEVICE list and exit
-  -h, -?, --help           display this message and exit
-  -v, --version            display version information and exit
-  -H INTEGER, --rom-history=INTEGER
-                           set the number of latest ROMs to search for
-  -b BASEDIR, --basedir=BASEDIR
-                           set alternate base directory
-  -l LOGPATH, --logpath=LOGPATH
-                           write log to alternate location
-  -c ROOTURL, --cmserver=ROOTURL
-                           use alternate root url to connect with
-
-More than one DEVICE can be given, but only ONE option per DEVICE list.
+  -d, --download             Download ROM for DEVICE
+  -M N, --max-roms=N         Show a max of N ROMs per ROM type (with
+                             `--show')
+  -l, --device-list          List all available devices
+  -L, --latest               Show or download the latest ROM for DEVICE
+                             (with the action of showing or downloading
+                             depending on whether `--show' or `--download'
+                             was used)
+  -s, --show                 Only show ROM(s) for DEVICE (don't download
+                             them)
+  -H, --show-hash            Show the MD5 hash (with `--show')
+  -i, --interactive          Interactive mode
+  -a, --all                  Specify all ROM types
+  -e, --experimental         Specify only Experimental
+  -m, --snapshot             Specify only M Snapshot ROMs
+  -n, --nightly              Specify only Nightly ROMs
+  -r, --rc                   Specify only Release Candidate ROMs
+  -S, --stable               Specify only Stable ROMs
+  -u, --update-device-list   Update the local device list
+  -U, --show-url             Show the URL (with `--show')
+  -o FILENAME, --output=FILENAME
+                             Download ROM to FILENAME
+  -?, -h, --help             Show this help message and exit
+  -v, --version              Show version info and exit

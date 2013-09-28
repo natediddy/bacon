@@ -1,14 +1,29 @@
-confdir = $(sysconfdir)
-conf_DATA = bacon.conf
+ACLOCAL_AMFLAGS = ${ACLOCAL_FLAGS}
 
-SUBDIRS = src docs
+bin_PROGRAMS = bacon
+
+bacon_SOURCES = \
+	bacon.c \
+	bacon-device.c \
+	bacon-env.c \
+	bacon-hash.c \
+	bacon-net.c \
+	bacon-parse.c \
+	bacon-progress.c \
+	bacon-rom.c \
+	bacon-util.c \
+	bacon.h \
+	bacon-device.h \
+	bacon-env.h \
+	bacon-hash.h \
+	bacon-net.h \
+	bacon-os.h \
+	bacon-parse.h \
+	bacon-progress.h \
+	bacon-rom.h \
+	bacon-util.h
 
 EXTRA_DIST = \
-	AUTHORS \
-	ChangeLog \
-	COPYING \
-	autogen.sh \
-	README \
-	$(conf_DATA) \
-	config.h.in \
-	bacon-version.sh
+	README
+
+dist_noinst_SCRIPTS = autogen.sh
