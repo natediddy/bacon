@@ -57,7 +57,7 @@ static bool             rc_type            = false;
 static bool             stable_type        = false;
 
 static void
-bacon_usage (bool error)
+bacon_usage (const bool error)
 {
   bacon_foutln ((!error) ? stdout : stderr,
                 "Usage: %s [OPTION...] [DEVICE...]",
@@ -108,7 +108,7 @@ bacon_version (void)
 }
 
 static void
-bacon_set_program_name (char *argv0)
+bacon_set_program_name (const char *argv0)
 {
   char *x;
 
@@ -242,7 +242,7 @@ bacon_check_opts (void)
 }
 
 static void
-bacon_parse_string_for_short_opts (char *s)
+bacon_parse_string_for_short_opts (const char *s)
 {
   size_t x;
 
@@ -448,7 +448,7 @@ bacon_interactive (void)
 }
 
 static void
-bacon_show_rom_list (BaconDevice *device, BaconRomList *list)
+bacon_show_rom_list (const BaconDevice *device, const BaconRomList *list)
 {
   int n;
   int x;
@@ -484,7 +484,7 @@ bacon_show_rom_list (BaconDevice *device, BaconRomList *list)
 }
 
 static void
-bacon_download_rom (BaconDevice *device, BaconRom *rom)
+bacon_download_rom (const BaconDevice *device, const BaconRom *rom)
 {
   char *p;
   bool success;
@@ -502,7 +502,7 @@ bacon_download_rom (BaconDevice *device, BaconRom *rom)
     else
       output_download = bacon_strdup (rom->name);
   }
-  else if (!bacon_env_validate_path (output_download, true))
+  else if (!bacon_env_ensure_path (output_download, true))
   {
     bacon_error ("`%s' is an invalid output path");
     exit (EXIT_FAILURE);
@@ -600,7 +600,7 @@ bacon_perform (void)
 }
 
 int
-main (int argc, char **argv)
+main (const int argc, char **argv)
 {
   atexit (bacon_cleanup);
   bacon_parse_opt (argv);

@@ -61,9 +61,9 @@ struct BaconRomList
 
 BaconRomList *bacon_rom_list_new     (const char *codename,
                                       int type,
-                                      int max);
+                                      const int max);
 void          bacon_rom_list_destroy (BaconRomList *rom_list);
-const char *  bacon_rom_type_str     (int index);
+const char *  bacon_rom_type_str     (const int index);
 
 #endif /* BACON_ROM_H */
 

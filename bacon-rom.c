@@ -42,7 +42,7 @@
 static char request[BACON_REQUEST_MAX];
 
 static void
-bacon_form_request (const char *codename, int id)
+bacon_form_request (const char *codename, const int id)
 {
   const char *type_str;
 
@@ -74,7 +74,7 @@ bacon_form_request (const char *codename, int id)
 }
 
 static BaconRom *
-bacon_setup_rom (const char *codename, int id, int *max)
+bacon_setup_rom (const char *codename, const int id, const int *max)
 {
   char *data;
   BaconRom *rom;
@@ -92,7 +92,7 @@ bacon_setup_rom (const char *codename, int id, int *max)
 }
 
 BaconRomList *
-bacon_rom_list_new (const char *codename, int type, int max)
+bacon_rom_list_new (const char *codename, int type, const int max)
 {
   int x;
   char *data;
@@ -155,7 +155,7 @@ bacon_rom_list_destroy (BaconRomList *list)
 }
 
 const char *
-bacon_rom_type_str (int index)
+bacon_rom_type_str (const int index)
 {
   switch (index)
   {

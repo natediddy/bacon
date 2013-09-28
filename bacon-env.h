@@ -40,7 +40,7 @@ char *bacon_env_program_path   (void);
 char *bacon_env_cwd            (void);
 char *bacon_env_make_absolute  (const char *path);
 bool  bacon_env_mkpath         (const char *path);
-bool  bacon_env_validate_path  (const char *path, bool file);
+bool  bacon_env_validate_path  (const char *path, const bool file);
 
 #endif /* BACON_ENV_H */
 

@@ -21,8 +21,8 @@
 
 bool  bacon_net_init_for_page_data (const char *request);
 bool  bacon_net_init_for_rom       (const char *request,
-                                    long offset,
-                                    const char *local_filename);
+                                    const long offset,
+                                    const char *filename);
 void  bacon_net_deinit             (void);
 char *bacon_net_get_page_data      (void);
 bool  bacon_net_get_rom            (void);

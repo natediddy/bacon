@@ -216,7 +216,7 @@ bacon_parse_remote_for_device_list (const char *data)
 }
 
 BaconDeviceList *
-bacon_parse_for_device_list (const char *data, bool local)
+bacon_parse_for_device_list (const char *data, const bool local)
 {
   BaconDeviceList *list;
 
@@ -228,7 +228,7 @@ bacon_parse_for_device_list (const char *data, bool local)
 }
 
 BaconRom *
-bacon_parse_for_rom (const char *data, int max)
+bacon_parse_for_rom (const char *data, const int max)
 {
   int m;
   char *x;

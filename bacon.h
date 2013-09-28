@@ -29,7 +29,7 @@
 #define BACON_ROOT_URL "http://get.cm"
 
 #ifndef __cplusplus
-typedef int bool;
+typedef char bool;
 # define bool bool
 # undef false
 # define false (0)

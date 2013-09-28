@@ -28,7 +28,7 @@ typedef struct
 } BaconHash;
 
 void bacon_hash_from_file (BaconHash *hash, const char *filename);
-bool bacon_hash_match     (BaconHash *hash1, BaconHash *hash2);
+bool bacon_hash_match     (const BaconHash *hash1, const BaconHash *hash2);
 
 #endif /* BACON_HASH_H */
 

@@ -21,8 +21,10 @@
 #include "bacon-device.h"
 #include "bacon-rom.h"
 
-BaconDeviceList *bacon_parse_for_device_list (const char *data, bool local);
-BaconRom *       bacon_parse_for_rom         (const char *data, int max);
+BaconDeviceList *bacon_parse_for_device_list (const char *data,
+                                              const bool local);
+BaconRom *       bacon_parse_for_rom         (const char *data,
+                                              const int max);
 
 #endif /* BACON_PARSE_H */
 

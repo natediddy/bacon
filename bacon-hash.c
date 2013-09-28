@@ -319,7 +319,7 @@ bacon_hash_from_file (BaconHash *hash, const char *path)
 }
 
 bool
-bacon_hash_match (BaconHash *hash1, BaconHash *hash2)
+bacon_hash_match (const BaconHash *hash1, const BaconHash *hash2)
 {
   return bacon_streq (hash1->hash, hash2->hash);
 }

@@ -160,20 +160,20 @@ bacon_output_add_char (const char c)
 }
 
 static void
-bacon_set_bytes_per_sec (double current)
+bacon_set_bytes_per_sec (const double current)
 {
   if (current <= 0.0)
   {
     per_sec = -1;
     return;
   }
-  per_sec = ((int) current / ((int) start_time - (int) time (NULL)));
+  per_sec = (current / (start_time - time (NULL)));
   if (per_sec < 0)
     per_sec = -per_sec;
 }
 
 static void
-bacon_format_percent (double x)
+bacon_format_percent (const double x)
 {
   if (bacon_nan_value (x) || bacon_nan_value (x * 100))
   {
@@ -184,13 +184,13 @@ bacon_format_percent (double x)
 }
 
 static void
-bacon_format_total (CmByte bytes)
+bacon_format_total (const CmByte bytes)
 {
   bacon_byte_str_format (total_buffer, BACON_SIZE_MAX, bytes);
 }
 
 static void
-bacon_format_current (CmByte bytes)
+bacon_format_current (const CmByte bytes)
 {
   bacon_byte_str_format (current_buffer, BACON_SIZE_MAX, bytes);
 }
@@ -210,7 +210,7 @@ bacon_format_speed (void)
 }
 
 static void
-bacon_format_eta (double x)
+bacon_format_eta (const double x)
 {
   int d;
   int h;
@@ -224,10 +224,10 @@ bacon_format_eta (double x)
     return;
   }
 
-  d = (((int) x / per_sec) / BACON_DAY_SECS);
-  h = (((int) x / per_sec) / BACON_HOUR_SECS);
-  m = (((int) x / per_sec) / BACON_MIN_SECS);
-  s = (((int) x / per_sec) % BACON_MOD_SEC);
+  d = ((x / per_sec) / BACON_DAY_SECS);
+  h = ((x / per_sec) / BACON_HOUR_SECS);
+  m = ((x / per_sec) / BACON_MIN_SECS);
+  s = ((int) (x / per_sec) % BACON_MOD_SEC);
   n = 0;
 
   if (d > 0)
@@ -278,7 +278,7 @@ bacon_progress_init (void)
 }
 
 void
-bacon_progress_deinit (bool newline)
+bacon_progress_deinit (const bool newline)
 {
   end_time = time (NULL);
   if (newline)
@@ -286,7 +286,7 @@ bacon_progress_deinit (bool newline)
 }
 
 void
-bacon_progress_file (double total, double current)
+bacon_progress_file (const double total, const double current)
 {
   static struct timeval last = { -1, -1 };
 
@@ -350,7 +350,7 @@ bacon_progress_file (double total, double current)
 }
 
 void
-bacon_progress_page (double total, double current)
+bacon_progress_page (const double total, const double current)
 {
   static struct timeval last = { -1, -1 };
 

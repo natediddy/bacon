@@ -238,10 +238,7 @@ bacon_net_fetch (void)
 {
   bacon_progress_init ();
   net->status = curl_easy_perform (net->cp);
-  if (net->action == BACON_NET_ACTION_GET_FILE)
-    bacon_progress_deinit (true);
-  else
-    bacon_progress_deinit (false);
+  bacon_progress_deinit (net->action == BACON_NET_ACTION_GET_FILE);
   return bacon_net_check ();
 }
 
@@ -258,11 +255,13 @@ bacon_net_init_for_page_data (const char *request)
 }
 
 bool
-bacon_net_init_for_rom (const char *request, long offset, const char *local)
+bacon_net_init_for_rom (const char *request,
+                        long offset,
+                        const char *filename)
 {
   if (net)
     bacon_net_deinit ();
-  bacon_net_init (BACON_NET_ACTION_GET_FILE, request, offset, local);
+  bacon_net_init (BACON_NET_ACTION_GET_FILE, request, offset, filename);
   if (bacon_net_check () && bacon_net_setup ())
     return true;
   bacon_net_deinit ();

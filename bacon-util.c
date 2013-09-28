@@ -113,7 +113,7 @@ bacon_outln (const char *msg, ...)
 }
 
 void
-bacon_outlni (int level, const char *msg, ...)
+bacon_outlni (const int level, const char *msg, ...)
 {
   int i;
   int j;
@@ -147,7 +147,7 @@ bacon_msg (const char *msg, ...)
 }
 
 void *
-bacon_malloc (size_t n)
+bacon_malloc (const size_t n)
 {
   void *ptr;
 
@@ -161,7 +161,7 @@ bacon_malloc (size_t n)
 }
 
 void *
-bacon_realloc (void *ptr, size_t n)
+bacon_realloc (void *ptr, const size_t n)
 {
   void *pptr;
 
@@ -192,7 +192,7 @@ bacon_strdup (const char *str)
 }
 
 char *
-bacon_strndup (const char *str, size_t n)
+bacon_strndup (const char *str, const size_t n)
 {
   char *res;
 
@@ -260,7 +260,7 @@ bacon_strstw (const char *str, const char *pre)
 }
 
 void
-bacon_byte_str_format (char *buf, size_t n, CmByte bytes)
+bacon_byte_str_format (char *buf, const size_t n, const CmByte bytes)
 {
   double x;
   char c;
@@ -319,7 +319,7 @@ bacon_int_from_str (const char *str)
 }
 
 bool
-bacon_nan_value (double v)
+bacon_nan_value (const double v)
 {
   volatile double x;
 
