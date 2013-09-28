@@ -494,6 +494,8 @@ bacon_download_rom (const BaconDevice *device, const BaconRom *rom)
   if (!rom)
     return;
 
+  p = NULL;
+
   if (!output_download)
   {
     p = bacon_env_cwd ();
@@ -502,13 +504,23 @@ bacon_download_rom (const BaconDevice *device, const BaconRom *rom)
     else
       output_download = bacon_strdup (rom->name);
   }
-  else if (!bacon_env_ensure_path (output_download, true))
+
+  if (bacon_env_dir_exists (output_download))
+  {
+    p = bacon_strf ("%s%c%s", output_download, BACON_PATH_SEP, rom->name);
+    bacon_free (output_download);
+    output_download = bacon_strdup (p);
+  }
+
+  if (!bacon_env_ensure_path (output_download, true))
   {
     bacon_error ("`%s' is an invalid output path");
     exit (EXIT_FAILURE);
   }
 
+  bacon_free (p);
   offset = 0L;
+
   if (bacon_env_file_exists (output_download))
   {
     bacon_hash_from_file (&hash, output_download);
@@ -521,6 +533,7 @@ bacon_download_rom (const BaconDevice *device, const BaconRom *rom)
     bacon_msg ("resuming download of `%s'", output_download);
     offset = bacon_env_size_of (output_download);
   }
+
 
   success = true;
   if (bacon_net_init_for_rom (rom->get, offset, output_download))
