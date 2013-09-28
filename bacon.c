@@ -74,7 +74,7 @@ Options:\n\
   -d, --download             Download ROM for DEVICE\n\
   -M N, --max-roms=N         Show a max of N ROMs per ROM type (with\n\
                              `--show')\n\
-  -l, --device-list          List all available devices\n\
+  -l, --list-devices         List all available devices\n\
   -L, --latest               Show or download the latest ROM for DEVICE\n\
                              (with the action of showing or downloading\n\
                              depending on whether `--show' or `--download'\n\
