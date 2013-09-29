@@ -7,6 +7,7 @@ bacon_SOURCES = \
 	bacon-device.c \
 	bacon-env.c \
 	bacon-hash.c \
+	bacon-inter.c \
 	bacon-net.c \
 	bacon-parse.c \
 	bacon-progress.c \
@@ -16,6 +17,7 @@ bacon_SOURCES = \
 	bacon-device.h \
 	bacon-env.h \
 	bacon-hash.h \
+	bacon-inter.h \
 	bacon-net.h \
 	bacon-os.h \
 	bacon-parse.h \

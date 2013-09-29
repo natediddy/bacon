@@ -21,7 +21,6 @@
 #include <sys/types.h>
 
 #include "bacon-env.h"
-#include "bacon-os.h"
 #include "bacon-util.h"
 
 #ifdef BACON_OS_UNIX
@@ -34,24 +33,23 @@
 #endif
 
 #ifdef BACON_OS_UNIX
-# define BACON_HOME_VAR       "HOME"
 # define BACON_DELETE_FILE(p) (unlink (p) == 0)
 # define BACON_GETCWD(buf, n) (getcwd (buf, n) != NULL)
 # define BACON_MKDIR(p)       mkdir (p, S_IRWXU)
 #endif
 
 #ifdef BACON_OS_WINDOWS
-# define BACON_HOME_VAR       "USERPROFILE"
 # define BACON_DELETE_FILE(p) (DeleteFile (p))
 # define BACON_GETCWD(buf, n) (GetCurrentDirectory (n, buf) != 0)
 # define BACON_MKDIR(p)       _mkdir (p)
 #endif
 
-#define BACON_PROGRAM_DIRNAME "." BACON_PROGRAM_NAME
-#define BACON_PATH_BUFFER_MAX 1024
+#define BACON_PROGRAM_DIRNAME  "." BACON_PROGRAM_NAME
+#define BACON_PATH_MAX         1024
+#define BACON_GETENV_VALUE_MAX (BACON_PATH_MAX * 2)
 
 bool
-bacon_env_dir_exists (const char *path)
+bacon_env_is_directory (const char *path)
 {
   struct stat s;
 
@@ -62,7 +60,7 @@ bacon_env_dir_exists (const char *path)
 }
 
 bool
-bacon_env_file_exists (const char *path)
+bacon_env_is_file (const char *path)
 {
   struct stat s;
 
@@ -75,10 +73,10 @@ bacon_env_file_exists (const char *path)
 void
 bacon_env_delete (const char *path)
 {
-  if (bacon_env_dir_exists (path))
+  if (bacon_env_is_directory (path))
     return;
 
-  if (bacon_env_file_exists (path))
+  if (bacon_env_is_file (path))
   {
     if (!BACON_DELETE_FILE (path))
     {
@@ -125,46 +123,117 @@ bacon_env_fclose (FILE *fp)
 }
 
 char *
-bacon_env_home_path (void)
+bacon_env_getenv (const char *key)
 {
+  char *result = NULL;
 #ifdef BACON_OS_UNIX
-  char *home;
+  char *valbuf;
 
-  home = getenv (BACON_HOME_VAR);
-  if (!home || !*home)
-    goto fail;
+  valbuf = getenv (key);
+  if (valbuf)
+    result = bacon_strdup (valbuf);
 #endif
 #ifdef BACON_OS_WINDOWS
-  char home[BACON_PATH_BUFFER_MAX];
+  char valbuf[BACON_PATH_MAX];
 
-  if (GetEnvironmentVariable (BACON_HOME_VAR, home,
-                              BACON_PATH_BUFFER_MAX) != 0)
-    goto fail;
+  if (GetEnvironmentVariable (key, valbuf, BACON_PATH_MAX) == 0)
+    result = bacon_strdup (valbuf);
 #endif
-  return home;
-
-fail:
-  bacon_error ("could not find the current home directory path");
-  exit (EXIT_FAILURE);
+  if (!result)
+    bacon_debug ("failed to get environment variable '%s'", key);
+  return result;
 }
+
+char *
+bacon_env_home_path (void)
+{
+  char *home = NULL;
+
+#ifdef BACON_OS_UNIX
+  home = bacon_env_getenv ("HOME");
+#endif
+#ifdef BACON_OS_WINDOWS
+  char *drive = NULL;
+  char *path = NULL;
+
+  drive = bacon_env_getenv ("HOMEDRIVE");
+  if (drive)
+  {
+    path = bacon_env_getenv ("HOMEPATH");
+    if (path)
+      home = bacon_strf ("%s%s", drive, path);
+  }
+  bacon_free (drive);
+  bacon_free (path);
+#endif
+  if (!home)
+  {
+    bacon_error ("could not find the current home directory path");
+    exit (EXIT_FAILURE);
+  }
+  return home;
+}
+
+#ifdef BACON_OS_UNIX
+void
+bacon_env_make_hidden (char *path)
+{
+  char *old;
+  char *base;
+  char *hbase;
+  char *parent;
+
+  base = bacon_env_basename (path);
+  if (base && *base && (*base != '.'))
+  {
+    hbase = bacon_strf (".%s", base);
+    parent = bacon_env_dirname (path);
+    old = bacon_strdup (path);
+    bacon_free (path);
+    path = bacon_strf ("%s%c%s", parent, BACON_PATH_SEP, hbase);
+    bacon_free (parent);
+    bacon_free (hbase);
+    if (rename (old, path) == -1)
+      bacon_debug ("failed to rename `%s' to `%s' (%s)",
+                   old, path, strerror (errno));
+    bacon_free (old);
+  }
+  bacon_free (base);
+}
+#else
+void
+bacon_env_make_hidden (const char *path)
+{
+  if (!SetFileAttributes (path, FILE_ATTRIBUTE_HIDDEN))
+    bacon_debug ("failed to set hidden attribute for `%s'", path);
+}
+#endif
 
 char *
 bacon_env_program_path (void)
 {
+  char *home;
   char *path;
 
-  path = bacon_strf ("%s%c%s", bacon_env_home_path(),
-                     BACON_PATH_SEP, BACON_PROGRAM_DIRNAME);
-  bacon_env_mkpath (path);
+  home = bacon_env_home_path ();
+  path = bacon_strf ("%s%c%s", home, BACON_PATH_SEP, BACON_PROGRAM_DIRNAME);
+  bacon_free (home);
+
+  if (!bacon_env_mkpath (path))
+  {
+    bacon_error ("could not create program path");
+    exit (EXIT_FAILURE);
+  }
+  bacon_env_make_hidden (path);
   return path;
 }
 
 char *
 bacon_env_cwd (void)
 {
-  char cwd[BACON_PATH_BUFFER_MAX];
+  char cwd[BACON_PATH_MAX];
 
-  if (BACON_GETCWD (cwd, BACON_PATH_BUFFER_MAX))
+  if (BACON_GETCWD (cwd, BACON_PATH_MAX))
     return bacon_strdup (cwd);
   return NULL;
 }
@@ -176,7 +245,7 @@ bacon_env_dirname (const char *path)
   char *dirname;
 
   for (pos = strlen (path) - 1; pos >= 0; --pos)
-    if (BACON_IS_SLASH (path[pos]))
+    if (bacon_env_is_path_sep (path[pos]))
       break;
   dirname = bacon_newa (char, pos);
   strncpy (dirname, path, pos);
@@ -193,11 +262,11 @@ bacon_env_basename (const char *path)
   char *basename;
 
   n = strlen (path);
-  while (BACON_IS_SLASH (path[n - 1]))
+  while (bacon_env_is_path_sep (path[n - 1]))
     --n;
 
   for (pos = n - 1; pos >= 0; --pos)
-    if (BACON_IS_SLASH (path[pos]))
+    if (bacon_env_is_path_sep (path[pos]))
       break;
 
   n_basename = n - pos;
@@ -205,7 +274,7 @@ bacon_env_basename (const char *path)
   strncpy (basename, path + (pos + 1), n_basename);
   basename[n_basename] = '\0';
 
-  while (BACON_IS_SLASH (basename[n_basename - 1]))
+  while (bacon_env_is_path_sep (basename[n_basename - 1]))
   {
     basename[n_basename - 1] = '\0';
     --n_basename;
@@ -219,7 +288,7 @@ bacon_env_mkabs (const char *path)
   char *cwd;
   char *abs;
 
-  if (BACON_IS_SLASH (*path))
+  if (bacon_env_is_path_sep (*path))
     return bacon_strdup (path);
   cwd = bacon_env_cwd ();
   abs = bacon_strf ("%s%c%s", cwd, BACON_PATH_SEP, path);
@@ -227,9 +296,37 @@ bacon_env_mkabs (const char *path)
   return abs;
 }
 
-/*
- * TODO: recognized '~' in paths
- */
+/* TODO: recognize '~' for home directory in
+   paths used with `--output=~/foo/bar' option.
+   The shell does the work fine whenever '~' is
+   used with `-o ~/foo/bar' or `--output ~/foo/bar'.
+   The trouble is from the '=' in the long option version. */
+/*void
+bacon_env_exppath (char *path)
+{
+  size_t n;
+  size_t x;
+  ssize_t tilde;
+  char *p;
+  char *home;
+
+  n = strlen (path);
+  tilde = -1;
+  for (x = 0; x < n; ++x)
+  {
+    if (path[x] == '~')
+    {
+      tilde = x;
+      break;
+    }
+  }
+
+  if (tilde == -1)
+    return;
+
+  home = bacon_env_home_path ();
+}*/
+
 bool
 bacon_env_mkpath (const char *path)
 {
@@ -245,7 +342,7 @@ bacon_env_mkpath (const char *path)
   while (*p)
   {
     p++;
-    while (*p && !BACON_IS_SLASH (*p))
+    while (*p && !bacon_env_is_path_sep (*p))
       p++;
     c = *p;
     *p = '\0';
@@ -280,5 +377,30 @@ bacon_env_ensure_path (const char *path, const bool file)
   else
     ret = bacon_env_mkpath (path);
   return ret;
+}
+
+void
+bacon_env_fix_download_path (char **path, const char *name)
+{
+  char *p;
+
+  p = NULL;
+  if (!(*path))
+  {
+    p = bacon_env_cwd ();
+    if (p && *p)
+      (*path) = bacon_strf ("%s%c%s", p, BACON_PATH_SEP, name);
+    else
+      (*path) = bacon_strdup (name);
+    bacon_free (p);
+    return;
+  }
+
+  if (bacon_env_is_directory ((*path)))
+  {
+    p = bacon_strf ("%s%c%s", (*path), BACON_PATH_SEP, name);
+    bacon_free ((*path));
+    (*path) = bacon_strdup (p);
+  }
 }
 

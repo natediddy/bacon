@@ -42,7 +42,7 @@ bacon_set_local_device_list_path (void)
 static bool
 bacon_has_local_device_list (void)
 {
-  return bacon_env_file_exists (local_device_list_path);
+  return bacon_env_is_file (local_device_list_path);
 }
 
 static void

@@ -22,6 +22,7 @@
 #include "bacon.h"
 #include "bacon-device.h"
 #include "bacon-env.h"
+#include "bacon-inter.h"
 #include "bacon-net.h"
 #include "bacon-rom.h"
 #include "bacon-util.h"
@@ -37,10 +38,11 @@ static struct
   char id[BACON_DEVICE_NAME_MAX];
 } devices[BACON_DEVICES_MAX];
 
-static BaconDeviceList *device_list        = NULL;
-static char *           output_download    = NULL;
-static int              max_roms           = BACON_DEFAULT_MAX_ROMS;
-static int              rom_type           = BACON_ROM_TYPE_NONE;
+BaconDeviceList *       device_list        = NULL;
+char *                  output_download    = NULL;
+int                     max_roms           = BACON_DEFAULT_MAX_ROMS;
+int                     rom_type           = BACON_ROM_TYPE_NONE;
+
 static bool             list_all_devices   = false;
 static bool             update_device_list = false;
 static bool             latest             = false;
@@ -231,7 +233,10 @@ bacon_check_opts (void)
       downloading = true;
   }
 
-  if (!*devices[0].id && !update_device_list && !list_all_devices)
+  if (!interactive &&
+      !*devices[0].id &&
+      !update_device_list &&
+      !list_all_devices)
   {
     bacon_error ("no devices given (try `--help')");
     exit (EXIT_FAILURE);
@@ -441,13 +446,6 @@ bacon_parse_opt (char **v)
 }
 
 static void
-bacon_interactive (void)
-{
-  bacon_warn ("Interactive mode not currently implemented");
-  exit (EXIT_SUCCESS);
-}
-
-static void
 bacon_show_rom_list (const BaconDevice *device, const BaconRomList *list)
 {
   int n;
@@ -455,7 +453,7 @@ bacon_show_rom_list (const BaconDevice *device, const BaconRomList *list)
   BaconRom *rom;
 
   bacon_outlni (0, "%s [%s]:", device->fullname, device->codename);
-  for (x = 0; x < BACON_TOTAL; ++x)
+  for (x = 0; x < BACON_ROM_TOTAL; ++x)
   {
     rom = list->roms[x];
     if (!rom)
@@ -486,7 +484,6 @@ bacon_show_rom_list (const BaconDevice *device, const BaconRomList *list)
 static void
 bacon_download_rom (const BaconDevice *device, const BaconRom *rom)
 {
-  char *p;
   bool success;
   long offset;
   BaconHash hash;
@@ -494,34 +491,15 @@ bacon_download_rom (const BaconDevice *device, const BaconRom *rom)
   if (!rom)
     return;
 
-  p = NULL;
-
-  if (!output_download)
-  {
-    p = bacon_env_cwd ();
-    if (p && *p)
-      output_download = bacon_strf ("%s%c%s", p, BACON_PATH_SEP, rom->name);
-    else
-      output_download = bacon_strdup (rom->name);
-  }
-
-  if (bacon_env_dir_exists (output_download))
-  {
-    p = bacon_strf ("%s%c%s", output_download, BACON_PATH_SEP, rom->name);
-    bacon_free (output_download);
-    output_download = bacon_strdup (p);
-  }
-
+  bacon_env_fix_download_path (&output_download, rom->name);
   if (!bacon_env_ensure_path (output_download, true))
   {
-    bacon_error ("`%s' is an invalid output path");
+    bacon_error ("`%s' is an invalid output path", output_download);
     exit (EXIT_FAILURE);
   }
 
-  bacon_free (p);
   offset = 0L;
-
-  if (bacon_env_file_exists (output_download))
+  if (bacon_env_is_file (output_download))
   {
     bacon_hash_from_file (&hash, output_download);
     if (bacon_hash_match (&hash, &rom->hash))
@@ -591,7 +569,10 @@ bacon_perform (void)
     device_list = bacon_device_list_new (update_device_list);
 
   if (interactive)
+  {
     bacon_interactive ();
+    return;
+  }
 
   if (list_all_devices)
     bacon_list_all_devices ();
@@ -606,7 +587,7 @@ bacon_perform (void)
     if (showing)
       bacon_show_rom_list (device, rom_list);
     else if (downloading && latest)
-      for (x = 0; x < BACON_TOTAL; ++x)
+      for (x = 0; x < BACON_ROM_TOTAL; ++x)
         bacon_download_rom (device, rom_list->roms[x]);
     bacon_rom_list_destroy (rom_list);
   }

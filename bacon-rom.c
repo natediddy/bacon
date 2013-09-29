@@ -26,7 +26,7 @@
 #define BACON_ROM_TYPE_NIGHTLY_STRING  "Nightly"
 #define BACON_ROM_TYPE_RC_STRING       "Release Candidate"
 #define BACON_ROM_TYPE_STABLE_STRING   "Stable"
-#define BACON_ROM_TYPE_ALL_STRING      ""
+#define BACON_ROM_TYPE_ALL_STRING      "All"
 
 #define BACON_NIGHTLY_FORMAT  "nightly"
 #define BACON_RC_FORMAT       "RC"
@@ -49,19 +49,19 @@ bacon_form_request (const char *codename, const int id)
   *request = '\0';
   switch (id)
   {
-    case BACON_NIGHTLY:
+    case BACON_ROM_NIGHTLY:
       type_str = BACON_NIGHTLY_FORMAT;
       break;
-    case BACON_RC:
+    case BACON_ROM_RC:
       type_str = BACON_RC_FORMAT;
       break;
-    case BACON_SNAPSHOT:
+    case BACON_ROM_SNAPSHOT:
       type_str = BACON_SNAPSHOT_FORMAT;
       break;
-    case BACON_STABLE:
+    case BACON_ROM_STABLE:
       type_str = BACON_STABLE_FORMAT;
       break;
-    case BACON_TEST:
+    case BACON_ROM_TEST:
       type_str = BACON_TEST_FORMAT;
       break;
     default:
@@ -102,32 +102,33 @@ bacon_rom_list_new (const char *codename, int type, const int max)
 
   if (type & BACON_ROM_TYPE_ALL)
   {
-    for (x = 0; x < BACON_TOTAL; ++x)
+    for (x = 0; x < BACON_ROM_TOTAL; ++x)
       list->roms[x] = bacon_setup_rom (codename, x, &max);
     return list;
   }
 
   if (type & BACON_ROM_TYPE_NIGHTLY)
-    list->roms[BACON_NIGHTLY] =
-      bacon_setup_rom (codename, BACON_NIGHTLY, &max);
+    list->roms[BACON_ROM_NIGHTLY] =
+      bacon_setup_rom (codename, BACON_ROM_NIGHTLY, &max);
   else
-    list->roms[BACON_NIGHTLY] = NULL;
+    list->roms[BACON_ROM_NIGHTLY] = NULL;
 
   if (type & BACON_ROM_TYPE_RC)
-    list->roms[BACON_RC] = bacon_setup_rom (codename, BACON_RC, &max);
+    list->roms[BACON_ROM_RC] = bacon_setup_rom (codename, BACON_ROM_RC, &max);
   else
-    list->roms[BACON_RC] = NULL;
+    list->roms[BACON_ROM_RC] = NULL;
 
   if (type & BACON_ROM_TYPE_SNAPSHOT)
-    list->roms[BACON_SNAPSHOT] =
-      bacon_setup_rom (codename, BACON_SNAPSHOT, &max);
+    list->roms[BACON_ROM_SNAPSHOT] =
+      bacon_setup_rom (codename, BACON_ROM_SNAPSHOT, &max);
   else
-    list->roms[BACON_SNAPSHOT] = NULL;
+    list->roms[BACON_ROM_SNAPSHOT] = NULL;
 
   if (type & BACON_ROM_TYPE_TEST)
-    list->roms[BACON_TEST] = bacon_setup_rom (codename, BACON_TEST, &max);
+    list->roms[BACON_ROM_TEST] =
+      bacon_setup_rom (codename, BACON_ROM_TEST, &max);
   else
-    list->roms[BACON_TEST] = NULL;
+    list->roms[BACON_ROM_TEST] = NULL;
   return list;
 }
 
@@ -140,7 +141,7 @@ bacon_rom_list_destroy (BaconRomList *list)
   if (!list)
     return;
 
-  for (x = 0; x < BACON_TOTAL; ++x)
+  for (x = 0; x < BACON_ROM_TOTAL; ++x)
   {
     rom = list->roms[x];
     for (; rom; rom = rom->next)
@@ -159,15 +160,15 @@ bacon_rom_type_str (const int index)
 {
   switch (index)
   {
-    case BACON_NIGHTLY:
+    case BACON_ROM_NIGHTLY:
       return BACON_ROM_TYPE_NIGHTLY_STRING;
-    case BACON_RC:
+    case BACON_ROM_RC:
       return BACON_ROM_TYPE_RC_STRING;
-    case BACON_SNAPSHOT:
+    case BACON_ROM_SNAPSHOT:
       return BACON_ROM_TYPE_SNAPSHOT_STRING;
-    case BACON_STABLE:
+    case BACON_ROM_STABLE:
       return BACON_ROM_TYPE_STABLE_STRING;
-    case BACON_TEST:
+    case BACON_ROM_TEST:
       return BACON_ROM_TYPE_TEST_STRING;
     default:
       return BACON_ROM_TYPE_ALL_STRING;

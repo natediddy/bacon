@@ -26,16 +26,51 @@
 #define BACON_MEBIBYTE_VALUE ((CmByte) 1048576LU)
 #define BACON_GIBIBYTE_VALUE ((CmByte) 1073741824LU)
 
+#ifdef BACON_DEBUG
+# define BACON_DEBUG_TAG  "DEBUG: "
+#endif
+#define BACON_ERROR_TAG  "error: "
+#define BACON_WARN_TAG   "warning: "
+#define BACON_NORMAL_TAG ""
+
 extern const char *g_program_name;
+
+#ifdef BACON_DEBUG
+void
+__bacon_debug (const char *file,
+               const char *func,
+               const int line,
+               const char *msg,
+               ...)
+{
+  va_list a;
+
+  if (msg && *msg)
+  {
+    fprintf (stderr, "%s:", g_program_name);
+    if (file && *file)
+      fprintf (stderr, "%s:", file);
+    if (func && *func)
+      fprintf (stderr, "%s:", func);
+    if (line >= 0)
+      fprintf (stderr, "%i:", line);
+    fputs (BACON_DEBUG_TAG, stderr);
+    va_start (a, msg);
+    vfprintf (stderr, msg, a);
+    va_end (a);
+  }
+  fputc ('\n', stderr);
+}
+#endif
 
 void
 bacon_error (const char *msg, ...)
 {
   va_list a;
 
-  fprintf (stderr, "%s: error: ", g_program_name);
   if (msg && *msg)
   {
+    fprintf (stderr, "%s: " BACON_ERROR_TAG, g_program_name);
     va_start (a, msg);
     vfprintf (stderr, msg, a);
     va_end (a);
@@ -48,9 +83,9 @@ bacon_warn (const char *msg, ...)
 {
   va_list a;
 
-  fprintf (stderr, "%s: warning: ", g_program_name);
   if (msg && *msg)
   {
+    fprintf (stderr, "%s: " BACON_WARN_TAG, g_program_name);
     va_start (a, msg);
     vfprintf (stderr, msg, a);
     va_end (a);
@@ -122,6 +157,7 @@ bacon_outlni (const int level, const char *msg, ...)
   for (i = 0; i < level; ++i)
     for (j = 0; j < BACON_INDENT_SIZE; ++j)
       fputc (' ', stdout);
+
   if (msg && *msg)
   {
     va_start (a, msg);
@@ -136,9 +172,9 @@ bacon_msg (const char *msg, ...)
 {
   va_list a;
 
-  fprintf (stdout, "%s: ", g_program_name);
   if (msg && *msg)
   {
+    fprintf (stdout, "%s: " BACON_NORMAL_TAG, g_program_name);
     va_start (a, msg);
     vfprintf (stdout, msg, a);
     va_end (a);

@@ -33,12 +33,12 @@
 #define BACON_ROM_TYPE_STABLE   0x0008
 #define BACON_ROM_TYPE_TEST     0x0004
 
-#define BACON_NIGHTLY  0
-#define BACON_RC       1
-#define BACON_SNAPSHOT 2
-#define BACON_STABLE   3
-#define BACON_TEST     4
-#define BACON_TOTAL    5
+#define BACON_ROM_NIGHTLY  0
+#define BACON_ROM_RC       1
+#define BACON_ROM_SNAPSHOT 2
+#define BACON_ROM_STABLE   3
+#define BACON_ROM_TEST     4
+#define BACON_ROM_TOTAL    5
 
 typedef struct BaconRom     BaconRom;
 typedef struct BaconRomList BaconRomList;
@@ -56,7 +56,7 @@ struct BaconRom
 
 struct BaconRomList
 {
-  BaconRom *roms[BACON_TOTAL];
+  BaconRom *roms[BACON_ROM_TOTAL];
 };
 
 BaconRomList *bacon_rom_list_new     (const char *codename,

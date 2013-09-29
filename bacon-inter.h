@@ -14,30 +14,12 @@
  * limitations under the License.
  */
 
-#ifndef BACON_H
-#define BACON_H
+#ifndef BACON_INTER_H
+#define BACON_INTER_H
 
-#define BACON_DEBUG
+#include "bacon-device.h"
 
-#ifdef HAVE_CONFIG_H
-# include "bacon-config.h"
-# define BACON_PROGRAM_NAME PACKAGE_NAME
-# define BACON_VERSION      PACKAGE_VERSION
-#else
-# define BACON_PROGRAM_NAME "bacon"
-# define BACON_VERSION      "2.0"
-#endif
+void bacon_interactive (void);
 
-#define BACON_ROOT_URL "http://get.cm"
-
-#ifndef __cplusplus
-typedef char bool;
-# define bool bool
-# undef false
-# define false (0)
-# undef true
-# define true (!false)
-#endif
-
-#endif /* BACON_H */
+#endif /* BACON_INTER_H */
 

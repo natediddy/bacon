@@ -33,6 +33,7 @@
 
 #define bacon_new(type)        ((type *) bacon_malloc (sizeof (type)))
 #define bacon_newa(type, size) ((type *) bacon_malloc (size))
+
 #define bacon_free(p) \
   do                  \
   {                   \
@@ -45,8 +46,22 @@
 #define bacon_round(x) \
   (((x) >= 0) ? ((int) ((x) + 0.5)) : ((int) ((x) - 0.5)))
 
+#ifdef BACON_DEBUG
+# define bacon_debug(msg, ...) \
+    __bacon_debug (__FILE__, __func__, __LINE__, msg, __VA_ARGS__)
+#else
+# define bacon_debug(msg, ...)
+#endif
+
 typedef unsigned long CmByte;
 
+#ifdef BACON_DEBUG
+void  __bacon_debug            (const char *file,
+                                const char *func,
+                                const int line,
+                                const char *msg,
+                                ...);
+#endif
 void  bacon_error              (const char *msg, ...);
 void  bacon_warn               (const char *msg, ...);
 void  bacon_fout               (FILE *stream, const char *msg, ...);
