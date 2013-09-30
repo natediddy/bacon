@@ -26,6 +26,7 @@ bacon_SOURCES = \
 	bacon-util.h
 
 EXTRA_DIST = \
-	README
+	README \
+	README.md
 
 dist_noinst_SCRIPTS = autogen.sh
