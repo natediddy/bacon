@@ -25,7 +25,7 @@
 # define BACON_VERSION      PACKAGE_VERSION
 #else
 # define BACON_PROGRAM_NAME "bacon"
-# define BACON_VERSION      "2.0"
+# define BACON_VERSION      "2.1"
 #endif
 
 #define BACON_ROOT_URL "http://get.cm"
