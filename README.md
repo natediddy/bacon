@@ -44,6 +44,7 @@ In order to build bacon, you will need the development library of libcurl
 installed, as well as GNU Autotools.
 
 On a Linux OS you can use:
+
     ./autogen.sh
     ./configure
     make
@@ -51,4 +52,5 @@ On a Linux OS you can use:
 Installing
 ----------
 On a Linux OS, after building you can run:
+
     sudo make install
