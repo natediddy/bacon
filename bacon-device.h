@@ -23,14 +23,12 @@
 
 typedef struct BaconDeviceList BaconDeviceList;
 
-typedef struct
-{
+typedef struct {
   char codename[BACON_DEVICE_NAME_MAX];
   char fullname[BACON_DEVICE_NAME_MAX];
 } BaconDevice;
 
-struct BaconDeviceList
-{
+struct BaconDeviceList {
   BaconDevice *device;
   BaconDeviceList *next;
   BaconDeviceList *prev;

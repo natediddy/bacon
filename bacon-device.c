@@ -52,8 +52,7 @@ bacon_write_local_device_list (BaconDeviceList *list)
   BaconDeviceList *p;
 
   fp = bacon_env_fopen (local_device_list_path, "w");
-  for (p = list; p; p = p->next)
-  {
+  for (p = list; p; p = p->next) {
     bacon_foutln (fp, "%s@%s", p->device->codename, p->device->fullname);
     if (!p->next)
       break;
@@ -80,8 +79,7 @@ bacon_device_local_data (void)
   fp = bacon_env_fopen (local_device_list_path, "r");
 
   x = 0;
-  while (true)
-  {
+  while (true) {
     c = fgetc (fp);
     if (c == EOF)
       break;
@@ -102,21 +100,16 @@ bacon_device_list_new (const bool force_new)
   data = NULL;
   bacon_set_local_device_list_path ();
 
-  if (force_new || !bacon_has_local_device_list ())
-  {
-    if (bacon_net_init_for_page_data (""))
-    {
+  if (force_new || !bacon_has_local_device_list ()) {
+    if (bacon_net_init_for_page_data ("")) {
       data = bacon_net_get_page_data ();
-      if (data)
-      {
+      if (data) {
         list = bacon_parse_for_device_list (data, false);
         bacon_write_local_device_list (list);
       }
       bacon_net_deinit ();
     }
-  }
-  else
-  {
+  } else {
     data = bacon_device_local_data ();
     if (data)
       list = bacon_parse_for_device_list (data, true);
@@ -127,8 +120,7 @@ bacon_device_list_new (const bool force_new)
 void
 bacon_device_list_destroy (BaconDeviceList *list)
 {
-  for (; list; list = list->next)
-  {
+  for (; list; list = list->next) {
     bacon_free (list->device);
     bacon_free (list->prev);
     if (!list->next)
@@ -144,8 +136,7 @@ bacon_device_list_total (BaconDeviceList *list)
   BaconDeviceList *p;
 
   total = 0;
-  for (p = list; p; p = p->next)
-  {
+  for (p = list; p; p = p->next) {
     total++;
     if (!p->next)
       break;
@@ -158,8 +149,7 @@ bacon_device_is_valid_id (BaconDeviceList *list, const char *id)
 {
   BaconDeviceList *p;
 
-  for (p = list; p; p = p->next)
-  {
+  for (p = list; p; p = p->next) {
     if (bacon_streq (id, p->device->codename))
       return true;
     if (!p->next)
@@ -175,10 +165,8 @@ bacon_device_get_device_from_id (BaconDeviceList *list, const char *id)
   BaconDeviceList *p;
 
   device = NULL;
-  for (p = list; p; p = p->next)
-  {
-    if (bacon_streq (id, p->device->codename))
-    {
+  for (p = list; p; p = p->next) {
+    if (bacon_streq (id, p->device->codename)) {
       device = p->device;
       break;
     }

@@ -51,46 +51,40 @@
 #define ROTATE_LEFT(x, n) (((x) << (n)) | ((x) >> (32 - (n))))
 
 #define FF(a, b, c, d, x, s, ac)           \
-  do                                       \
-  {                                        \
+  do {                                     \
     (a) += F ((b), (c), (d)) + (x) + (ac); \
     (a) = ROTATE_LEFT ((a), (s));          \
     (a) += (b);                            \
   } while (false)
 
 #define GG(a, b, c, d, x, s, ac)           \
-  do                                       \
-  {                                        \
+  do {                                     \
     (a) += G ((b), (c), (d)) + (x) + (ac); \
     (a) = ROTATE_LEFT ((a), (s));          \
     (a) += (b);                            \
   } while (false)
 
 #define HH(a, b, c, d, x, s, ac)           \
-  do                                       \
-  {                                        \
+  do {                                     \
     (a) += H ((b), (c), (d)) + (x) + (ac); \
     (a) = ROTATE_LEFT ((a), (s));          \
     (a) += (b);                            \
   } while (false)
 
 #define II(a, b, c, d, x, s, ac)           \
-  do                                       \
-  {                                        \
+  do {                                     \
     (a) += I ((b), (c), (d)) + (x) + (ac); \
     (a) = ROTATE_LEFT ((a), (s));          \
     (a) += (b);                            \
   } while (false)
 
-typedef struct
-{
+typedef struct {
   unsigned int state[4];
   unsigned int count[2];
   unsigned char buffer[64];
 } BaconMd5Ctx;
 
-static unsigned char padding[64] =
-{
+static unsigned char padding[64] = {
   0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -105,8 +99,7 @@ bacon_hash_encode (unsigned char *o, unsigned int *i, unsigned int n)
   unsigned int x;
   unsigned int y;
 
-  for (x = 0, y = 0; y < n; x++, y += 4)
-  {
+  for (x = 0, y = 0; y < n; x++, y += 4) {
     o[y] = (unsigned char) (i[x] & 0xff);
     o[y + 1] = (unsigned char) ((i[x] >> 8) & 0xff);
     o[y + 2] = (unsigned char) ((i[x] >> 16) & 0xff);
@@ -244,15 +237,13 @@ bacon_hash_update (BaconMd5Ctx *ctx, unsigned char *input, unsigned int n)
   ctx->count[1] += (n >> 29);
   n_part = 64 - index;
 
-  if (n >= n_part)
-  {
+  if (n >= n_part) {
     memcpy (&ctx->buffer[index], input, n_part);
     bacon_hash_transform (ctx->state, ctx->buffer);
     for (i = n_part; i + 63 < n; i += 64)
       bacon_hash_transform (ctx->state, &input[i]);
     index = 0;
-  }
-  else
+  } else
     i = 0;
   memcpy (&ctx->buffer[index], &input[i], n - i);
 }
@@ -263,8 +254,7 @@ bacon_hash_update_from_file (BaconMd5Ctx *ctx, FILE *fp)
   unsigned char buffer[1024];
   unsigned int n;
 
-  while (true)
-  {
+  while (true) {
     n = fread (buffer, 1, 1024, fp);
     if (!n)
       break;

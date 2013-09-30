@@ -31,15 +31,11 @@
 #define BACON_LINE_MAX 1024
 
 #define bacon_append_new(type, root, p)   \
-  do                                      \
-  {                                       \
-    if (!root)                            \
-    {                                     \
+  do {                                    \
+    if (!root) {                          \
       p = bacon_new (type);               \
       p->prev = NULL;                     \
-    }                                     \
-    else                                  \
-    {                                     \
+    } else {                              \
       for (p = root; p; p = p->next)      \
          if (!p->next)                    \
             break;                        \
@@ -51,8 +47,7 @@
   } while (false)
 
 #define bacon_back_to_start(root, p) \
-  do                                 \
-  {                                  \
+  do {                               \
     for (; p; p = p->prev)           \
       if (!p->prev)                  \
          break;                      \
@@ -60,11 +55,9 @@
   } while (false)
 
 #define bacon_find_and_fill(__dst, __src, __p, __np, __x, __c) \
-  do                                                           \
-  {                                                            \
+  do {                                                         \
     __x = strstr (__src, __p);                                 \
-    if (__x && *__x)                                           \
-    {                                                          \
+    if (__x && *__x) {                                         \
       __x = __x + __np;                                        \
       bacon_fill_buffer (__dst, __x, __c);                     \
       __src = __x;                                             \
@@ -168,8 +161,7 @@ bacon_parse_local_for_device_list (const char *data)
   list = NULL;
   bacon_set_size_values ();
 
-  while (true)
-  {
+  while (true) {
     bacon_get_line (line, data, &pos);
     l = 0;
     if (!*line)
@@ -195,11 +187,9 @@ bacon_parse_remote_for_device_list (const char *data)
   list = NULL;
   bacon_set_size_values ();
 
-  while (true)
-  {
+  while (true) {
     x = strstr ((!d) ? data : d, BACON_CODENAME_TAG);
-    if (x && *x)
-    {
+    if (x && *x) {
       x = x + n_codename_tag;
       bacon_append_new (BaconDeviceList, list, p);
       p->device = bacon_new (BaconDevice);
@@ -208,8 +198,7 @@ bacon_parse_remote_for_device_list (const char *data)
       bacon_find_and_fill (p->device->fullname, d, BACON_FULLNAME_TAG,
                            n_fullname_tag, x, '<');
       bacon_back_to_start (list, p);
-    }
-    else
+    } else
       break;
   }
   return list;
@@ -241,11 +230,9 @@ bacon_parse_for_rom (const char *data, const int max)
   rom = NULL;
   bacon_set_size_values ();
   
-  while (m < max)
-  {
+  while (m < max) {
     x = strstr ((!d) ? data : d, BACON_ROM_NAME_PATTERN);
-    if (x && *x)
-    {
+    if (x && *x) {
       m++;
       x = x + n_rom_name_pattern;
       bacon_append_new (BaconRom, rom, p);
@@ -258,8 +245,7 @@ bacon_parse_for_rom (const char *data, const int max)
       bacon_find_and_fill (p->size, d, BACON_SIZE_TAG, n_size_tag, x, '<');
       bacon_find_and_fill (p->date, d, BACON_DATE_TAG, n_date_tag, x, '<');
       bacon_back_to_start (rom, p);
-    }
-    else
+    } else
       break;
   }
   return rom;

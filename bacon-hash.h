@@ -22,8 +22,7 @@
 #define BACON_HASH_DIGEST_SIZE 16
 #define BACON_HASH_SIZE        BACON_HASH_DIGEST_SIZE * 2 + 1
 
-typedef struct
-{
+typedef struct {
   char hash[BACON_HASH_SIZE];
 } BaconHash;
 

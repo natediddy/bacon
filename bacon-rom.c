@@ -47,26 +47,25 @@ bacon_form_request (const char *codename, const int id)
   const char *type_str;
 
   *request = '\0';
-  switch (id)
-  {
-    case BACON_ROM_NIGHTLY:
-      type_str = BACON_NIGHTLY_FORMAT;
-      break;
-    case BACON_ROM_RC:
-      type_str = BACON_RC_FORMAT;
-      break;
-    case BACON_ROM_SNAPSHOT:
-      type_str = BACON_SNAPSHOT_FORMAT;
-      break;
-    case BACON_ROM_STABLE:
-      type_str = BACON_STABLE_FORMAT;
-      break;
-    case BACON_ROM_TEST:
-      type_str = BACON_TEST_FORMAT;
-      break;
-    default:
-      type_str = BACON_ALL_FORMAT;
-      break;
+  switch (id) {
+  case BACON_ROM_NIGHTLY:
+    type_str = BACON_NIGHTLY_FORMAT;
+    break;
+  case BACON_ROM_RC:
+    type_str = BACON_RC_FORMAT;
+    break;
+  case BACON_ROM_SNAPSHOT:
+    type_str = BACON_SNAPSHOT_FORMAT;
+    break;
+  case BACON_ROM_STABLE:
+    type_str = BACON_STABLE_FORMAT;
+    break;
+  case BACON_ROM_TEST:
+    type_str = BACON_TEST_FORMAT;
+    break;
+  default:
+    type_str = BACON_ALL_FORMAT;
+    break;
   }
 
   snprintf (request, BACON_REQUEST_MAX, BACON_REQUEST_FORMAT,
@@ -81,8 +80,7 @@ bacon_setup_rom (const char *codename, const int id, const int *max)
 
   rom = NULL;
   bacon_form_request (codename, id);
-  if (bacon_net_init_for_page_data (request))
-  {
+  if (bacon_net_init_for_page_data (request)) {
     data = bacon_net_get_page_data ();
     if (data)
       rom = bacon_parse_for_rom (data, *max);
@@ -100,8 +98,7 @@ bacon_rom_list_new (const char *codename, int type, const int max)
 
   list = bacon_new (BaconRomList);
 
-  if (type & BACON_ROM_TYPE_ALL)
-  {
+  if (type & BACON_ROM_TYPE_ALL) {
     for (x = 0; x < BACON_ROM_TOTAL; ++x)
       list->roms[x] = bacon_setup_rom (codename, x, &max);
     return list;
@@ -124,6 +121,12 @@ bacon_rom_list_new (const char *codename, int type, const int max)
   else
     list->roms[BACON_ROM_SNAPSHOT] = NULL;
 
+  if (type & BACON_ROM_TYPE_STABLE)
+    list->roms[BACON_ROM_STABLE] =
+      bacon_setup_rom (codename, BACON_ROM_STABLE, &max);
+  else
+    list->roms[BACON_ROM_STABLE] = NULL;
+
   if (type & BACON_ROM_TYPE_TEST)
     list->roms[BACON_ROM_TEST] =
       bacon_setup_rom (codename, BACON_ROM_TEST, &max);
@@ -141,11 +144,9 @@ bacon_rom_list_destroy (BaconRomList *list)
   if (!list)
     return;
 
-  for (x = 0; x < BACON_ROM_TOTAL; ++x)
-  {
+  for (x = 0; x < BACON_ROM_TOTAL; ++x) {
     rom = list->roms[x];
-    for (; rom; rom = rom->next)
-    {
+    for (; rom; rom = rom->next) {
       bacon_free (rom->prev);
       if (!rom->next)
         break;
@@ -158,21 +159,63 @@ bacon_rom_list_destroy (BaconRomList *list)
 const char *
 bacon_rom_type_str (const int index)
 {
-  switch (index)
-  {
-    case BACON_ROM_NIGHTLY:
-      return BACON_ROM_TYPE_NIGHTLY_STRING;
-    case BACON_ROM_RC:
-      return BACON_ROM_TYPE_RC_STRING;
-    case BACON_ROM_SNAPSHOT:
-      return BACON_ROM_TYPE_SNAPSHOT_STRING;
-    case BACON_ROM_STABLE:
-      return BACON_ROM_TYPE_STABLE_STRING;
-    case BACON_ROM_TEST:
-      return BACON_ROM_TYPE_TEST_STRING;
-    default:
-      return BACON_ROM_TYPE_ALL_STRING;
+  switch (index) {
+  case BACON_ROM_NIGHTLY:
+    return BACON_ROM_TYPE_NIGHTLY_STRING;
+  case BACON_ROM_RC:
+    return BACON_ROM_TYPE_RC_STRING;
+  case BACON_ROM_SNAPSHOT:
+    return BACON_ROM_TYPE_SNAPSHOT_STRING;
+  case BACON_ROM_STABLE:
+    return BACON_ROM_TYPE_STABLE_STRING;
+  case BACON_ROM_TEST:
+    return BACON_ROM_TYPE_TEST_STRING;
+  default:
+    return BACON_ROM_TYPE_ALL_STRING;
   }
   return NULL;
+}
+
+bool
+bacon_rom_do_download (const BaconRom *rom, char *dlpath)
+{
+  long offset;
+  bool dlres;
+  BaconHash hash;
+
+  bacon_env_fix_download_path (&dlpath, rom->name);
+  if (!bacon_env_ensure_path (dlpath, true)) {
+    bacon_error ("`%s' is an invalid path", dlpath);
+    return false;
+  }
+
+  offset = 0L;
+  if (bacon_env_is_file (dlpath)) {
+    bacon_hash_from_file (&hash, dlpath);
+    if (bacon_hash_match (&hash, &rom->hash)) {
+      bacon_msg ("`%s' already exists - no need to redownload", dlpath);
+      return true;
+    }
+    bacon_msg ("resuming download of `%s'", dlpath);
+    offset = bacon_env_size_of (dlpath);
+  }
+
+  dlres = true;
+  if (bacon_net_init_for_rom (rom->get, offset, dlpath)) {
+    if (!bacon_net_get_rom ())
+      dlres = false;
+    bacon_net_deinit ();
+  } else
+    dlres = false;
+
+  if (dlres) {
+    bacon_hash_from_file (&hash, dlpath);
+    if (!bacon_hash_match (&hash, &rom->hash)) {
+      bacon_warn ("checksum mismatch for `%s' (possibly corrupt)", dlpath);
+      return false;
+    }
+    return true;
+  }
+  return false;
 }
 

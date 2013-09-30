@@ -31,8 +31,7 @@
 
 #define bacon_net_setopt(o, p) net->status = curl_easy_setopt (net->cp, o, p)
 
-typedef struct
-{
+typedef struct {
   FILE *fp;
   char *path;
   long offset;
@@ -41,28 +40,24 @@ typedef struct
   int (*progress) (void *, double, double, double, double);
 } BaconFileResult;
 
-typedef struct
-{
+typedef struct {
   char *buffer;
   size_t n;
 } BaconDataChunk;
 
-typedef struct
-{
+typedef struct {
   BaconDataChunk chunk;
   bool (*setup) (void);
   size_t (*write) (void *, size_t, size_t, void *);
   int (*progress) (void *, double, double, double, double);
 } BaconPageResult;
 
-typedef enum
-{
+typedef enum {
   BACON_NET_ACTION_GET_FILE,
   BACON_NET_ACTION_GET_PAGE
 } BaconNetAction;
 
-typedef struct
-{
+typedef struct {
   CURL *cp;
   CURLcode status;
   BaconNetAction action;
@@ -183,8 +178,7 @@ bacon_net_init (BaconNetAction action,
   else
     net->status = CURLE_OK;
 
-  if (net->action == BACON_NET_ACTION_GET_FILE)
-  {
+  if (net->action == BACON_NET_ACTION_GET_FILE) {
     net->res = bacon_new (BaconFileResult);
     BACON_FILE_RESULT->offset = offset;
     BACON_FILE_RESULT->fp = NULL;
@@ -195,9 +189,7 @@ bacon_net_init (BaconNetAction action,
     BACON_FILE_RESULT->setup = &bacon_file_setup;
     BACON_FILE_RESULT->write = &bacon_file_write;
     BACON_FILE_RESULT->progress = &bacon_file_progress;
-  }
-  else
-  {
+  } else {
     net->res = bacon_new (BaconPageResult);
     memset (&BACON_PAGE_RESULT->chunk, 0, sizeof (BaconDataChunk));
     BACON_PAGE_RESULT->chunk.buffer = bacon_newa (char, 1);
@@ -229,8 +221,7 @@ bacon_net_setup (void)
 
   if (net->action == BACON_NET_ACTION_GET_FILE)
     return BACON_FILE_RESULT->setup ();
-  else
-    return BACON_PAGE_RESULT->setup ();
+  return BACON_PAGE_RESULT->setup ();
 }
 
 static bool
@@ -274,15 +265,12 @@ bacon_net_deinit (void)
   curl_easy_cleanup (net->cp);
   bacon_free (net->url);
 
-  if (net->res)
-  {
-    if (net->action == BACON_NET_ACTION_GET_FILE)
-    {
+  if (net->res) {
+    if (net->action == BACON_NET_ACTION_GET_FILE) {
       if (BACON_FILE_RESULT->fp)
         fclose (BACON_FILE_RESULT->fp);
       bacon_free (BACON_FILE_RESULT->path);
-    }
-    else if (net->action == BACON_NET_ACTION_GET_PAGE)
+    } else if (net->action == BACON_NET_ACTION_GET_PAGE)
       bacon_free (BACON_PAGE_RESULT->chunk.buffer);
     bacon_free (net->res);
   }
@@ -292,8 +280,7 @@ bacon_net_deinit (void)
 char *
 bacon_net_get_page_data (void)
 {
-  if (net && net->action == BACON_NET_ACTION_GET_PAGE)
-  {
+  if (net && net->action == BACON_NET_ACTION_GET_PAGE) {
     if (bacon_net_fetch ())
       return BACON_PAGE_RESULT->chunk.buffer;
     bacon_error (curl_easy_strerror (net->status));
@@ -304,8 +291,7 @@ bacon_net_get_page_data (void)
 bool
 bacon_net_get_rom (void)
 {
-  if (net && net->action == BACON_NET_ACTION_GET_FILE)
-  {
+  if (net && net->action == BACON_NET_ACTION_GET_FILE) {
     if (bacon_net_fetch ())
       return true;
     bacon_error (curl_easy_strerror (net->status));

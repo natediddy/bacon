@@ -76,10 +76,8 @@ bacon_env_delete (const char *path)
   if (bacon_env_is_directory (path))
     return;
 
-  if (bacon_env_is_file (path))
-  {
-    if (!BACON_DELETE_FILE (path))
-    {
+  if (bacon_env_is_file (path)) {
+    if (!BACON_DELETE_FILE (path)) {
       bacon_error ("failed to delete file `%s' (%s)", path, strerror (errno));
       exit (EXIT_FAILURE);
     }
@@ -105,8 +103,7 @@ bacon_env_fopen (const char *path, const char *mode)
   FILE *fp;
 
   fp = fopen (path, mode);
-  if (!fp)
-  {
+  if (!fp) {
     bacon_error ("failed to open file `%s' (%s)", path, strerror (errno));
     exit (EXIT_FAILURE);
   }
@@ -157,8 +154,7 @@ bacon_env_home_path (void)
   char *path = NULL;
 
   drive = bacon_env_getenv ("HOMEDRIVE");
-  if (drive)
-  {
+  if (drive) {
     path = bacon_env_getenv ("HOMEPATH");
     if (path)
       home = bacon_strf ("%s%s", drive, path);
@@ -166,8 +162,7 @@ bacon_env_home_path (void)
   bacon_free (drive);
   bacon_free (path);
 #endif
-  if (!home)
-  {
+  if (!home) {
     bacon_error ("could not find the current home directory path");
     exit (EXIT_FAILURE);
   }
@@ -184,8 +179,7 @@ bacon_env_make_hidden (char *path)
   char *parent;
 
   base = bacon_env_basename (path);
-  if (base && *base && (*base != '.'))
-  {
+  if (base && *base && (*base != '.')) {
     hbase = bacon_strf (".%s", base);
     parent = bacon_env_dirname (path);
     old = bacon_strdup (path);
@@ -219,8 +213,7 @@ bacon_env_program_path (void)
   path = bacon_strf ("%s%c%s", home, BACON_PATH_SEP, BACON_PROGRAM_DIRNAME);
   bacon_free (home);
 
-  if (!bacon_env_mkpath (path))
-  {
+  if (!bacon_env_mkpath (path)) {
     bacon_error ("could not create program path");
     exit (EXIT_FAILURE);
   }
@@ -274,8 +267,7 @@ bacon_env_basename (const char *path)
   strncpy (basename, path + (pos + 1), n_basename);
   basename[n_basename] = '\0';
 
-  while (bacon_env_is_path_sep (basename[n_basename - 1]))
-  {
+  while (bacon_env_is_path_sep (basename[n_basename - 1])) {
     basename[n_basename - 1] = '\0';
     --n_basename;
   }
@@ -312,10 +304,8 @@ bacon_env_exppath (char *path)
 
   n = strlen (path);
   tilde = -1;
-  for (x = 0; x < n; ++x)
-  {
-    if (path[x] == '~')
-    {
+  for (x = 0; x < n; ++x) {
+    if (path[x] == '~') {
       tilde = x;
       break;
     }
@@ -339,15 +329,13 @@ bacon_env_mkpath (const char *path)
   ppath = bacon_env_mkabs (path);
   p = ppath;
 
-  while (*p)
-  {
+  while (*p) {
     p++;
     while (*p && !bacon_env_is_path_sep (*p))
       p++;
     c = *p;
     *p = '\0';
-    if (BACON_MKDIR (ppath) == -1 && errno != EEXIST)
-    {
+    if (BACON_MKDIR (ppath) == -1 && errno != EEXIST) {
       res = false;
       goto done;
     }
@@ -366,15 +354,13 @@ bacon_env_ensure_path (const char *path, const bool file)
   char *abs;
   bool ret;
 
-  if (file)
-  {
+  if (file) {
     abs = bacon_env_mkabs (path);
     dn = bacon_env_dirname (abs);
     ret = bacon_env_mkpath(dn);
     bacon_free (dn);
     bacon_free (abs);
-  }
-  else
+  } else
     ret = bacon_env_mkpath (path);
   return ret;
 }
@@ -385,8 +371,7 @@ bacon_env_fix_download_path (char **path, const char *name)
   char *p;
 
   p = NULL;
-  if (!(*path))
-  {
+  if (!(*path)) {
     p = bacon_env_cwd ();
     if (p && *p)
       (*path) = bacon_strf ("%s%c%s", p, BACON_PATH_SEP, name);
@@ -396,8 +381,7 @@ bacon_env_fix_download_path (char **path, const char *name)
     return;
   }
 
-  if (bacon_env_is_directory ((*path)))
-  {
+  if (bacon_env_is_directory ((*path))) {
     p = bacon_strf ("%s%c%s", (*path), BACON_PATH_SEP, name);
     bacon_free ((*path));
     (*path) = bacon_strdup (p);

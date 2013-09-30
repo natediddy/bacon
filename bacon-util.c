@@ -45,8 +45,7 @@ __bacon_debug (const char *file,
 {
   va_list a;
 
-  if (msg && *msg)
-  {
+  if (msg && *msg) {
     fprintf (stderr, "%s:", g_program_name);
     if (file && *file)
       fprintf (stderr, "%s:", file);
@@ -68,8 +67,7 @@ bacon_error (const char *msg, ...)
 {
   va_list a;
 
-  if (msg && *msg)
-  {
+  if (msg && *msg) {
     fprintf (stderr, "%s: " BACON_ERROR_TAG, g_program_name);
     va_start (a, msg);
     vfprintf (stderr, msg, a);
@@ -83,8 +81,7 @@ bacon_warn (const char *msg, ...)
 {
   va_list a;
 
-  if (msg && *msg)
-  {
+  if (msg && *msg) {
     fprintf (stderr, "%s: " BACON_WARN_TAG, g_program_name);
     va_start (a, msg);
     vfprintf (stderr, msg, a);
@@ -98,8 +95,7 @@ bacon_fout (FILE *stream, const char *msg, ...)
 {
   va_list a;
 
-  if (msg && *msg)
-  {
+  if (msg && *msg) {
     va_start (a, msg);
     vfprintf (stream, msg, a);
     va_end (a);
@@ -111,8 +107,7 @@ bacon_foutln (FILE *stream, const char *msg, ...)
 {
   va_list a;
 
-  if (msg && *msg)
-  {
+  if (msg && *msg) {
     va_start (a, msg);
     vfprintf (stream, msg, a);
     va_end (a);
@@ -125,8 +120,7 @@ bacon_out (const char *msg, ...)
 {
   va_list a;
 
-  if (msg && *msg)
-  {
+  if (msg && *msg) {
     va_start (a, msg);
     vfprintf (stdout, msg, a);
     va_end (a);
@@ -138,8 +132,7 @@ bacon_outln (const char *msg, ...)
 {
   va_list a;
 
-  if (msg && *msg)
-  {
+  if (msg && *msg) {
     va_start (a, msg);
     vfprintf (stdout, msg, a);
     va_end (a);
@@ -158,8 +151,7 @@ bacon_outlni (const int level, const char *msg, ...)
     for (j = 0; j < BACON_INDENT_SIZE; ++j)
       fputc (' ', stdout);
 
-  if (msg && *msg)
-  {
+  if (msg && *msg) {
     va_start (a, msg);
     vfprintf (stdout, msg, a);
     va_end (a);
@@ -172,8 +164,7 @@ bacon_msg (const char *msg, ...)
 {
   va_list a;
 
-  if (msg && *msg)
-  {
+  if (msg && *msg) {
     fprintf (stdout, "%s: " BACON_NORMAL_TAG, g_program_name);
     va_start (a, msg);
     vfprintf (stdout, msg, a);
@@ -188,8 +179,7 @@ bacon_malloc (const size_t n)
   void *ptr;
 
   ptr = malloc (n);
-  if (!ptr)
-  {
+  if (!ptr) {
     bacon_error (strerror (errno));
     exit (EXIT_FAILURE);
   }
@@ -202,8 +192,7 @@ bacon_realloc (void *ptr, const size_t n)
   void *pptr;
 
   pptr = realloc (ptr, n);
-  if (!pptr)
-  {
+  if (!pptr) {
     bacon_error (strerror (errno));
     exit (EXIT_FAILURE);
   }
@@ -216,8 +205,7 @@ bacon_strdup (const char *str)
   size_t n;
   char *res;
 
-  if (str)
-  {
+  if (str) {
     n = strlen (str);
     res = bacon_newa (char, n + 1);
     memcpy (res, str, n);
@@ -232,8 +220,7 @@ bacon_strndup (const char *str, const size_t n)
 {
   char *res;
 
-  if (str)
-  {
+  if (str) {
     res = bacon_newa (char, n + 1);
     memcpy (res, str, n);
     res[n] = '\0';
@@ -256,8 +243,7 @@ bacon_strf (const char *fmt, ...)
     return NULL;
 
   str = bacon_newa (char, size);
-  while (true)
-  {
+  while (true) {
     va_start (a, fmt);
     n = vsnprintf (str, size, fmt, a);
     va_end (a);
@@ -303,20 +289,14 @@ bacon_byte_str_format (char *buf, const size_t n, const CmByte bytes)
 
   if (bytes < BACON_KIBIBYTE_VALUE)
     snprintf (buf, n, "%lu%c", bytes, BACON_BYTE_SYMBOL);
-  else
-  {
-    if ((bytes / BACON_GIBIBYTE_VALUE) > 0)
-    {
+  else {
+    if ((bytes / BACON_GIBIBYTE_VALUE) > 0) {
       x = ((double) bytes / (double) BACON_GIBIBYTE_VALUE);
       c = BACON_GIBI_SYMBOL;
-    }
-    else if ((bytes / BACON_MEBIBYTE_VALUE) > 0)
-    {
+    } else if ((bytes / BACON_MEBIBYTE_VALUE) > 0) {
       x = ((double) bytes / (double) BACON_MEBIBYTE_VALUE);
       c = BACON_MEBI_SYMBOL;
-    }
-    else
-    {
+    } else {
       x = ((double) bytes / (double) BACON_KIBIBYTE_VALUE);
       c = BACON_KIBI_SYMBOL;
     }
@@ -332,18 +312,15 @@ bacon_int_from_str (const char *str)
   long long g;
 
   n = 0LL;
-  if (str && *str)
-  {
+  if (str && *str) {
     g = 0LL;
     sign = 1;
     while (isspace (*str))
       str++;
     if (*str == '-')
       sign = -1;
-    while (*str)
-    {
-      if (isdigit (*str))
-      {
+    while (*str) {
+      if (isdigit (*str)) {
         g = g * 10LL + *str++ - '0';
         continue;
       }
@@ -369,8 +346,7 @@ void
 bacon_get_time_of_day (struct timeval *tv)
 {
   memset (tv, 0, sizeof (struct timeval));
-  if (gettimeofday (tv, NULL) == -1)
-  {
+  if (gettimeofday (tv, NULL) == -1) {
     bacon_error ("failed to get time of day (%s)", strerror (errno));
     exit (EXIT_FAILURE);
   }

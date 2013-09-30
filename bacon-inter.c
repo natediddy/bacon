@@ -35,8 +35,7 @@ extern char *           output_download;
 extern int              max_roms;
 extern int              rom_type;
 
-static const char *const yesno_answers[] =
-{
+static const char *const yesno_answers[] = {
   "y", "Y", "yes", "YES", "yEs", "YeS", "yES", "yeS", "Yes", "YEs",
   "n", "N", "no", "NO", "nO", "No",
   NULL
@@ -47,10 +46,8 @@ bacon_valid_yesno_answer (const char *ans)
 {
   size_t x;
 
-  for (x = 0; yesno_answers[x]; ++x)
-  {
-    if (bacon_streq (ans, yesno_answers[x]))
-    {
+  for (x = 0; yesno_answers[x]; ++x) {
+    if (bacon_streq (ans, yesno_answers[x])) {
       if ((*ans == 'y') || (*ans == 'Y'))
         return BACON_ANSWER_YES;
       if ((*ans == 'n') || (*ans == 'N'))
@@ -66,25 +63,22 @@ bacon_yesno (const char *question, ...)
   va_list a;
   char answer[BACON_ANSWER_MAX];
 
-  while (true)
-  {
+  while (true) {
     va_start (a, question);
     vfprintf (stdout, question, a);
     va_end (a);
     fputs ("? [y/n] ", stdout);
-    if (!fgets (answer, BACON_ANSWER_MAX, stdin))
-    {
+    if (!fgets (answer, BACON_ANSWER_MAX, stdin)) {
       bacon_error ("failed to read from standard input");
       exit (EXIT_FAILURE);
     }
-    switch (bacon_valid_yesno_answer (answer))
-    {
-      case BACON_ANSWER_YES:
-        return true;
-      case BACON_ANSWER_NO:
-        return false;
-      default:
-        bacon_warn ("`%s' unrecognized - try again...", answer);
+    switch (bacon_valid_yesno_answer (answer)) {
+    case BACON_ANSWER_YES:
+      return true;
+    case BACON_ANSWER_NO:
+      return false;
+    default:
+      bacon_warn ("`%s' unrecognized - try again...", answer);
     }
   }
 }
@@ -95,14 +89,12 @@ bacon_get_num_answer (int *input)
   size_t n;
   char answer[BACON_ANSWER_MAX];
 
-  if (!fgets (answer, BACON_ANSWER_MAX, stdin))
-  {
+  if (!fgets (answer, BACON_ANSWER_MAX, stdin)) {
     bacon_error ("failed to read from standard input");
     exit (EXIT_FAILURE);
   }
   *input = bacon_int_from_str (answer);
-  if ((*input == 0) && *answer)
-  {
+  if ((*input == 0) && *answer) {
     n = strlen (answer);
     if (answer[n - 1] == '\n')
       answer[n - 1] = '\0';
@@ -121,10 +113,8 @@ bacon_get_device_from_index (int *idx)
 
   cidx = 1;
   device = NULL;
-  for (p = device_list; p; p = p->next)
-  {
-    if (cidx == *idx)
-    {
+  for (p = device_list; p; p = p->next) {
+    if (cidx == *idx) {
       device = p->device;
       break;
     }
@@ -142,8 +132,7 @@ bacon_get_device_answer (BaconDevice **device)
   size_t n;
   char answer[BACON_ANSWER_MAX];
 
-  if (!fgets (answer, BACON_ANSWER_MAX, stdin))
-  {
+  if (!fgets (answer, BACON_ANSWER_MAX, stdin)) {
     bacon_error ("failed to read from standard input");
     exit (EXIT_FAILURE);
   }
@@ -152,8 +141,7 @@ bacon_get_device_answer (BaconDevice **device)
   if (answer[n - 1] == '\n')
     answer[n - 1] = '\0';
 
-  if (bacon_device_is_valid_id (device_list, answer))
-  {
+  if (bacon_device_is_valid_id (device_list, answer)) {
     (*device) = bacon_device_get_device_from_id (device_list, answer);
     return;
   }
@@ -170,8 +158,7 @@ bacon_display_device_choices (void)
 
   idx = 1;
   bacon_outln ("Devices:");
-  for (p = device_list; p; p = p->next)
-  {
+  for (p = device_list; p; p = p->next) {
     bacon_outln ("%4i) %s - %s",
         idx, p->device->codename, p->device->fullname);
     if (!p->next)
@@ -199,13 +186,12 @@ bacon_display_rom_choices (const BaconRomList *list,
   BaconRom *rom;
 
   idx = 0;
+  /* add some extra spaces here to cover up the "Loading..." propeller */
   bacon_outlni (0, "%s:         ", bacon_rom_type_str (id));
   rom = list->roms[id];
-  if (rom)
-  {
+  if (rom) {
     idx = 1;
-    for (; rom; rom = rom->next)
-    {
+    for (; rom; rom = rom->next) {
       bacon_outlni (1, "%i) %s", idx, rom->name);
       bacon_outlni (2, "released: %s", rom->date);
       bacon_outlni (2, "size:     %s", rom->size);
@@ -213,8 +199,7 @@ bacon_display_rom_choices (const BaconRomList *list,
         break;
       ++idx;
     }
-  }
-  else
+  } else
     bacon_outlni (1, "none");
   *total_choices = idx;
 }
@@ -228,11 +213,9 @@ bacon_get_rom_by_index (const BaconRomList *list,
   BaconRom *rom;
 
   rom = list->roms[id];
-  if (rom)
-  {
+  if (rom) {
     idx = 0;
-    for (; rom; rom = rom->next)
-    {
+    for (; rom; rom = rom->next) {
       if (idx == index)
         return rom;
       if (!rom->next)
@@ -259,13 +242,11 @@ bacon_interactive (void)
   chosen_device = NULL;
   bacon_display_device_choices ();
 
-  while (true)
-  {
+  while (true) {
     bacon_out ("Enter choice: [1-%i or codename] ",
         bacon_device_list_total (device_list));
     bacon_get_device_answer (&chosen_device);
-    if (!chosen_device)
-    {
+    if (!chosen_device) {
       bacon_outln ("Invalid response - please try again...");
       continue;
     }
@@ -275,8 +256,7 @@ bacon_interactive (void)
   bacon_outln (NULL);
 
   bacon_display_rom_type_choices ();
-  while (true)
-  {
+  while (true) {
     bacon_out ("Enter number: [1-%i] ", BACON_ROM_TOTAL);
     if (!bacon_get_num_answer (&idx))
       continue;
@@ -291,8 +271,7 @@ bacon_interactive (void)
       rom_type |= BACON_ROM_TYPE_STABLE;
     else if (idx == BACON_ROM_TEST)
       rom_type |= BACON_ROM_TYPE_TEST;
-    else
-    {
+    else {
       bacon_warn ("'%i' not valid - please try again...", idx);
       continue;
     }
@@ -309,37 +288,16 @@ bacon_interactive (void)
   if (!total)
     return;
 
-  while (true)
-  {
+  while (true) {
     bacon_out ("Enter number: [1-%i] ", total);
     if (!bacon_get_num_answer (&idx))
       continue;
     rom = bacon_get_rom_by_index (rom_list, id, idx - 1);
-    if (!rom)
-    {
+    if (!rom) {
       bacon_warn ("'%i' not valid - please try again...", idx);
       continue;
     }
     break;
-  }
-
-  bacon_env_fix_download_path (&output_download, rom->name);
-  if (!bacon_env_ensure_path (output_download, true))
-  {
-    bacon_error ("can't download to `%s'", output_download);
-    exit (EXIT_FAILURE);
-  }
-
-  if (bacon_env_is_file (output_download))
-  {
-    bacon_hash_from_file (&hash, output_download);
-    if (bacon_hash_match (&hash, &rom->hash))
-    {
-      bacon_msg ("`%s' already exists - no need to redownload",
-                 output_download);
-      bacon_rom_list_destroy (rom_list);
-      return;
-    }
   }
 
   bacon_outln ("\n==========================================");
@@ -355,28 +313,10 @@ bacon_interactive (void)
   bacon_outln ("saving to:   %s", output_download);
   bacon_outln ("==========================================\n");
 
-  offset = bacon_env_size_of (output_download);
-  if (offset > 0)
-    bacon_msg ("resuming download of `%s'", output_download);
-
-  success = true;
-  if (bacon_net_init_for_rom (rom->get, offset, output_download))
-  {
-    if (!bacon_net_get_rom ())
-      success = false;
-    bacon_net_deinit ();
+  if (!bacon_rom_do_download (rom, output_download)) {
+    bacon_rom_list_destroy (rom_list);
+    exit (EXIT_FAILURE);
   }
-  else
-    success = false;
-
-  if (success)
-  {
-    bacon_hash_from_file (&hash, output_download);
-    if (!bacon_hash_match (&hash, &rom->hash))
-      bacon_warn ("checksum mismatch for `%s' (file is possible corrupt)",
-                  output_download);
-  }
-
   bacon_rom_list_destroy (rom_list);
 }
 

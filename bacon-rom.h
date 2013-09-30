@@ -25,7 +25,6 @@
 #define BACON_ROM_DATE_MAX 24
 
 #define BACON_ROM_TYPE_NONE     0
-
 #define BACON_ROM_TYPE_ALL      0x0200
 #define BACON_ROM_TYPE_NIGHTLY  0x0800
 #define BACON_ROM_TYPE_RC       0x0400
@@ -43,8 +42,7 @@
 typedef struct BaconRom     BaconRom;
 typedef struct BaconRomList BaconRomList;
 
-struct BaconRom
-{
+struct BaconRom {
   char name[BACON_ROM_NAME_MAX];
   char get[BACON_ROM_GET_MAX];
   char size[BACON_ROM_SIZE_MAX];
@@ -54,8 +52,7 @@ struct BaconRom
   BaconRom *prev;
 };
 
-struct BaconRomList
-{
+struct BaconRomList {
   BaconRom *roms[BACON_ROM_TOTAL];
 };
 
@@ -64,6 +61,7 @@ BaconRomList *bacon_rom_list_new     (const char *codename,
                                       const int max);
 void          bacon_rom_list_destroy (BaconRomList *rom_list);
 const char *  bacon_rom_type_str     (const int index);
+bool          bacon_rom_do_download  (const BaconRom *rom, char *dlpath);
 
 #endif /* BACON_ROM_H */
 

@@ -88,8 +88,7 @@ static char   percent_buffer [BACON_PERCENT_MAX];
 static char   eta_buffer     [BACON_ETA_MAX];
 static char   speed_buffer   [BACON_SPEED_MAX];
 
-static const char propeller[BACON_PROPELLER_SIZE] =
-{
+static const char propeller  [BACON_PROPELLER_SIZE] = {
   BACON_PROPELLER_0,
   BACON_PROPELLER_1,
   BACON_PROPELLER_2,
@@ -162,8 +161,7 @@ bacon_output_add_char (const char c)
 static void
 bacon_set_bytes_per_sec (const double current)
 {
-  if (current <= 0.0)
-  {
+  if (current <= 0.0) {
     per_sec = -1;
     return;
   }
@@ -175,8 +173,7 @@ bacon_set_bytes_per_sec (const double current)
 static void
 bacon_format_percent (const double x)
 {
-  if (bacon_nan_value (x) || bacon_nan_value (x * 100))
-  {
+  if (bacon_nan_value (x) || bacon_nan_value (x * 100)) {
     strncpy (percent_buffer, BACON_PERCENT_DEFAULT, BACON_PERCENT_MAX);
     return;
   }
@@ -198,8 +195,7 @@ bacon_format_current (const CmByte bytes)
 static void
 bacon_format_speed (void)
 {
-  if (per_sec < 0)
-  {
+  if (per_sec < 0) {
     snprintf (speed_buffer, BACON_SIZE_MAX + strlen (BACON_SPEED_SUFFIX),
         "0%c%s", BACON_BYTE_SYMBOL, BACON_SPEED_SUFFIX);
     return;
@@ -218,8 +214,7 @@ bacon_format_eta (const double x)
   int s;
   size_t n;
 
-  if (x <= 0.0)
-  {
+  if (x <= 0.0) {
     strncpy (eta_buffer, BACON_ETA_DEFAULT, strlen (BACON_ETA_DEFAULT) + 1);
     return;
   }
@@ -230,20 +225,17 @@ bacon_format_eta (const double x)
   s = ((int) (x / per_sec) % BACON_MOD_SEC);
   n = 0;
 
-  if (d > 0)
-  {
+  if (d > 0) {
     snprintf (eta_buffer, BACON_ETA_MAX, "%id", d);
     n = strlen (eta_buffer);
   }
 
-  if (h > 0)
-  {
+  if (h > 0) {
     snprintf (eta_buffer + n, BACON_ETA_MAX - n, "%ih", h);
     n = strlen (eta_buffer);
   }
 
-  if (m > 0)
-  {
+  if (m > 0) {
     snprintf (eta_buffer + n, BACON_ETA_MAX - n, "%im", m);
     n = strlen (eta_buffer);
   }
@@ -255,8 +247,7 @@ bacon_format_eta (const double x)
 static void
 bacon_output_finish (void)
 {
-  while (output_rem > 2)
-  {
+  while (output_rem > 2) {
     output_buffer[output_pos++] = ' ';
     output_rem--;
   }
@@ -299,14 +290,12 @@ bacon_progress_file (const double total, const double current)
 
   if ((last.tv_sec == -1) && (last.tv_usec == -1))
     millis = -1;
-  else
-  {
+  else {
     bacon_get_time_of_day (&now);
     millis = bacon_get_millis (&last, &now);
   }
 
-  if ((millis == -1) || BACON_FILE_WAIT (millis))
-  {
+  if ((millis == -1) || BACON_FILE_WAIT (millis)) {
     bacon_output_init ();
     bacon_format_current ((CmByte ) current);
     bacon_format_total ((CmByte ) total);
@@ -321,8 +310,7 @@ bacon_progress_file (const double total, const double current)
     bacon_output_add_string (total_buffer);
     bacon_output_add_char (' ');
     bar_end_pos = BACON_BAR_END_POS - 8;
-    if (bar_end_pos)
-    {
+    if (bar_end_pos) {
       bacon_output_add_char (BACON_BAR_START);
       has_stop_pos = bacon_round (x * bar_end_pos);
       for (i = 0; i < has_stop_pos; ++i)
@@ -341,8 +329,7 @@ bacon_progress_file (const double total, const double current)
     bacon_output_display ();
     if (millis == -1)
       bacon_get_time_of_day (&last);
-    else
-    {
+    else {
       last.tv_sec = now.tv_sec;
       last.tv_usec = now.tv_usec;
     }
@@ -359,14 +346,12 @@ bacon_progress_page (const double total, const double current)
 
   if ((last.tv_sec == -1) && (last.tv_usec == -1))
     millis = -1;
-  else
-  {
+  else {
     bacon_get_time_of_day (&now);
     millis = bacon_get_millis (&last, &now);
   }
 
-  if ((millis == -1) || BACON_PAGE_WAIT (millis))
-  {
+  if ((millis == -1) || BACON_PAGE_WAIT (millis)) {
     bacon_output_init ();
     bacon_output_add_string ("Loading... ");
     if (propeller_pos == BACON_PROPELLER_SIZE)
@@ -376,8 +361,7 @@ bacon_progress_page (const double total, const double current)
     bacon_output_display ();
     if (millis == -1)
       bacon_get_time_of_day (&last);
-    else
-    {
+    else {
       last.tv_sec = now.tv_sec;
       last.tv_usec = now.tv_usec;
     }

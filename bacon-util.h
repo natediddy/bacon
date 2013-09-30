@@ -35,8 +35,7 @@
 #define bacon_newa(type, size) ((type *) bacon_malloc (size))
 
 #define bacon_free(p) \
-  do                  \
-  {                   \
+  do {                \
     if (!(p))         \
       break;          \
     free ((p));       \
