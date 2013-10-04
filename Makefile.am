@@ -4,6 +4,7 @@ bacon_SOURCES = \
 	bacon.c \
 	bacon-device.c \
 	bacon-env.c \
+	bacon-gtk.c \
 	bacon-hash.c \
 	bacon-inter.c \
 	bacon-net.c \
@@ -14,6 +15,7 @@ bacon_SOURCES = \
 	bacon.h \
 	bacon-device.h \
 	bacon-env.h \
+	bacon-gtk.h \
 	bacon-hash.h \
 	bacon-inter.h \
 	bacon-license.h \

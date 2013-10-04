@@ -26,6 +26,9 @@
 #include "bacon.h"
 #include "bacon-device.h"
 #include "bacon-env.h"
+#ifdef BACON_USING_GTK
+# include "bacon-gtk.h"
+#endif
 #include "bacon-inter.h"
 #include "bacon-net.h"
 #include "bacon-rom.h"
@@ -729,9 +732,15 @@ bacon_perform (void)
 }
 
 int
-main (const int argc, char **argv)
+main (int argc, char **argv)
 {
   atexit (bacon_cleanup);
+#ifdef BACON_USING_GTK
+  if (argc == 1) {
+    bacon_gtk_main (&argc, &argv);
+    exit (EXIT_SUCCESS);
+  }
+#endif
   bacon_parse_opt (argv);
   bacon_perform ();
   exit (EXIT_SUCCESS);

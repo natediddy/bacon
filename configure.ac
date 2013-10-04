@@ -23,22 +23,42 @@ PKG_CHECK_MODULES(LIBCURL,
 
 if test "x$has_libcurl" != "xno" ; then
   if test "x$LIBCURL_CFLAGS" != "x" ; then
-    if test "x$CFLAGS" = "x" ; then
-      CFLAGS="$LIBCURL_CFLAGS"
-    else
-      CFLAGS="$CFLAGS $LIBCURL_CFLAGS"
-    fi
+    CFLAGS="$CFLAGS $LIBCURL_CFLAGS"
   fi
   if test "x$LIBCURL_LIBS" != "x" ; then
-    if test "x$LIBS" = "x" ; then
-      LIBS="$LIBCURL_LIBS"
-    else
-      LIBS="$LIBS $LIBCURL_LIBS"
-    fi
+    LIBS="$LIBS $LIBCURL_LIBS"
   fi
-  AC_MSG_NOTICE([found libcurl])
 else
-  AC_MSG_ERROR([libcurl not found!])
+  AC_MSG_ERROR([Could not find libcurl libraries!])
+fi
+
+GTK_MINIMUM=3.2.0
+AC_SUBST(GTK_MINIMUM)
+GLIB_MINIMUM=2.28.0
+AC_SUBST(GLIB_MINIMUM)
+
+AC_ARG_WITH([gtk],
+            AC_HELP_STRING([--with-gtk], [Compile with the GTK+ UI]),
+            [with_gtk="yes"],
+            [with_gtk="no"])
+
+if test "x$with_gtk" = "xyes" ; then
+  PKG_CHECK_MODULES([GTK],
+                    [gtk+-3.0 >= $GTK_MINIMUM glib-2.0 >= $GLIB_MINIMUM],
+                    [has_gtk="yes"],
+                    [has_gtk="no"])
+  if test "x$has_gtk" = "xyes" ; then
+    if test "x$GTK_CFLAGS" != "x" ; then
+      CFLAGS="$CFLAGS $GTK_CFLAGS -DBACON_USING_GTK"
+    fi
+    if test "x$GTK_LIBS" != "x" ; then
+      LIBS="$LIBS $GTK_LIBS"
+    fi
+  else
+    AC_MSG_ERROR([Could not find requested GTK3 libraries!])
+  fi
+else
+  AC_MSG_NOTICE([Not using GTK3])
 fi
 
 enable_debugging="no"
