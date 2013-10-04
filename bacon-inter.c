@@ -30,10 +30,10 @@
 #define BACON_ANSWER_YES     1
 #define BACON_ANSWER_NO      2
 
-extern BaconDeviceList *device_list;
-extern char *           output_download;
-extern int              max_roms;
-extern int              rom_type;
+extern BaconDeviceList *g_device_list;
+extern char *           g_out_path;
+extern int              g_max_roms;
+extern int              g_rom_type;
 
 static const char *const yesno_answers[] = {
   "y", "Y", "yes", "YES", "yEs", "YeS", "yES", "yeS", "Yes", "YEs",
@@ -113,7 +113,7 @@ bacon_get_device_from_index (int *idx)
 
   cidx = 1;
   device = NULL;
-  for (p = device_list; p; p = p->next) {
+  for (p = g_device_list; p; p = p->next) {
     if (cidx == *idx) {
       device = p->device;
       break;
@@ -141,8 +141,8 @@ bacon_get_device_answer (BaconDevice **device)
   if (answer[n - 1] == '\n')
     answer[n - 1] = '\0';
 
-  if (bacon_device_is_valid_id (device_list, answer)) {
-    (*device) = bacon_device_get_device_from_id (device_list, answer);
+  if (bacon_device_is_valid_id (g_device_list, answer)) {
+    (*device) = bacon_device_get_device_from_id (g_device_list, answer);
     return;
   }
 
@@ -158,7 +158,7 @@ bacon_display_device_choices (void)
 
   idx = 1;
   bacon_outln ("Devices:");
-  for (p = device_list; p; p = p->next) {
+  for (p = g_device_list; p; p = p->next) {
     bacon_outln ("%4i) %s - %s",
         idx, p->device->codename, p->device->fullname);
     if (!p->next)
@@ -244,7 +244,7 @@ bacon_interactive (void)
 
   while (true) {
     bacon_out ("Enter choice: [1-%i or codename] ",
-        bacon_device_list_total (device_list));
+        bacon_device_list_total (g_device_list));
     bacon_get_device_answer (&chosen_device);
     if (!chosen_device) {
       bacon_outln ("Invalid response - please try again...");
@@ -262,15 +262,15 @@ bacon_interactive (void)
       continue;
     --idx;
     if (idx == BACON_ROM_NIGHTLY)
-      rom_type |= BACON_ROM_TYPE_NIGHTLY;
+      g_rom_type |= BACON_ROM_TYPE_NIGHTLY;
     else if (idx == BACON_ROM_RC)
-      rom_type |= BACON_ROM_TYPE_RC;
+      g_rom_type |= BACON_ROM_TYPE_RC;
     else if (idx == BACON_ROM_SNAPSHOT)
-      rom_type |= BACON_ROM_TYPE_SNAPSHOT;
+      g_rom_type |= BACON_ROM_TYPE_SNAPSHOT;
     else if (idx == BACON_ROM_STABLE)
-      rom_type |= BACON_ROM_TYPE_STABLE;
+      g_rom_type |= BACON_ROM_TYPE_STABLE;
     else if (idx == BACON_ROM_TEST)
-      rom_type |= BACON_ROM_TYPE_TEST;
+      g_rom_type |= BACON_ROM_TYPE_TEST;
     else {
       bacon_warn ("'%i' not valid - please try again...", idx);
       continue;
@@ -280,8 +280,9 @@ bacon_interactive (void)
   }
 
   bacon_outln (NULL);
-  max_roms = 50;
-  rom_list = bacon_rom_list_new (chosen_device->codename, rom_type, max_roms);
+  g_max_roms = 50;
+  rom_list =
+    bacon_rom_list_new (chosen_device->codename, g_rom_type, g_max_roms);
   total = 1;
   bacon_display_rom_choices (rom_list, id, &total);
 
@@ -310,10 +311,10 @@ bacon_interactive (void)
   bacon_outln ("size:        %s", rom->size);
   bacon_outln ("url:         %s/%s", BACON_ROOT_URL, rom->get);
   bacon_outln ("md5:         %s", rom->hash.hash);
-  bacon_outln ("saving to:   %s", output_download);
+  bacon_outln ("saving to:   %s", g_out_path);
   bacon_outln ("==========================================\n");
 
-  if (!bacon_rom_do_download (rom, output_download)) {
+  if (!bacon_rom_do_download (rom, g_out_path)) {
     bacon_rom_list_destroy (rom_list);
     exit (EXIT_FAILURE);
   }

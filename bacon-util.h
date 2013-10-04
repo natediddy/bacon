@@ -76,6 +76,7 @@ char *bacon_strndup            (const char *str, const size_t n);
 char *bacon_strf               (const char *fmt, ...);
 bool  bacon_streq              (const char *str1, const char *str2);
 bool  bacon_strstw             (const char *str, const char *pre);
+bool  bacon_strhasc            (const char *str, const char c);
 void  bacon_byte_str_format    (char *buf,
                                 const size_t n,
                                 const CmByte bytes);

@@ -1,5 +1,3 @@
-ACLOCAL_AMFLAGS = ${ACLOCAL_FLAGS}
-
 bin_PROGRAMS = bacon
 
 bacon_SOURCES = \

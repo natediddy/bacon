@@ -17,21 +17,21 @@
 #ifndef BACON_H
 #define BACON_H
 
-#define BACON_DEBUG
-
 #ifdef HAVE_CONFIG_H
 # include "bacon-config.h"
-# define BACON_PROGRAM_NAME PACKAGE_NAME
-# define BACON_VERSION      PACKAGE_VERSION
+# define BACON_PROGRAM_NAME     PACKAGE_NAME
+# define BACON_VERSION          PACKAGE_VERSION
+# define BACON_BUG_REPORT_EMAIL PACKAGE_BUGREPORT
 #else
-# define BACON_PROGRAM_NAME "bacon"
-# define BACON_VERSION      "2.1"
+# define BACON_PROGRAM_NAME     "bacon"
+# define BACON_VERSION          "2.3"
+# define BACON_BUG_REPORT_EMAIL "me@nathanforbes.com"
 #endif
 
 #define BACON_ROOT_URL "http://get.cm"
 
 #ifndef __cplusplus
-typedef char bool;
+typedef unsigned char bool;
 # define bool bool
 # undef false
 # define false (0)

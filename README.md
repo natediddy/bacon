@@ -9,34 +9,41 @@ And for more information about Android in general, visit [Android](http://www.an
 
 Usage
 -----
-    bacon [OPTION...] [DEVICE...]
+    Usage: bacon [OPTION...] [DEVICE...]
 
 Options
 -------
-    -d, --download             Download ROM for DEVICE
-    -M N, --max-roms=N         Show a max of N ROMs per ROM type (with
-                               `--show')
-    -l, --list-devices         List all available devices
-    -L, --latest               Show or download the latest ROM for DEVICE
-                               (with the action of showing or downloading
-                               depending on whether `--show' or `--download'
-                               was used)
-    -s, --show                 Only show ROM(s) for DEVICE (don't download
-                               them)
-    -H, --show-hash            Show the MD5 hash (with `--show')
-    -i, --interactive          Interactive mode
-    -a, --all                  Specify all ROM types
-    -e, --experimental         Specify only Experimental
-    -m, --snapshot             Specify only M Snapshot ROMs
-    -n, --nightly              Specify only Nightly ROMs
-    -r, --rc                   Specify only Release Candidate ROMs
-    -S, --stable               Specify only Stable ROMs
-    -u, --update-device-list   Update the local device list
-    -U, --show-url             Show the URL (with `--show')
-    -o FILENAME, --output=FILENAME
-                               Download ROM to FILENAME
-    -?, -h, --help             Show this help message and exit
-    -v, --version              Show version info and exit
+    General Options:
+        -d, --download             Download the latest ROM for DEVICE
+                                   Requires specific ROM type option
+                                   (See 'ROM Type Options' below)
+        -i, --interactive          Interactive mode
+        -l, --list-devices         List all available DEVICEs
+        -N, --no-progress          Do not show any progress when retrieving
+                                   data from the internet (this includes the
+                                   progress bar during ROM downloads)
+        -s, --show                 Show ROMs for DEVICE (no downloading)
+        -u, --update-device-list   Update the local DEVICE list
+        -?, -h, --help             Display this help text and exit
+        -v, --version              Display version information and exit
+    ROM Type Options:
+        -a, --all                  Specify all ROM types [default when no
+                                   ROM types are given]
+        -e, --experimental         Specify only Experimental
+        -m, --snapshot             Specify only M Snapshot ROMs
+        -n, --nightly              Specify only Nightly ROMs
+        -r, --rc                   Specify only Release Candidate ROMs
+        -S, --stable               Specify only Stable ROMs
+    Download Options:
+        -o PATH, --output=PATH     Save downloaded ROM to PATH
+    Show Options:
+        -H, --hash                 Show remote MD5 hash for each ROM
+                                   displayed
+        -L, --latest               Show only the latest ROM for each ROM type
+                                   specified
+        -M N, --max=N              Show a maximum of N ROMs for each ROM type
+                                   specified
+        -U, --url                  Show download URL for each ROM displayed
 
 Building
 --------

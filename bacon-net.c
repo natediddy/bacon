@@ -31,6 +31,8 @@
 
 #define bacon_net_setopt(o, p) net->status = curl_easy_setopt (net->cp, o, p)
 
+extern bool g_show_progress;
+
 typedef struct {
   FILE *fp;
   char *path;
@@ -124,6 +126,8 @@ bacon_net_check (void)
 static bool
 bacon_file_setup (void)
 {
+  bool check;
+
   if (BACON_FILE_RESULT->offset == 0)
     BACON_FILE_RESULT->fp = bacon_env_fopen (BACON_FILE_RESULT->path, "wb");
   else if (BACON_FILE_RESULT->offset > 0)
@@ -138,28 +142,35 @@ bacon_file_setup (void)
     return false;
 
   bacon_net_setopt (CURLOPT_WRITEFUNCTION, (void *) BACON_FILE_RESULT->write);
-  if (!bacon_net_check ())
-    return false;
+  check = bacon_net_check ();
 
-  bacon_net_setopt (CURLOPT_PROGRESSFUNCTION,
-                    (void *) BACON_FILE_RESULT->progress);
-  return bacon_net_check ();
+  if (check && g_show_progress) {
+    bacon_net_setopt (CURLOPT_PROGRESSFUNCTION,
+                      (void *) BACON_FILE_RESULT->progress);
+    check = bacon_net_check ();
+  }
+  return check;
 }
 
 static bool
 bacon_page_setup (void)
 {
+  bool check;
+
   bacon_net_setopt (CURLOPT_WRITEDATA, (void *) &BACON_PAGE_RESULT->chunk);
   if (!bacon_net_check ())
     return false;
 
   bacon_net_setopt (CURLOPT_WRITEFUNCTION, (void *) BACON_PAGE_RESULT->write);
-  if (!bacon_net_check ())
-    return false;
+  check = bacon_net_check ();
 
-  bacon_net_setopt (CURLOPT_PROGRESSFUNCTION,
-      (void *) BACON_PAGE_RESULT->progress);
-  return bacon_net_check ();
+  if (check && g_show_progress)
+  {
+    bacon_net_setopt (CURLOPT_PROGRESSFUNCTION,
+                      (void *) BACON_PAGE_RESULT->progress);
+    check = bacon_net_check ();
+  }
+  return check;
 }
 
 static void
@@ -188,7 +199,8 @@ bacon_net_init (BaconNetAction action,
       BACON_FILE_RESULT->path = NULL;
     BACON_FILE_RESULT->setup = &bacon_file_setup;
     BACON_FILE_RESULT->write = &bacon_file_write;
-    BACON_FILE_RESULT->progress = &bacon_file_progress;
+    if (g_show_progress)
+      BACON_FILE_RESULT->progress = &bacon_file_progress;
   } else {
     net->res = bacon_new (BaconPageResult);
     memset (&BACON_PAGE_RESULT->chunk, 0, sizeof (BaconDataChunk));
@@ -196,7 +208,8 @@ bacon_net_init (BaconNetAction action,
     BACON_PAGE_RESULT->chunk.n = 0;
     BACON_PAGE_RESULT->setup = &bacon_page_setup;
     BACON_PAGE_RESULT->write = &bacon_page_write;
-    BACON_PAGE_RESULT->progress = &bacon_page_progress;
+    if (g_show_progress)
+      BACON_PAGE_RESULT->progress = &bacon_page_progress;
   }
 }
 
@@ -215,7 +228,10 @@ bacon_net_setup (void)
   if (!bacon_net_check ())
     return false;
 
-  bacon_net_setopt (CURLOPT_NOPROGRESS, 0L);
+  if (g_show_progress)
+    bacon_net_setopt (CURLOPT_NOPROGRESS, 0L);
+  else
+    bacon_net_setopt (CURLOPT_NOPROGRESS, 1L);
   if (!bacon_net_check ())
     return false;
 
@@ -227,9 +243,11 @@ bacon_net_setup (void)
 static bool
 bacon_net_fetch (void)
 {
-  bacon_progress_init ();
+  if (g_show_progress)
+    bacon_progress_init ();
   net->status = curl_easy_perform (net->cp);
-  bacon_progress_deinit (net->action == BACON_NET_ACTION_GET_FILE);
+  if (g_show_progress)
+    bacon_progress_deinit (net->action == BACON_NET_ACTION_GET_FILE);
   return bacon_net_check ();
 }
 

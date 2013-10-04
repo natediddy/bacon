@@ -281,6 +281,14 @@ bacon_strstw (const char *str, const char *pre)
   return false;
 }
 
+bool
+bacon_strhasc (const char *str, const char c)
+{
+  if (strchr (str, c))
+    return true;
+  return false;
+}
+
 void
 bacon_byte_str_format (char *buf, const size_t n, const CmByte bytes)
 {
