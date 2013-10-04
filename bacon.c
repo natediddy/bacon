@@ -1,17 +1,21 @@
 /*
- * Copyright (C) 2013 Nathan Forbes
+ * bacon - A command line tool for viewing/downloading CyanogenMod ROMs
+ *         for Android devices.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Copyright (C) 2013  Nathan Forbes
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <ctype.h>
@@ -93,7 +97,7 @@ static void
 bacon_help (void)
 {
   /* each item in array gets its own line */
-  static const char *helptext[] = {
+  static const char *const helptext[] = {
     "General Options:",
     "  -d, --download             Download the latest ROM for DEVICE",
     "                             Requires specific ROM type option",
@@ -138,8 +142,20 @@ bacon_help (void)
 static void
 bacon_version (void)
 {
-  bacon_outln (BACON_PROGRAM_NAME " " BACON_VERSION);
-  bacon_outln ("Written by Nathan Forbes <" BACON_BUG_REPORT_EMAIL ">");
+  /* each item in array gets its own line */
+  static const char *const versiontext[] = {
+    BACON_PROGRAM_NAME " " BACON_VERSION,
+    "Copyright (C) 2013 Nathan Forbes <" BACON_BUG_REPORT_EMAIL ">",
+    "License GPLv3+: GNU GPL version 3 or later "
+      "<http://gnu.org/licenses/gpl.html>",
+    "This is free software: you are free to change and redistribute it.",
+    "There is NO WARRANTY, to the extent permitted by law.",
+    NULL
+  };
+  size_t x;
+
+  for (x = 0; versiontext[x]; ++x)
+    bacon_outln (versiontext[x]);
   exit (EXIT_SUCCESS);
 }
 

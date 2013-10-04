@@ -16,6 +16,7 @@ bacon_SOURCES = \
 	bacon-env.h \
 	bacon-hash.h \
 	bacon-inter.h \
+	bacon-license.h \
 	bacon-net.h \
 	bacon-os.h \
 	bacon-parse.h \
@@ -24,6 +25,7 @@ bacon_SOURCES = \
 	bacon-util.h
 
 EXTRA_DIST = \
+	COPYING \
 	README \
 	README.md
 

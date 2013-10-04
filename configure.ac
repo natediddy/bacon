@@ -1,4 +1,4 @@
-AC_INIT([bacon], [2.3], [me@nathanforbes.com],
+AC_INIT([bacon], [2.4], [me@nathanforbes.com],
         [bacon], [https://github.com/natediddy/bacon])
 AC_CONFIG_SRCDIR([bacon.c])
 
