@@ -27,12 +27,12 @@
 #define BACON_GET_CM_URL "http://get.cm"
 
 /* Use these URLs from the CM wiki page for device icons in the GUI */
-#ifdef BACON_USING_GTK
+#ifdef BACON_GTK
 # define BACON_DEVICE_ICONS_URL      "http://wiki.cyanogenmod.org/w/Devices#"
 # define BACON_DEVICE_ICON_THUMB_URL "http://wiki.cyanogenmod.org/images"
 #endif
 
-#ifdef BACON_USING_GTK
+#ifdef BACON_GTK
 bool  bacon_net_init_for_device_icons      (void);
 bool  bacon_net_init_for_device_icon_thumb (const char *request,
                                             const char *filename);

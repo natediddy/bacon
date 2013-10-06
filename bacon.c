@@ -26,7 +26,7 @@
 #include "bacon.h"
 #include "bacon-device.h"
 #include "bacon-env.h"
-#ifdef BACON_USING_GTK
+#ifdef BACON_GTK
 # include "bacon-gtk.h"
 #endif
 #include "bacon-inter.h"
@@ -134,7 +134,7 @@ bacon_help (void)
     "  -M N, --max=N              Show a maximum of N ROMs for each ROM type",
     "                             specified",
     "  -U, --url                  Show download URL for each ROM displayed",
-#ifdef BACON_USING_GTK
+#ifdef BACON_GTK
     "",
     "Providing no arguments will launch the GTK+ graphical user interface.",
 #endif
@@ -155,10 +155,18 @@ bacon_version (void)
   static const char *const version[] = {
     BACON_PROGRAM_NAME " " BACON_VERSION,
     "Copyright (C) 2013 Nathan Forbes <" BACON_BUG_REPORT_EMAIL ">",
-    "License GPLv3+: GNU GPL version 3 or later "
-      "<http://gnu.org/licenses/gpl.html>",
-    "This is free software: you are free to change and redistribute it.",
-    "There is NO WARRANTY, to the extent permitted by law.",
+    "This is free software; see the source for copying conditions.",
+    "There NO warranty; not even for MERCHANTABILITY or FITNESS FOR A",
+    "PARTICULAR PURPOSE.",
+#if defined (BACON_TARGET_SYSTEM) || defined (BACON_GTK)
+    "",
+# ifdef BACON_TARGET_SYSTEM
+    "Built for: " BACON_TARGET_SYSTEM,
+# endif
+# ifdef BACON_GTK
+    "Using GTK+ interface",
+# endif
+#endif
     NULL
   };
   size_t x;
@@ -743,7 +751,7 @@ main (int argc, char **argv)
   bacon_set_program_name (argv[0]);
   atexit (bacon_cleanup);
   bacon_env_set_program_data_path ();
-#ifdef BACON_USING_GTK
+#ifdef BACON_GTK
   if (argc == 1) {
     bacon_gtk_main (&argc, &argv);
     exit (EXIT_SUCCESS);

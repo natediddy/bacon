@@ -37,7 +37,7 @@
 
 extern bool g_show_progress;
 
-#ifdef BACON_USING_GTK
+#ifdef BACON_GTK
 static bool for_icons = false;
 #endif
 static char url[BACON_URL_MAX];
@@ -158,7 +158,7 @@ bacon_file_setup (void)
   bacon_net_setopt (CURLOPT_WRITEFUNCTION, (void *) BACON_FILE_RESULT->write);
   check = bacon_net_check ();
 
-#ifdef BACON_USING_GTK
+#ifdef BACON_GTK
   if (!for_icons) {
 #endif
   if (check && g_show_progress) {
@@ -166,7 +166,7 @@ bacon_file_setup (void)
                       (void *) BACON_FILE_RESULT->progress);
     check = bacon_net_check ();
   }
-#ifdef BACON_USING_GTK
+#ifdef BACON_GTK
   }
 #endif
   return check;
@@ -184,7 +184,7 @@ bacon_page_setup (void)
   bacon_net_setopt (CURLOPT_WRITEFUNCTION, (void *) BACON_PAGE_RESULT->write);
   check = bacon_net_check ();
 
-#ifdef BACON_USING_GTK
+#ifdef BACON_GTK
   if (!for_icons) {
 #endif
   if (check && g_show_progress) {
@@ -192,7 +192,7 @@ bacon_page_setup (void)
                       (void *) BACON_PAGE_RESULT->progress);
     check = bacon_net_check ();
   }
-#ifdef BACON_USING_GTK
+#ifdef BACON_GTK
   }
 #endif
   return check;
@@ -251,14 +251,14 @@ bacon_net_setup (void)
   if (!bacon_net_check ())
     return false;
 
-#ifdef BACON_USING_GTK
+#ifdef BACON_GTK
   if (!for_icons) {
 #endif
   if (g_show_progress)
     bacon_net_setopt (CURLOPT_NOPROGRESS, 0L);
   else
     bacon_net_setopt (CURLOPT_NOPROGRESS, 1L);
-#ifdef BACON_USING_GTK
+#ifdef BACON_GTK
   }
 #endif
   if (!bacon_net_check ())
@@ -306,7 +306,7 @@ bacon_net_init_for_rom (const char *request,
   return false;
 }
 
-#ifdef BACON_USING_GTK
+#ifdef BACON_GTK
 bool
 bacon_net_init_for_device_icons (void)
 {
@@ -340,7 +340,7 @@ bacon_net_deinit (void)
 {
   *url = '\0';
   curl_easy_cleanup (net->cp);
-#ifdef BACON_USING_GTK
+#ifdef BACON_GTK
   for_icons = false;
 #endif
 

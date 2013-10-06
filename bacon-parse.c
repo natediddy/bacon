@@ -32,7 +32,7 @@
 #define BACON_GET_PATTERN      BACON_GET_CM_URL "/"
 #define BACON_SIZE_TAG         "<td>"
 #define BACON_DATE_TAG         "<td>"
-#ifdef BACON_USING_GTK
+#ifdef BACON_GTK
 # define BACON_THUMB_URL_PATTERN "wiki.cyanogenmod.org/images/"
 #endif
 
@@ -79,7 +79,7 @@ static size_t n_hash_pattern      = 0;
 static size_t n_get_pattern       = 0;
 static size_t n_size_tag          = 0;
 static size_t n_date_tag          = 0;
-#ifdef BACON_USING_GTK
+#ifdef BACON_GTK
 static size_t n_thumb_url_pattern = 0;
 #endif
 
@@ -107,7 +107,7 @@ bacon_set_size_values (void)
   if (!n_date_tag)
     n_date_tag = strlen (BACON_DATE_TAG);
 
-#ifdef BACON_USING_GTK
+#ifdef BACON_GTK
   if (!n_thumb_url_pattern)
     n_thumb_url_pattern = strlen (BACON_THUMB_URL_PATTERN);
 #endif
@@ -267,7 +267,7 @@ bacon_parse_for_rom (const char *data, const int max)
   return rom;
 }
 
-#ifdef BACON_USING_GTK
+#ifdef BACON_GTK
 BaconDeviceThumbRequestList *
 bacon_parse_for_device_thumb_request_list (const char *data,
                                            BaconDeviceList *devicelist)

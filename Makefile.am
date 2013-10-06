@@ -13,7 +13,6 @@ bacon_SOURCES = \
 	bacon-rom.c \
 	bacon-util.c \
 	bacon.h \
-	bacon-defdevpix.h \
 	bacon-device.h \
 	bacon-env.h \
 	bacon-gtk.h \
@@ -23,6 +22,7 @@ bacon_SOURCES = \
 	bacon-net.h \
 	bacon-os.h \
 	bacon-parse.h \
+	bacon-pixbufs.h \
 	bacon-progress.h \
 	bacon-rom.h \
 	bacon-util.h
@@ -32,4 +32,4 @@ EXTRA_DIST = \
 	README \
 	README.md
 
-dist_noinst_SCRIPTS = autogen.sh
+dist_noinst_SCRIPTS = buildconf 

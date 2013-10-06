@@ -1,11 +1,16 @@
 AC_INIT([bacon], [3.0], [me@nathanforbes.com],
         [bacon], [https://github.com/natediddy/bacon])
+
+AC_CANONICAL_SYSTEM
+
 AC_CONFIG_SRCDIR([bacon.c])
 
 AM_INIT_AUTOMAKE([-Wall no-define foreign])
 
 AC_CONFIG_HEADERS([bacon-config.h])
+
 AC_PROG_CC
+
 AC_CONFIG_FILES([Makefile])
 
 AC_CONFIG_MACRO_DIR([m4])
@@ -53,7 +58,7 @@ if test "x$with_gtk" = "xyes" ; then
                     [has_gtk="no"])
   if test "x$has_gtk" = "xyes" ; then
     if test "x$GTK_CFLAGS" != "x" ; then
-      CFLAGS="$CFLAGS $GTK_CFLAGS -DBACON_USING_GTK"
+      CFLAGS="$CFLAGS $GTK_CFLAGS -DBACON_GTK"
     fi
     if test "x$GTK_LIBS" != "x" ; then
       LIBS="$LIBS $GTK_LIBS"
@@ -74,12 +79,23 @@ if test "x$enable_debugging" != "xno" ; then
   CFLAGS="$CFLAGS -DBACON_DEBUG"
 fi
 
+AC_DEFUN([CURL_SHFUNC_SQUEEZE], [
+  _sqz_result=""
+  eval _sqz_input=\$$1
+  for _sqz_token in $_sqz_input; do
+    if test -z "$_sqz_result"; then
+      _sqz_result="$_sqz_token"
+    else
+      _sqz_result="$_sqz_result $_sqz_token"
+    fi
+  done
+  eval $1=\$_sqz_result
+])
 
-os_string=""
-AC_CANONICAL_HOST
-BACON_OS_STRING="$host_os"
-AC_SUBST(BACON_OS_STRING)
-CFLAGS="$CFLAGS -DBACON_OS_STRING=\"$BACON_OS_STRING\""
+CFLAGS="$CFLAGS -DBACON_TARGET_SYSTEM=\\\"${target}\\\""
+
+CURL_SHFUNC_SQUEEZE(LIBS)
+CURL_SHFUNC_SQUEEZE(CFLAGS)
 
 AC_OUTPUT
 
@@ -95,6 +111,6 @@ Configuration:
 
   LIBS:                ${LIBS}
 
-  Operating System:    ${BACON_OS_STRING}
+  Target System:       ${target}
 
 "

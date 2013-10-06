@@ -17,21 +17,26 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifdef BACON_USING_GTK
+#ifdef BACON_GTK
 #include <string.h>
 
 #include <gtk/gtk.h>
 
 #include "bacon.h"
 #include "bacon-device.h"
-#include "bacon-defdevpix.h"
 #include "bacon-env.h"
 #include "bacon-gtk.h"
 #include "bacon-hash.h"
 #include "bacon-net.h"
 #include "bacon-parse.h"
+#include "bacon-pixbufs.h"
 #include "bacon-rom.h"
 #include "bacon-util.h"
+
+#define BACON_DEVICE_ICON_SCALE_WIDTH  100
+#define BACON_DEVICE_ICON_SCALE_HEIGHT 100
+#define BACON_WINDOW_SIZE_WIDTH        900
+#define BACON_WINDOW_SIZE_HEIGHT       600
 
 #define BACON_DISPLAY_NAME          "Bacon"
 #define BACON_HELP_MENU_ITEM_LABEL  "Help"
@@ -172,8 +177,11 @@ bacon_data_init (void)
     }
     if (tp && tp->name && *tp->name) {
       iconpath = bacon_full_icon_path (tp->name);
-      dp->pixbuf = gdk_pixbuf_new_from_file_at_scale (iconpath, 100, 100,
-                                                      TRUE, &error);
+      dp->pixbuf =
+        gdk_pixbuf_new_from_file_at_scale (iconpath,
+                                           BACON_DEVICE_ICON_SCALE_WIDTH,
+                                           BACON_DEVICE_ICON_SCALE_HEIGHT,
+                                           TRUE, &error);
       if (error) {
         g_warning ("failed to create pixbuf from `%s': %s",
                    iconpath, error->message);
@@ -181,17 +189,12 @@ bacon_data_init (void)
       }
       g_free (iconpath);
     } else {
-      i = gdk_pixbuf_new_from_inline (-1, default_device_icon, FALSE, &error);
+      dp->pixbuf = gdk_pixbuf_new_from_inline (-1, fallback_device_icon,
+                                               FALSE, &error);
       if (error) {
         g_warning ("failed to create pixbuf from inline: %s", error->message);
         g_error_free (error);
-      } else {
-        dp->pixbuf = gdk_pixbuf_scale_simple (i, 100, 100,
-                                              GDK_INTERP_BILINEAR);
-        if (dp->pixbuf)
-          g_object_unref (i);
-        else
-          dp->pixbuf = i;
+        dp->pixbuf = NULL;
       }
     }
     dp->rom_list = NULL;
@@ -300,42 +303,61 @@ bacon_on_icon_view_button_press_event (GtkWidget *widget,
           break;
         }
       }
+      gtk_tree_path_free (path);
     }
   }
+}
+
+static gboolean
+bacon_on_icon_view_query_tooltip (GtkWidget *widget,
+                                  gint x,
+                                  gint y,
+                                  gboolean keyboard_mode,
+                                  GtkTooltip *tooltip,
+                                  gpointer user_data)
+{
+  char *codename;
+  GtkTreeIter iter;
+  GtkTreeModel *model;
+  GtkTreePath *path;
+
+  if (gtk_icon_view_get_tooltip_context (GTK_ICON_VIEW (widget),
+                                         &x, &y, keyboard_mode,
+                                         &model, &path, &iter))
+  {
+    gtk_tree_model_get (model, &iter, DEVICE_CODENAME_COLUMN, &codename, -1);
+    gtk_tooltip_set_text (tooltip, codename);
+    gtk_icon_view_set_tooltip_item (GTK_ICON_VIEW (widget), tooltip, path);
+    return TRUE;
+  }
+  return FALSE;
 }
 
 static GtkTreeModel *
 bacon_get_icon_view_tree_model (void)
 {
   int x;
-  char *fullname;
   GtkTreeIter iter;
-  GtkListStore *list_store;
+  GtkListStore *store;
   BaconData *p;
 
   if (!g_device_list)
     g_device_list = bacon_device_list_new (false);
-
   bacon_init_icon_cache ();
   bacon_data_init ();
-  list_store = gtk_list_store_new (N_COLUMNS,
-                                   G_TYPE_STRING,
-                                   G_TYPE_STRING,
-                                   GDK_TYPE_PIXBUF);
 
+  store = gtk_list_store_new (N_COLUMNS, G_TYPE_STRING,
+                              G_TYPE_STRING, GDK_TYPE_PIXBUF);
   for (p = s_data; p; p = p->next) {
-    fullname = g_strdup_printf ("%s (%s)", p->device->fullname,
-                                p->device->codename);
-    gtk_list_store_append (list_store, &iter);
-    gtk_list_store_set (list_store, &iter,
-                        DEVICE_FULLNAME_COLUMN, fullname,
+    gtk_list_store_append (store, &iter);
+    gtk_list_store_set (store, &iter,
+                        DEVICE_FULLNAME_COLUMN, p->device->fullname,
                         DEVICE_CODENAME_COLUMN, p->device->codename,
                         DEVICE_PIXBUF_COLUMN, p->pixbuf, -1);
-    g_free (fullname);
     if (!p->next)
       break;
   }
-  return GTK_TREE_MODEL (list_store);
+  return GTK_TREE_MODEL (store);
 }
 
 static GtkWidget *
@@ -349,14 +371,16 @@ bacon_get_main_window (void)
   GtkWidget *help_menu;
   GtkWidget *help;
   GtkWidget *about;
-  GtkTreeModel *tree_model;
+  GtkTreeModel *model;
 
   /* setup window (contains everything) */
   window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   gtk_window_set_position (GTK_WINDOW (window), GTK_WIN_POS_CENTER);
   gtk_window_set_resizable (GTK_WINDOW (window), TRUE);
   gtk_window_set_title (GTK_WINDOW (window), BACON_DISPLAY_NAME);
-  gtk_widget_set_size_request (window, 900, 600);
+  gtk_window_set_default_size (GTK_WINDOW (window),
+                               BACON_WINDOW_SIZE_WIDTH,
+                               BACON_WINDOW_SIZE_HEIGHT);
 
   g_signal_connect (G_OBJECT (window), "delete-event",
                     G_CALLBACK (bacon_on_main_window_delete_event), window);
@@ -389,21 +413,25 @@ bacon_get_main_window (void)
                                        GTK_SHADOW_IN);
   gtk_box_pack_start (GTK_BOX (vbox), scrolled_window, TRUE, TRUE, 0);
 
-  /* setup tree_model (contains all the device data) */
-  tree_model = bacon_get_icon_view_tree_model ();
+  /* setup model (contains all the device data) */
+  model = bacon_get_icon_view_tree_model ();
 
   /* setup icon_view (contains tree_model) */
-  icon_view = gtk_icon_view_new_with_model (tree_model);
+  icon_view = gtk_icon_view_new_with_model (model);
   gtk_icon_view_set_text_column (GTK_ICON_VIEW (icon_view),
                                  DEVICE_FULLNAME_COLUMN);
   gtk_icon_view_set_pixbuf_column (GTK_ICON_VIEW (icon_view),
                                    DEVICE_PIXBUF_COLUMN);
   gtk_icon_view_set_selection_mode (GTK_ICON_VIEW (icon_view),
                                     GTK_SELECTION_SINGLE);
+  gtk_icon_view_set_item_width (GTK_ICON_VIEW (icon_view), -1);
+  gtk_widget_set_has_tooltip (icon_view, TRUE);
   gtk_container_add (GTK_CONTAINER (scrolled_window), icon_view);
 
   g_signal_connect (G_OBJECT (icon_view), "button-press-event",
                     G_CALLBACK (bacon_on_icon_view_button_press_event), NULL);
+  g_signal_connect (G_OBJECT (icon_view), "query-tooltip",
+                    G_CALLBACK (bacon_on_icon_view_query_tooltip), NULL);
 
   /* return window */
   gtk_widget_show_all (window);
@@ -436,5 +464,5 @@ bacon_gtk_main (int *argc, char ***argv)
       break;
   }
 }
-#endif /* BACON_USING_GTK */
+#endif /* BACON_GTK */
 
