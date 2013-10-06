@@ -134,6 +134,10 @@ bacon_help (void)
     "  -M N, --max=N              Show a maximum of N ROMs for each ROM type",
     "                             specified",
     "  -U, --url                  Show download URL for each ROM displayed",
+#ifdef BACON_USING_GTK
+    "",
+    "Providing no arguments will launch the GTK+ graphical user interface.",
+#endif
     NULL
   };
   size_t x;
