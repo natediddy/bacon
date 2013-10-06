@@ -412,7 +412,7 @@ bacon_download (void)
   bacon_outln ("filename:    %s", rom->name);
   bacon_outln ("released on: %s", rom->date);
   bacon_outln ("size:        %s", rom->size);
-  bacon_outln ("url:         %s/%s", BACON_ROOT_URL, rom->get);
+  bacon_outln ("url:         %s/%s", BACON_GET_CM_URL, rom->get);
   bacon_outln ("md5:         %s", rom->hash.hash);
   if (dirpath)
     bacon_outln ("saving to:   %s%c%s", dirpath, BACON_PATH_SEP, rom->name);

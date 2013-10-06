@@ -22,15 +22,30 @@
 #define BACON_DEVICE_H
 
 #include "bacon.h"
+#include "bacon-env.h"
 
 #define BACON_DEVICE_NAME_MAX 128
+#ifdef BACON_USING_GTK
+# define BACON_DEVICE_THUMB_REQUEST_MAX 1024
+#endif
 
-typedef struct BaconDeviceList BaconDeviceList;
+typedef struct BaconDevice                 BaconDevice;
+typedef struct BaconDeviceList             BaconDeviceList;
+#ifdef BACON_USING_GTK
+typedef struct BaconDeviceThumbRequestList BaconDeviceThumbRequestList;
 
-typedef struct {
+struct BaconDeviceThumbRequestList {
+  char request[BACON_DEVICE_THUMB_REQUEST_MAX];
+  char filename[BACON_PATH_MAX];
+  BaconDeviceThumbRequestList *next;
+  BaconDeviceThumbRequestList *prev;
+};
+#endif
+
+struct BaconDevice {
   char codename[BACON_DEVICE_NAME_MAX];
   char fullname[BACON_DEVICE_NAME_MAX];
-} BaconDevice;
+};
 
 struct BaconDeviceList {
   BaconDevice *device;

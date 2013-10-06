@@ -13,6 +13,7 @@ bacon_SOURCES = \
 	bacon-rom.c \
 	bacon-util.c \
 	bacon.h \
+	bacon-defdevpix.h \
 	bacon-device.h \
 	bacon-env.h \
 	bacon-gtk.h \

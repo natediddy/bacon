@@ -51,6 +51,8 @@
 #define BACON_PROGRAM_DIRNAME  "." BACON_PROGRAM_NAME
 #define BACON_GETENV_VALUE_MAX (BACON_PATH_MAX * 2)
 
+char *g_program_data_path = NULL;
+
 bool
 bacon_env_is_directory (const char *path)
 {
@@ -206,22 +208,25 @@ bacon_env_make_hidden (const char *path)
 }
 #endif
 
-char *
-bacon_env_program_path (void)
+void
+bacon_env_set_program_data_path (void)
 {
   char *home;
-  char *path;
 
-  home = bacon_env_home_path ();
-  path = bacon_strf ("%s%c%s", home, BACON_PATH_SEP, BACON_PROGRAM_DIRNAME);
-  bacon_free (home);
-
-  if (!bacon_env_mkpath (path)) {
-    bacon_error ("could not create program path");
-    exit (EXIT_FAILURE);
+  if (!g_program_data_path) {
+    home = bacon_env_home_path ();
+    g_program_data_path =
+      bacon_strf ("%s%c%s", home, BACON_PATH_SEP, BACON_PROGRAM_DIRNAME);
+    bacon_free (home);
   }
-  bacon_env_make_hidden (path);
-  return path;
+
+  if (!bacon_env_is_directory (g_program_data_path)) {
+    if (!bacon_env_mkpath (g_program_data_path)) {
+      bacon_error ("could not create program path");
+      exit (EXIT_FAILURE);
+    }
+    bacon_env_make_hidden (g_program_data_path);
+  }
 }
 
 char *
@@ -330,6 +335,7 @@ bacon_env_mkpath (const char *path)
  
   res = true;
   ppath = bacon_env_mkabs (path);
+  bacon_debug ("ppath=\"%s\"", ppath);
   p = ppath;
 
   while (*p) {

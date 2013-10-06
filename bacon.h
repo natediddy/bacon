@@ -28,11 +28,9 @@
 # define BACON_BUG_REPORT_EMAIL PACKAGE_BUGREPORT
 #else
 # define BACON_PROGRAM_NAME     "bacon"
-# define BACON_VERSION          "2.4"
+# define BACON_VERSION          "3.0"
 # define BACON_BUG_REPORT_EMAIL "me@nathanforbes.com"
 #endif
-
-#define BACON_ROOT_URL "http://get.cm"
 
 #ifndef __cplusplus
 typedef unsigned char bool;

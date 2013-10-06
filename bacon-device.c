@@ -23,24 +23,22 @@
 #include <sys/types.h>
 
 #include "bacon-device.h"
-#include "bacon-env.h"
 #include "bacon-net.h"
 #include "bacon-parse.h"
 #include "bacon-util.h"
 
 #define BACON_DEVICE_LIST_LOCAL_FILENAME "devicelist.txt"
 
+extern char *g_program_data_path;
+
 static char *local_device_list_path = NULL;
 
 static void
 bacon_set_local_device_list_path (void)
 {
-  char *ppath;
-
-  ppath = bacon_env_program_path ();
-  local_device_list_path = bacon_strf ("%s%c%s", ppath, BACON_PATH_SEP,
+  local_device_list_path = bacon_strf ("%s%c%s", g_program_data_path,
+                                       BACON_PATH_SEP,
                                        BACON_DEVICE_LIST_LOCAL_FILENAME);
-  bacon_free (ppath);
 }
 
 static bool

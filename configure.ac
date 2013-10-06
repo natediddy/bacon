@@ -1,4 +1,4 @@
-AC_INIT([bacon], [2.4], [me@nathanforbes.com],
+AC_INIT([bacon], [3.0], [me@nathanforbes.com],
         [bacon], [https://github.com/natediddy/bacon])
 AC_CONFIG_SRCDIR([bacon.c])
 
@@ -36,6 +36,8 @@ GTK_MINIMUM=3.2.0
 AC_SUBST(GTK_MINIMUM)
 GLIB_MINIMUM=2.28.0
 AC_SUBST(GLIB_MINIMUM)
+GIO_MINIMUM=2.26.0
+AC_SUBST(GIO_MINIMUM)
 
 AC_ARG_WITH([gtk],
             AC_HELP_STRING([--with-gtk], [Compile with the GTK+ UI]),
@@ -44,7 +46,9 @@ AC_ARG_WITH([gtk],
 
 if test "x$with_gtk" = "xyes" ; then
   PKG_CHECK_MODULES([GTK],
-                    [gtk+-3.0 >= $GTK_MINIMUM glib-2.0 >= $GLIB_MINIMUM],
+                    [gtk+-3.0 >= $GTK_MINIMUM
+                     glib-2.0 >= $GLIB_MINIMUM
+                     gio-2.0 >= $GIO_MINIMUM],
                     [has_gtk="yes"],
                     [has_gtk="no"])
   if test "x$has_gtk" = "xyes" ; then

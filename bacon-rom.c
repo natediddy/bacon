@@ -206,7 +206,7 @@ bacon_rom_do_download (const BaconRom *rom, char *dlpath)
 
   dlres = true;
   if (bacon_net_init_for_rom (rom->get, offset, dlpath)) {
-    if (!bacon_net_get_rom ())
+    if (!bacon_net_get_file ())
       dlres = false;
     bacon_net_deinit ();
   } else

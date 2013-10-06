@@ -57,6 +57,8 @@ typedef enum {
   BACON_OT_URL
 } BaconOptionType;
 
+extern char *g_program_data_path;
+
 /* global variables */
 const char *            g_program_name;
 BaconDeviceList *       g_device_list      = NULL;
@@ -100,7 +102,7 @@ static void
 bacon_help (void)
 {
   /* each item in array gets its own line */
-  static const char *const helptext[] = {
+  static const char *const help[] = {
     "General Options:",
     "  -d, --download             Download the latest ROM for DEVICE",
     "                             Requires specific ROM type option",
@@ -137,8 +139,8 @@ bacon_help (void)
   size_t x;
 
   bacon_usage (false);
-  for (x = 0; helptext[x]; ++x)
-    bacon_outln (helptext[x]);
+  for (x = 0; help[x]; ++x)
+    bacon_outln (help[x]);
   exit (EXIT_SUCCESS);
 }
 
@@ -146,7 +148,7 @@ static void
 bacon_version (void)
 {
   /* each item in array gets its own line */
-  static const char *const versiontext[] = {
+  static const char *const version[] = {
     BACON_PROGRAM_NAME " " BACON_VERSION,
     "Copyright (C) 2013 Nathan Forbes <" BACON_BUG_REPORT_EMAIL ">",
     "License GPLv3+: GNU GPL version 3 or later "
@@ -157,8 +159,8 @@ bacon_version (void)
   };
   size_t x;
 
-  for (x = 0; versiontext[x]; ++x)
-    bacon_outln (versiontext[x]);
+  for (x = 0; version[x]; ++x)
+    bacon_outln (version[x]);
   exit (EXIT_SUCCESS);
 }
 
@@ -194,6 +196,7 @@ bacon_cleanup (void)
   if (g_device_list)
     bacon_device_list_destroy (g_device_list);
   bacon_free (g_out_path);
+  bacon_free (g_program_data_path);
 }
 
 static void
@@ -508,7 +511,6 @@ bacon_parse_opt (char **v)
   bool addopt;
   char *o;
 
-  bacon_set_program_name (v[0]);
   pos = 0;
 
   for (x = 1; v[x]; ++x) {
@@ -660,7 +662,7 @@ bacon_show_rom_list (const BaconDevice *device, const BaconRomList *list)
       if (show_hash)
         bacon_outlni (3, "hash:     %s", rom->hash.hash);
       if (show_url)
-        bacon_outlni (3, "url:      " BACON_ROOT_URL "/%s", rom->get);
+        bacon_outlni (3, "url:      " BACON_GET_CM_URL "/%s", rom->get);
       if (!rom->next)
         break;
       ++n;
@@ -734,7 +736,9 @@ bacon_perform (void)
 int
 main (int argc, char **argv)
 {
+  bacon_set_program_name (argv[0]);
   atexit (bacon_cleanup);
+  bacon_env_set_program_data_path ();
 #ifdef BACON_USING_GTK
   if (argc == 1) {
     bacon_gtk_main (&argc, &argv);

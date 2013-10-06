@@ -21,6 +21,7 @@
 #include <string.h>
 
 #include "bacon.h"
+#include "bacon-net.h"
 #include "bacon-parse.h"
 #include "bacon-util.h"
 
@@ -28,9 +29,12 @@
 #define BACON_FULLNAME_TAG     "<span class=\"fullname\">"
 #define BACON_ROM_NAME_PATTERN ".zip\">"
 #define BACON_HASH_PATTERN     "md5sum: "
-#define BACON_GET_PATTERN      BACON_ROOT_URL "/"
+#define BACON_GET_PATTERN      BACON_GET_CM_URL "/"
 #define BACON_SIZE_TAG         "<td>"
 #define BACON_DATE_TAG         "<td>"
+#ifdef BACON_USING_GTK
+# define BACON_THUMB_URL_PATTERN "wiki.cyanogenmod.org/images/"
+#endif
 
 #define BACON_LINE_MAX 1024
 
@@ -68,13 +72,16 @@
     }                                                          \
   } while (false)
 
-static size_t n_codename_tag     = 0;
-static size_t n_fullname_tag     = 0;
-static size_t n_rom_name_pattern = 0;
-static size_t n_hash_pattern     = 0;
-static size_t n_get_pattern      = 0;
-static size_t n_size_tag         = 0;
-static size_t n_date_tag         = 0;
+static size_t n_codename_tag      = 0;
+static size_t n_fullname_tag      = 0;
+static size_t n_rom_name_pattern  = 0;
+static size_t n_hash_pattern      = 0;
+static size_t n_get_pattern       = 0;
+static size_t n_size_tag          = 0;
+static size_t n_date_tag          = 0;
+#ifdef BACON_USING_GTK
+static size_t n_thumb_url_pattern = 0;
+#endif
 
 static void
 bacon_set_size_values (void)
@@ -99,6 +106,11 @@ bacon_set_size_values (void)
 
   if (!n_date_tag)
     n_date_tag = strlen (BACON_DATE_TAG);
+
+#ifdef BACON_USING_GTK
+  if (!n_thumb_url_pattern)
+    n_thumb_url_pattern = strlen (BACON_THUMB_URL_PATTERN);
+#endif
 }
 
 static void
@@ -254,4 +266,63 @@ bacon_parse_for_rom (const char *data, const int max)
   }
   return rom;
 }
+
+#ifdef BACON_USING_GTK
+BaconDeviceThumbRequestList *
+bacon_parse_for_device_thumb_request_list (const char *data,
+                                           BaconDeviceList *devicelist)
+{
+  char *d;
+  char *e;
+  char *x;
+  BaconDeviceList *dp;
+  BaconDeviceThumbRequestList *p;
+  BaconDeviceThumbRequestList *list;
+
+  x = NULL;
+  list = NULL;
+  bacon_set_size_values ();
+
+  for (dp = devicelist; dp; dp = dp->next) {
+    x = strstr (data, dp->device->codename);
+    if (x && *x) {
+      x = x + strlen (dp->device->codename);
+      d = x;
+      x = strstr (d, BACON_THUMB_URL_PATTERN);
+      if (x && *x) {
+        if (!list) {
+          p = bacon_new (BaconDeviceThumbRequestList);
+          p->prev = NULL;
+        } else {
+          for (p = list; p; p = p->next)
+            if (!p->next)
+              break;
+          p->next = bacon_new (BaconDeviceThumbRequestList);
+          p->next->prev = p;
+          p = p->next;
+        }
+        p->next = NULL;
+        x = x + n_thumb_url_pattern;
+        bacon_fill_buffer (p->request, x, '"');
+        if (p->request && *p->request) {
+          e = strrchr (p->request, '.');
+          if (!e || !*e)
+            bacon_debug ("BUG: failed get thumb icon file extension "
+                         "for '%s' - guessing '.png'",
+                         dp->device->codename);
+        } else
+          bacon_debug ("BUG: failed to get thumb icon request URL for '%s'",
+                       dp->device->codename);
+        snprintf (p->filename, BACON_PATH_MAX, "device-%s%s",
+                  dp->device->codename, (e && *e) ? e : ".png");
+        for (; p; p = p->prev)
+          if (!p->prev)
+            break;
+        list = p;
+      }
+    }
+  }
+  return list;
+}
+#endif
 
