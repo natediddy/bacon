@@ -45,6 +45,8 @@ Options
                                    specified
         -U, --url                  Show download URL for each ROM displayed
 
+    Providing no arguments will launch the GTK+ graphical user interface.
+
 Building
 --------
 In order to build bacon, you will need the development library of libcurl
@@ -52,8 +54,7 @@ installed, as well as GNU Autotools.
 
 On a Linux OS you can use:
 
-    ./autogen.sh
-    ./configure
+    ./buildhelper setup --with-gtk
     make
 
 Installing
