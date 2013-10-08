@@ -34,11 +34,10 @@
 #include "bacon-rom.h"
 #include "bacon-util.h"
 
-#define BACON_DEVICE_ICON_SCALE_WIDTH  100
-#define BACON_DEVICE_ICON_SCALE_HEIGHT 100
-#define BACON_WINDOW_SIZE_WIDTH        900
-#define BACON_WINDOW_SIZE_HEIGHT       600
-
+#define BACON_DEVICE_ICON_SCALE_WIDTH    100
+#define BACON_DEVICE_ICON_SCALE_HEIGHT   100
+#define BACON_WINDOW_SIZE_WIDTH          900
+#define BACON_WINDOW_SIZE_HEIGHT         600
 #define BACON_DISPLAY_NAME               "Bacon"
 #define BACON_FILE_MENU_ITEM_LABEL       "File"
 #define BACON_QUIT_MENU_ITEM_LABEL       "Quit"
@@ -84,15 +83,14 @@ enum {
 
 extern BaconDeviceList *g_device_list;
 extern char *           g_program_data_path;
-
-static BaconThumbList *s_thumbs             = NULL;
-static BaconData *     s_data               = NULL;
-static GtkEntryBuffer *s_entry_buffer       = NULL;
-static GtkIconView *   s_icon_view          = NULL;
-static GtkLabel *      s_device_count_label = NULL;
-static GtkTreeModel *  s_model              = NULL;
-static gchar *         s_thumbs_path        = NULL;
-static gint            s_device_count       = 0;
+static BaconThumbList * s_thumbs             = NULL;
+static BaconData *      s_data               = NULL;
+static GtkEntryBuffer * s_entry_buffer       = NULL;
+static GtkIconView *    s_icon_view          = NULL;
+static GtkLabel *       s_device_count_label = NULL;
+static GtkTreeModel *   s_model              = NULL;
+static gchar *          s_thumbs_path        = NULL;
+static gint             s_device_count       = 0;
 
 static void
 bacon_add_thumb (const char *name)
@@ -205,7 +203,7 @@ bacon_init_data (void)
       }
       g_free (iconpath);
     } else {
-      dp->pixbuf = gdk_pixbuf_new_from_inline (-1, fallback_device_icon,
+      dp->pixbuf = gdk_pixbuf_new_from_inline (-1, s_fallback_device_icon,
                                                FALSE, &error);
       if (error) {
         g_warning ("failed to create pixbuf from inline: %s", error->message);

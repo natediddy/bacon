@@ -25,18 +25,17 @@
 #include "bacon-parse.h"
 #include "bacon-util.h"
 
-#define BACON_CODENAME_TAG     "<span class=\"codename\">"
-#define BACON_FULLNAME_TAG     "<span class=\"fullname\">"
-#define BACON_ROM_NAME_PATTERN ".zip\">"
-#define BACON_HASH_PATTERN     "md5sum: "
-#define BACON_GET_PATTERN      BACON_GET_CM_URL "/"
-#define BACON_SIZE_TAG         "<td>"
-#define BACON_DATE_TAG         "<td>"
+#define BACON_CODENAME_TAG       "<span class=\"codename\">"
+#define BACON_FULLNAME_TAG       "<span class=\"fullname\">"
+#define BACON_ROM_NAME_PATTERN   ".zip\">"
+#define BACON_HASH_PATTERN       "md5sum: "
+#define BACON_GET_PATTERN        BACON_GET_CM_URL "/"
+#define BACON_SIZE_TAG           "<td>"
+#define BACON_DATE_TAG           "<td>"
 #ifdef BACON_GTK
 # define BACON_THUMB_URL_PATTERN "wiki.cyanogenmod.org/images/"
 #endif
-
-#define BACON_LINE_MAX 1024
+#define BACON_LINE_MAX           1024
 
 #define bacon_append_new(type, root, p)   \
   do {                                    \
@@ -72,44 +71,44 @@
     }                                                          \
   } while (false)
 
-static size_t n_codename_tag      = 0;
-static size_t n_fullname_tag      = 0;
-static size_t n_rom_name_pattern  = 0;
-static size_t n_hash_pattern      = 0;
-static size_t n_get_pattern       = 0;
-static size_t n_size_tag          = 0;
-static size_t n_date_tag          = 0;
+static size_t s_n_codename_tag      = 0;
+static size_t s_n_fullname_tag      = 0;
+static size_t s_n_rom_name_pattern  = 0;
+static size_t s_n_hash_pattern      = 0;
+static size_t s_n_get_pattern       = 0;
+static size_t s_n_size_tag          = 0;
+static size_t s_n_date_tag          = 0;
 #ifdef BACON_GTK
-static size_t n_thumb_url_pattern = 0;
+static size_t s_n_thumb_url_pattern = 0;
 #endif
 
 static void
 bacon_set_size_values (void)
 {
-  if (!n_codename_tag)
-    n_codename_tag = strlen (BACON_CODENAME_TAG);
+  if (!s_n_codename_tag)
+    s_n_codename_tag = strlen (BACON_CODENAME_TAG);
 
-  if (!n_fullname_tag)
-    n_fullname_tag = strlen (BACON_FULLNAME_TAG);
+  if (!s_n_fullname_tag)
+    s_n_fullname_tag = strlen (BACON_FULLNAME_TAG);
 
-  if (!n_rom_name_pattern)
-    n_rom_name_pattern = strlen (BACON_ROM_NAME_PATTERN);
+  if (!s_n_rom_name_pattern)
+    s_n_rom_name_pattern = strlen (BACON_ROM_NAME_PATTERN);
 
-  if (!n_hash_pattern)
-    n_hash_pattern = strlen (BACON_HASH_PATTERN);
+  if (!s_n_hash_pattern)
+    s_n_hash_pattern = strlen (BACON_HASH_PATTERN);
 
-  if (!n_get_pattern)
-    n_get_pattern = strlen (BACON_GET_PATTERN);
+  if (!s_n_get_pattern)
+    s_n_get_pattern = strlen (BACON_GET_PATTERN);
 
-  if (!n_size_tag)
-    n_size_tag = strlen (BACON_SIZE_TAG);
+  if (!s_n_size_tag)
+    s_n_size_tag = strlen (BACON_SIZE_TAG);
 
-  if (!n_date_tag)
-    n_date_tag = strlen (BACON_DATE_TAG);
+  if (!s_n_date_tag)
+    s_n_date_tag = strlen (BACON_DATE_TAG);
 
 #ifdef BACON_GTK
-  if (!n_thumb_url_pattern)
-    n_thumb_url_pattern = strlen (BACON_THUMB_URL_PATTERN);
+  if (!s_n_thumb_url_pattern)
+    s_n_thumb_url_pattern = strlen (BACON_THUMB_URL_PATTERN);
 #endif
 }
 
@@ -206,13 +205,13 @@ bacon_parse_remote_for_device_list (const char *data)
   while (true) {
     x = strstr ((!d) ? data : d, BACON_CODENAME_TAG);
     if (x && *x) {
-      x = x + n_codename_tag;
+      x = x + s_n_codename_tag;
       bacon_append_new (BaconDeviceList, list, p);
       p->device = bacon_new (BaconDevice);
       bacon_fill_buffer (p->device->codename, x, '<');
       d = x;
       bacon_find_and_fill (p->device->fullname, d, BACON_FULLNAME_TAG,
-                           n_fullname_tag, x, '<');
+                           s_n_fullname_tag, x, '<');
       bacon_back_to_start (list, p);
     } else
       break;
@@ -250,16 +249,16 @@ bacon_parse_for_rom (const char *data, const int max)
     x = strstr ((!d) ? data : d, BACON_ROM_NAME_PATTERN);
     if (x && *x) {
       m++;
-      x = x + n_rom_name_pattern;
+      x = x + s_n_rom_name_pattern;
       bacon_append_new (BaconRom, rom, p);
       bacon_fill_buffer (p->name, x, '<');
       d = x;
       bacon_find_and_fill (p->hash.hash, d, BACON_HASH_PATTERN,
-                           n_hash_pattern, x, ' ');
+                           s_n_hash_pattern, x, ' ');
       bacon_find_and_fill (p->get, d, BACON_GET_PATTERN,
-                           n_get_pattern, x, '"');
-      bacon_find_and_fill (p->size, d, BACON_SIZE_TAG, n_size_tag, x, '<');
-      bacon_find_and_fill (p->date, d, BACON_DATE_TAG, n_date_tag, x, '<');
+                           s_n_get_pattern, x, '"');
+      bacon_find_and_fill (p->size, d, BACON_SIZE_TAG, s_n_size_tag, x, '<');
+      bacon_find_and_fill (p->date, d, BACON_DATE_TAG, s_n_date_tag, x, '<');
       bacon_back_to_start (rom, p);
     } else
       break;
@@ -302,7 +301,7 @@ bacon_parse_for_device_thumb_request_list (const char *data,
           p = p->next;
         }
         p->next = NULL;
-        x = x + n_thumb_url_pattern;
+        x = x + s_n_thumb_url_pattern;
         bacon_fill_buffer (p->request, x, '"');
         if (p->request && *p->request) {
           e = strrchr (p->request, '.');

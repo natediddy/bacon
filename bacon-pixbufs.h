@@ -4,12 +4,13 @@
 /* this icon is used as a fallback for whenever
    there is no icon of the particular device itself */
 # ifdef __SUNPRO_C
-#  pragma align 4 (fallback_device_icon)
+#  pragma align 4 (s_fallback_device_icon)
 # endif
 # ifdef __GNUC__
-static const guint8 fallback_device_icon[] __attribute__ ((__aligned__ (4))) =
+static const guint8 s_fallback_device_icon[] __attribute__ ((__aligned__ (4)))
+=
 # else
-static const guint8 fallback_device_icon[] =
+static const guint8 s_fallback_device_icon[] =
 # endif
 { ""
   /* Pixbuf magic (0x47646b50) */

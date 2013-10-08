@@ -24,18 +24,16 @@
 
 #include "bacon-util.h"
 
-#define BACON_INDENT_SIZE 4
-
+#define BACON_INDENT_SIZE    4
 #define BACON_KIBIBYTE_VALUE ((CmByte) 1024LU)
 #define BACON_MEBIBYTE_VALUE ((CmByte) 1048576LU)
 #define BACON_GIBIBYTE_VALUE ((CmByte) 1073741824LU)
-
 #ifdef BACON_DEBUG
-# define BACON_DEBUG_TAG  "DEBUG: "
+# define BACON_DEBUG_TAG     "DEBUG: "
 #endif
-#define BACON_ERROR_TAG  "error: "
-#define BACON_WARN_TAG   "warning: "
-#define BACON_NORMAL_TAG ""
+#define BACON_ERROR_TAG      "error: "
+#define BACON_WARN_TAG       "warning: "
+#define BACON_NORMAL_TAG     ""
 
 extern const char *g_program_name;
 

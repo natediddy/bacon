@@ -28,25 +28,23 @@
 
 #include "bacon.h"
 
-#define BACON_BYTE_SYMBOL 'B'
-#define BACON_KIBI_SYMBOL 'K'
-#define BACON_MEBI_SYMBOL 'M'
-#define BACON_GIBI_SYMBOL 'G'
-
-#define BACON_SEC_MILLIS 1000
-
+#define BACON_BYTE_SYMBOL      'B'
+#define BACON_KIBI_SYMBOL      'K'
+#define BACON_MEBI_SYMBOL      'M'
+#define BACON_GIBI_SYMBOL      'G'
+#define BACON_SEC_MILLIS       1000
 #define bacon_new(type)        ((type *) bacon_malloc (sizeof (type)))
 #define bacon_newa(type, size) ((type *) bacon_malloc (size))
 
-#define bacon_free(p) \
-  do {                \
-    if (!(p))         \
-      break;          \
-    free ((p));       \
-    (p) = NULL;       \
+#define bacon_free(p)          \
+  do {                         \
+    if (!(p))                  \
+      break;                   \
+    free ((p));                \
+    (p) = NULL;                \
   } while (false)
 
-#define bacon_round(x) \
+#define bacon_round(x)         \
   (((x) >= 0) ? ((int) ((x) + 0.5)) : ((int) ((x) - 0.5)))
 
 #ifdef BACON_DEBUG

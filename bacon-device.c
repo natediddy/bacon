@@ -30,21 +30,21 @@
 #define BACON_DEVICE_LIST_LOCAL_FILENAME "devicelist.txt"
 
 extern char *g_program_data_path;
-
-static char *local_device_list_path = NULL;
+static char *s_local_device_list_path = NULL;
 
 static void
 bacon_set_local_device_list_path (void)
 {
-  local_device_list_path = bacon_strf ("%s%c%s", g_program_data_path,
-                                       BACON_PATH_SEP,
-                                       BACON_DEVICE_LIST_LOCAL_FILENAME);
+  s_local_device_list_path = bacon_strf ("%s%c%s",
+                                         g_program_data_path,
+                                         BACON_PATH_SEP,
+                                         BACON_DEVICE_LIST_LOCAL_FILENAME);
 }
 
 static bool
 bacon_has_local_device_list (void)
 {
-  return bacon_env_is_file (local_device_list_path);
+  return bacon_env_is_file (s_local_device_list_path);
 }
 
 static void
@@ -53,7 +53,7 @@ bacon_write_local_device_list (BaconDeviceList *list)
   FILE *fp;
   BaconDeviceList *p;
 
-  fp = bacon_env_fopen (local_device_list_path, "w");
+  fp = bacon_env_fopen (s_local_device_list_path, "w");
   for (p = list; p; p = p->next) {
     bacon_foutln (fp, "%s@%s", p->device->codename, p->device->fullname);
     if (!p->next)
@@ -74,11 +74,11 @@ bacon_device_local_data (void)
 
   n = 0;
   memset (&s, 0, sizeof (struct stat));
-  if (stat (local_device_list_path, &s) == 0)
+  if (stat (s_local_device_list_path, &s) == 0)
     n = ((size_t) s.st_size);
 
   data = bacon_newa (char, n);
-  fp = bacon_env_fopen (local_device_list_path, "r");
+  fp = bacon_env_fopen (s_local_device_list_path, "r");
 
   x = 0;
   while (true) {

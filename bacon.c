@@ -35,8 +35,8 @@
 #include "bacon-util.h"
 
 #define BACON_DEFAULT_MAX_ROMS 3
-#define BACON_DEVICES_MAX    512
-#define BACON_OPT_MAX       1024
+#define BACON_DEVICES_MAX      512
+#define BACON_OPT_MAX          1024
 
 typedef enum {
   BACON_OT_DOWNLOAD,
@@ -57,37 +57,27 @@ typedef enum {
   BACON_OT_URL
 } BaconOptionType;
 
-extern char *g_program_data_path;
-
-/* global variables */
-const char *            g_program_name;
-BaconDeviceList *       g_device_list      = NULL;
-char *                  g_out_path         = NULL;
-int                     g_max_roms         = BACON_DEFAULT_MAX_ROMS;
-int                     g_rom_type         = BACON_ROM_TYPE_NONE;
-bool                    g_show_progress    = true;
-
-/* local variables */
-static char *           opt               [BACON_OPT_MAX];
-static size_t           opt_pos            = 0;
-static bool             list_all_devices   = false;
-static bool             update_device_list = false;
-static bool             latest             = false;
-static bool             downloading        = false;
-static bool             showing            = false;
-static bool             show_hash          = false;
-static bool             show_url           = false;
-static bool             interactive        = false;
-static bool             all_types          = false;
-static bool             experimental_type  = false;
-static bool             snapshot_type      = false;
-static bool             nightly_type       = false;
-static bool             rc_type            = false;
-static bool             stable_type        = false;
+extern char *    g_program_data_path;
+const char *     g_program_name;
+BaconDeviceList *g_device_list        = NULL;
+char *           g_out_path           = NULL;
+int              g_max_roms           = BACON_DEFAULT_MAX_ROMS;
+int              g_rom_type           = BACON_ROM_TYPE_NONE;
+bool             g_show_progress      = true;
+static bool      s_list_all_devices   = false;
+static bool      s_update_device_list = false;
+static bool      s_latest             = false;
+static bool      s_downloading        = false;
+static bool      s_showing            = false;
+static bool      s_show_hash          = false;
+static bool      s_show_url           = false;
+static bool      s_interactive        = false;
+static size_t    s_opt_pos            = 0;
+static char *    s_opt                [BACON_OPT_MAX];
 
 static struct {
   char id[BACON_DEVICE_NAME_MAX];
-} devices[BACON_DEVICES_MAX];
+} s_devices[BACON_DEVICES_MAX];
 
 static void
 bacon_usage (const bool error)
@@ -250,73 +240,77 @@ bacon_get_specific_option (BaconOptionType otype)
 {
   size_t x;
 
-  for (x = 0; opt[x]; ++x) {
+  for (x = 0; s_opt[x]; ++x) {
     switch (otype) {
     case BACON_OT_DOWNLOAD:
-      if (bacon_streq (opt[x], "-d") || bacon_streq (opt[x], "--download"))
-        return opt[x];
+      if (bacon_streq (s_opt[x], "-d") ||
+          bacon_streq (s_opt[x], "--download"))
+        return s_opt[x];
       break;
     case BACON_OT_INTERACTIVE:
-      if (bacon_streq (opt[x], "-i") || bacon_streq (opt[x], "--interactive"))
-        return opt[x];
+      if (bacon_streq (s_opt[x], "-i") ||
+          bacon_streq (s_opt[x], "--interactive"))
+        return s_opt[x];
       break;
     case BACON_OT_LIST_DEVICES:
-      if (bacon_streq (opt[x], "-l") ||
-          bacon_streq (opt[x], "--list-devices"))
-        return opt[x];
+      if (bacon_streq (s_opt[x], "-l") ||
+          bacon_streq (s_opt[x], "--list-devices"))
+        return s_opt[x];
       break;
     case BACON_OT_NO_PROGRESS:
-      if (bacon_streq (opt[x], "-N") || bacon_streq (opt[x], "--no-progress"))
-        return opt[x];
+      if (bacon_streq (s_opt[x], "-N") ||
+          bacon_streq (s_opt[x], "--no-progress"))
+        return s_opt[x];
       break;
     case BACON_OT_SHOW:
-      if (bacon_streq (opt[x], "-s") || bacon_streq (opt[x], "--show"))
-        return opt[x];
+      if (bacon_streq (s_opt[x], "-s") || bacon_streq (s_opt[x], "--show"))
+        return s_opt[x];
       break;
     case BACON_OT_ALL:
-      if (bacon_streq (opt[x], "-a") || bacon_streq (opt[x], "--all"))
-        return opt[x];
+      if (bacon_streq (s_opt[x], "-a") || bacon_streq (s_opt[x], "--all"))
+        return s_opt[x];
       break;
     case BACON_OT_EXPERIMENTAL:
-      if (bacon_streq (opt[x], "-e") ||
-          bacon_streq (opt[x], "--experimental"))
-        return opt[x];
+      if (bacon_streq (s_opt[x], "-e") ||
+          bacon_streq (s_opt[x], "--experimental"))
+        return s_opt[x];
       break;
     case BACON_OT_SNAPSHOT:
-      if (bacon_streq (opt[x], "-m") || bacon_streq (opt[x], "--snapshot"))
-        return opt[x];
+      if (bacon_streq (s_opt[x], "-m") ||
+          bacon_streq (s_opt[x], "--snapshot"))
+        return s_opt[x];
       break;
     case BACON_OT_NIGHTLY:
-      if (bacon_streq (opt[x], "-n") || bacon_streq (opt[x], "--nightly"))
-        return opt[x];
+      if (bacon_streq (s_opt[x], "-n") || bacon_streq (s_opt[x], "--nightly"))
+        return s_opt[x];
       break;
     case BACON_OT_RC:
-      if (bacon_streq (opt[x], "-r") || bacon_streq (opt[x], "--rc"))
-        return opt[x];
+      if (bacon_streq (s_opt[x], "-r") || bacon_streq (s_opt[x], "--rc"))
+        return s_opt[x];
       break;
     case BACON_OT_STABLE:
-      if (bacon_streq (opt[x], "-S") || bacon_streq (opt[x], "--stable"))
-        return opt[x];
+      if (bacon_streq (s_opt[x], "-S") || bacon_streq (s_opt[x], "--stable"))
+        return s_opt[x];
       break;
     case BACON_OT_OUTPUT:
-      if (bacon_streq (opt[x], "-o") || bacon_strstw (opt[x], "--output"))
-        return opt[x];
+      if (bacon_streq (s_opt[x], "-o") || bacon_strstw (s_opt[x], "--output"))
+        return s_opt[x];
       break;
     case BACON_OT_HASH:
-      if (bacon_streq (opt[x], "-H") || bacon_streq (opt[x], "--hash"))
-        return opt[x];
+      if (bacon_streq (s_opt[x], "-H") || bacon_streq (s_opt[x], "--hash"))
+        return s_opt[x];
       break;
     case BACON_OT_LATEST:
-      if (bacon_streq (opt[x], "-L") || bacon_streq (opt[x], "--latest"))
-        return opt[x];
+      if (bacon_streq (s_opt[x], "-L") || bacon_streq (s_opt[x], "--latest"))
+        return s_opt[x];
       break;
     case BACON_OT_MAX:
-      if (bacon_strstw (opt[x], "-M") || bacon_strstw (opt[x], "--max"))
-        return opt[x];
+      if (bacon_strstw (s_opt[x], "-M") || bacon_strstw (s_opt[x], "--max"))
+        return s_opt[x];
       break;
     case BACON_OT_URL:
-      if (bacon_streq (opt[x], "-U") || bacon_streq (opt[x], "--url"))
-        return opt[x];
+      if (bacon_streq (s_opt[x], "-U") || bacon_streq (s_opt[x], "--url"))
+        return s_opt[x];
       break;
     default:
       ;
@@ -328,12 +322,12 @@ bacon_get_specific_option (BaconOptionType otype)
 static void
 bacon_check_opts (void)
 {
-  if (!opt[0] && !*devices[0].id) {
+  if (!s_opt[0] && !*s_devices[0].id) {
     bacon_error ("nothing to do");
     goto error;
   }
 
-  if (interactive && (g_rom_type != BACON_ROM_TYPE_NONE)) {
+  if (s_interactive && (g_rom_type != BACON_ROM_TYPE_NONE)) {
     if (g_rom_type & BACON_ROM_TYPE_ALL)
       bacon_error ("ROM type option `%s' cannot be used with `%s'",
                    bacon_get_specific_option (BACON_OT_ALL),
@@ -361,32 +355,34 @@ bacon_check_opts (void)
     goto error;
   }
 
-  if (downloading && showing) {
+  if (s_downloading && s_showing) {
     bacon_error ("`%s' and `%s' are mutually exclusive",
                  bacon_get_specific_option (BACON_OT_DOWNLOAD),
                  bacon_get_specific_option (BACON_OT_SHOW));
     goto error;
   }
 
-  if (interactive && (downloading || showing)) {
-    if (downloading)
+  if (s_interactive && (s_downloading || s_showing)) {
+    if (s_downloading)
       bacon_error ("`%s' and `%s' are mutually exclusive",
                    bacon_get_specific_option (BACON_OT_DOWNLOAD),
                    bacon_get_specific_option (BACON_OT_INTERACTIVE));
-    if (showing)
+    if (s_showing)
       bacon_error ("`%s' and `%s' are mutually exclusive",
                    bacon_get_specific_option (BACON_OT_SHOW),
                    bacon_get_specific_option (BACON_OT_INTERACTIVE));
     goto error;
   }
 
-  if (downloading) {
-    if (show_hash || show_url || bacon_get_specific_option (BACON_OT_MAX)) {
-      if (show_hash)
+  if (s_downloading) {
+    if (s_show_hash || s_show_url ||
+        bacon_get_specific_option (BACON_OT_MAX))
+    {
+      if (s_show_hash)
         bacon_error ("`%s' cannot be used with `%s'",
                      bacon_get_specific_option (BACON_OT_HASH),
                      bacon_get_specific_option (BACON_OT_DOWNLOAD));
-      if (show_url)
+      if (s_show_url)
         bacon_error ("`%s' cannot be used with `%s'",
                      bacon_get_specific_option (BACON_OT_URL),
                      bacon_get_specific_option (BACON_OT_DOWNLOAD));
@@ -396,34 +392,37 @@ bacon_check_opts (void)
                      bacon_get_specific_option (BACON_OT_DOWNLOAD));
       goto error;
     } else
-      latest = true;
+      s_latest = true;
   }
 
-  if (showing && g_out_path) {
+  if (s_showing && g_out_path) {
     bacon_error ("`%s' cannot be used with `%s'",
                  bacon_get_specific_option (BACON_OT_OUTPUT),
                  bacon_get_specific_option (BACON_OT_SHOW));
     goto error;
   }
 
-  if (latest && bacon_get_specific_option (BACON_OT_MAX)) {
+  if (s_latest && bacon_get_specific_option (BACON_OT_MAX)) {
     bacon_error ("`%s' and `%s' are mutually exclusive",
                  bacon_get_specific_option (BACON_OT_LATEST),
                  bacon_get_specific_option (BACON_OT_MAX));
     goto error;
   }
 
-  if (g_out_path && !downloading) {
+  if (g_out_path && !s_downloading) {
     bacon_error ("`%s' can only be used with `-d'/`--download'",
                  bacon_get_specific_option (BACON_OT_OUTPUT));
     goto error;
   }
 
-  if (!downloading && !showing)
-    showing = true;
+  if (!s_downloading && !s_showing)
+    s_showing = true;
 
   if (g_rom_type == BACON_ROM_TYPE_NONE)
     g_rom_type |= BACON_ROM_TYPE_ALL;
+
+  if (s_latest)
+    g_max_roms = 1;
 
   return;
 
@@ -448,64 +447,64 @@ bacon_parse_string_for_short_opts (const char *s)
       bacon_error ("invalid context for `-%c' (try `--help')", s[x]);
       exit (EXIT_FAILURE);
     case 'd':
-      downloading = true;
-      opt[opt_pos++] = "-d";
+      s_downloading = true;
+      s_opt[s_opt_pos++] = "-d";
       break;
     case 'H':
-      show_hash = true;
-      opt[opt_pos++] = "-H";
+      s_show_hash = true;
+      s_opt[s_opt_pos++] = "-H";
       break;
     case 'i':
-      interactive = true;
-      opt[opt_pos++] = "-i";
+      s_interactive = true;
+      s_opt[s_opt_pos++] = "-i";
       break;
     case 'l':
-      list_all_devices = true;
-      opt[opt_pos++] = "-l";
+      s_list_all_devices = true;
+      s_opt[s_opt_pos++] = "-l";
       break;
     case 'L':
-      latest = true;
-      opt[opt_pos++] = "-L";
+      s_latest = true;
+      s_opt[s_opt_pos++] = "-L";
       break;
     case 's':
-      showing = true;
-      opt[opt_pos++] = "-s";
+      s_showing = true;
+      s_opt[s_opt_pos++] = "-s";
       break;
     case 'a':
       g_rom_type |= BACON_ROM_TYPE_ALL;
-      opt[opt_pos++] = "-a";
+      s_opt[s_opt_pos++] = "-a";
       break;
     case 'e':
       g_rom_type |= BACON_ROM_TYPE_TEST;
-      opt[opt_pos++] = "-e";
+      s_opt[s_opt_pos++] = "-e";
       break;
     case 'm':
       g_rom_type |= BACON_ROM_TYPE_SNAPSHOT;
-      opt[opt_pos++] = "-m";
+      s_opt[s_opt_pos++] = "-m";
       break;
     case 'n':
       g_rom_type |= BACON_ROM_TYPE_NIGHTLY;
-      opt[opt_pos++] = "-n";
+      s_opt[s_opt_pos++] = "-n";
       break;
     case 'r':
       g_rom_type |= BACON_ROM_TYPE_RC;
-      opt[opt_pos++] = "-r";
+      s_opt[s_opt_pos++] = "-r";
       break;
     case 'S':
       g_rom_type |= BACON_ROM_TYPE_STABLE;
-      opt[opt_pos++] = "-S";
+      s_opt[s_opt_pos++] = "-S";
       break;
     case 'u':
-      update_device_list = true;
-      opt[opt_pos++] = "-u";
+      s_update_device_list = true;
+      s_opt[s_opt_pos++] = "-u";
       break;
     case 'N':
       g_show_progress = false;
-      opt[opt_pos++] = "-N";
+      s_opt[s_opt_pos++] = "-N";
       break;
     case 'U':
-      show_url = true;
-      opt[opt_pos++] = "-U";
+      s_show_url = true;
+      s_opt[s_opt_pos++] = "-U";
       break;
     default:
       bacon_error ("`-%c' is an unrecognized option (try `--help')", s[x]);
@@ -534,19 +533,19 @@ bacon_parse_opt (char **v)
     else if (bacon_streq (v[x], "-v") || bacon_streq (v[x], "--version"))
       bacon_version ();
     else if (bacon_streq (v[x], "-H") || bacon_streq (v[x], "--hash"))
-      show_hash = true;
+      s_show_hash = true;
     else if (bacon_streq (v[x], "-l") || bacon_streq (v[x], "--list-devices"))
-      list_all_devices = true;
+      s_list_all_devices = true;
     else if (bacon_streq (v[x], "-L") || bacon_streq (v[x], "--latest"))
-      latest = true;
+      s_latest = true;
     else if (bacon_streq (v[x], "-d") || bacon_streq (v[x], "--download"))
-      downloading = true;
+      s_downloading = true;
     else if (bacon_streq (v[x], "-M") || bacon_streq (v[x], "--max")) {
       if (!v[x + 1]) {
         bacon_error ("`%s' requires an argument (try `--help')", v[x]);
         exit (EXIT_FAILURE);
       }
-      opt[opt_pos++] = v[x];
+      s_opt[s_opt_pos++] = v[x];
       addopt = false;
       if (!bacon_set_max_roms_from_arg (v[++x])) {
         bacon_error ("'%s' is not a valid argument for `%s' (try `--help')",
@@ -564,7 +563,7 @@ bacon_parse_opt (char **v)
                      o);
         exit (EXIT_FAILURE);
       }
-      opt[opt_pos++] = "-M";
+      s_opt[s_opt_pos++] = "-M";
       addopt = false;
     } else if (bacon_strstw (v[x], "--max=")) {
       o = strchr (v[x], '=');
@@ -578,16 +577,16 @@ bacon_parse_opt (char **v)
                      "(try `--help')", o);
         exit (EXIT_FAILURE);
       }
-      opt[opt_pos++] = "--max";
+      s_opt[s_opt_pos++] = "--max";
       addopt = false;
     } else if (bacon_streq (v[x], "-N") ||
                bacon_streq (v[x], "--no-progress"))
       g_show_progress = false;
     else if (bacon_streq (v[x], "-i") ||
              bacon_streq (v[x], "--interactive"))
-      interactive = true;
+      s_interactive = true;
     else if (bacon_streq (v[x], "-s") || bacon_streq (v[x], "--show"))
-      showing = true;
+      s_showing = true;
     else if (bacon_streq (v[x], "-a") || bacon_streq (v[x], "--all"))
       g_rom_type |= BACON_ROM_TYPE_ALL;
     else if (bacon_streq (v[x], "-e") ||
@@ -605,15 +604,15 @@ bacon_parse_opt (char **v)
       g_rom_type |= BACON_ROM_TYPE_STABLE;
     else if (bacon_streq (v[x], "-u") ||
              bacon_streq (v[x], "--update-device-list"))
-      update_device_list = true;
+      s_update_device_list = true;
     else if (bacon_streq (v[x], "-U") || bacon_streq (v[x], "--url"))
-      show_url = true;
+      s_show_url = true;
     else if (bacon_streq (v[x], "-o") || bacon_streq (v[x], "--output")) {
       if (!v[x + 1] || v[x + 1][0] == '-') {
         bacon_error ("`%s' requires an argument (try `--help')", v[x]);
         exit (EXIT_FAILURE);
       }
-      opt[opt_pos++] = v[x];
+      s_opt[s_opt_pos++] = v[x];
       addopt = false;
       g_out_path = bacon_strdup (v[++x]);
     } else if (bacon_strstw (v[x], "--output=")) {
@@ -624,7 +623,7 @@ bacon_parse_opt (char **v)
         exit (EXIT_FAILURE);
       }
       g_out_path = bacon_strdup (o);
-      opt[opt_pos++] = "--output";
+      s_opt[s_opt_pos++] = "--output";
       addopt = false;
     } else if (v[x][0] == '-') {
       if (!v[x][1] || v[x][1] == '-') {
@@ -635,16 +634,16 @@ bacon_parse_opt (char **v)
       addopt = false;
     } else if (pos < BACON_DEVICES_MAX) {
       n = strlen (v[x]);
-      strncpy (devices[pos].id, v[x], n);
-      devices[pos++].id[n] = '\0';
+      strncpy (s_devices[pos].id, v[x], n);
+      s_devices[pos++].id[n] = '\0';
       addopt = false;
     }
     if (addopt)
-      opt[opt_pos++] = v[x];
+      s_opt[s_opt_pos++] = v[x];
   }
 
-  opt[opt_pos] = NULL;
-  devices[pos].id[0] = '\0';
+  s_opt[s_opt_pos] = NULL;
+  s_devices[pos].id[0] = '\0';
   bacon_check_opts ();
 }
 
@@ -661,19 +660,19 @@ bacon_show_rom_list (const BaconDevice *device, const BaconRomList *list)
     if (!rom)
       continue;
     bacon_outlni (1, "%s%s:",
-                  (!latest) ? "" : "Latest ",
+                  (!s_latest) ? "" : "Latest ",
                   bacon_rom_type_str (x));
     n = 0;
     for (; rom; rom = rom->next) {
-      if (!latest)
+      if (!s_latest)
         bacon_outlni (2, "%i) %s", n + 1, rom->name);
       else
         bacon_outlni (2, "%s", rom->name);
       bacon_outlni (3, "released: %s", rom->date);
       bacon_outlni (3, "size:     %s", rom->size);
-      if (show_hash)
+      if (s_show_hash)
         bacon_outlni (3, "hash:     %s", rom->hash.hash);
-      if (show_url)
+      if (s_show_url)
         bacon_outlni (3, "url:      " BACON_GET_CM_URL "/%s", rom->get);
       if (!rom->next)
         break;
@@ -696,9 +695,9 @@ bacon_check_given_devices (void)
   bool bad_device;
 
   bad_device = false;
-  for (x = 0; *devices[x].id; ++x) {
-    if (!bacon_device_is_valid_id (g_device_list, devices[x].id)) {
-      bacon_error ("'%s' is not a valid device", devices[x].id);
+  for (x = 0; *s_devices[x].id; ++x) {
+    if (!bacon_device_is_valid_id (g_device_list, s_devices[x].id)) {
+      bacon_error ("'%s' is not a valid device", s_devices[x].id);
       if (!bad_device)
         bad_device = true;
     }
@@ -720,25 +719,26 @@ bacon_perform (void)
   BaconRomList *rom_list;
 
   if (!g_device_list)
-    g_device_list = bacon_device_list_new (update_device_list);
+    g_device_list = bacon_device_list_new (s_update_device_list);
 
-  if (interactive) {
+  if (s_interactive) {
     bacon_interactive ();
     return;
   }
 
-  if (list_all_devices)
+  if (s_list_all_devices)
     bacon_list_all_devices ();
 
-  if (*devices[0].id)
+  if (*s_devices[0].id)
     bacon_check_given_devices ();
 
-  for (pos = 0; *devices[pos].id; ++pos) {
-    device = bacon_device_get_device_from_id (g_device_list, devices[pos].id);
+  for (pos = 0; *s_devices[pos].id; ++pos) {
+    device = bacon_device_get_device_from_id (g_device_list,
+                                              s_devices[pos].id);
     rom_list = bacon_rom_list_new (device->codename, g_rom_type, g_max_roms);
-    if (showing)
+    if (s_showing)
       bacon_show_rom_list (device, rom_list);
-    else if (downloading && latest)
+    else if (s_downloading && s_latest)
       for (x = 0; x < BACON_ROM_TOTAL; ++x)
         bacon_download_rom (device, rom_list->roms[x]);
     bacon_rom_list_destroy (rom_list);

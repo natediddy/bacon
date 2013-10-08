@@ -4,7 +4,6 @@ myname=`basename $0`
 
 # remove everything from previous builds
 if test -f Makefile; then
-  echo "Running: make distclean"
   make distclean
 fi
 
@@ -23,7 +22,6 @@ for x in *~ \
          install-sh \
          missing \
          stamp-h?; do
-  echo "Running: rm -rf \"$x\""
   rm -rf "$x"
 done
 

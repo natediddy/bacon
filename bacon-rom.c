@@ -31,26 +31,23 @@
 #define BACON_ROM_TYPE_RC_STRING       "Release Candidate"
 #define BACON_ROM_TYPE_STABLE_STRING   "Stable"
 #define BACON_ROM_TYPE_ALL_STRING      "All"
+#define BACON_NIGHTLY_FORMAT           "nightly"
+#define BACON_RC_FORMAT                "RC"
+#define BACON_SNAPSHOT_FORMAT          "snapshot"
+#define BACON_STABLE_FORMAT            "stable"
+#define BACON_TEST_FORMAT              "test"
+#define BACON_ALL_FORMAT               ""
+#define BACON_REQUEST_FORMAT           "?device=%s&type=%s"
+#define BACON_REQUEST_MAX              128
 
-#define BACON_NIGHTLY_FORMAT  "nightly"
-#define BACON_RC_FORMAT       "RC"
-#define BACON_SNAPSHOT_FORMAT "snapshot"
-#define BACON_STABLE_FORMAT   "stable"
-#define BACON_TEST_FORMAT     "test"
-#define BACON_ALL_FORMAT      ""
-
-#define BACON_REQUEST_FORMAT "?device=%s&type=%s"
-
-#define BACON_REQUEST_MAX 128
-
-static char request[BACON_REQUEST_MAX];
+static char s_request[BACON_REQUEST_MAX];
 
 static void
 bacon_form_request (const char *codename, const int id)
 {
   const char *type_str;
 
-  *request = '\0';
+  *s_request = '\0';
   switch (id) {
   case BACON_ROM_NIGHTLY:
     type_str = BACON_NIGHTLY_FORMAT;
@@ -72,7 +69,7 @@ bacon_form_request (const char *codename, const int id)
     break;
   }
 
-  snprintf (request, BACON_REQUEST_MAX, BACON_REQUEST_FORMAT,
+  snprintf (s_request, BACON_REQUEST_MAX, BACON_REQUEST_FORMAT,
             codename, type_str);
 }
 
@@ -84,7 +81,7 @@ bacon_setup_rom (const char *codename, const int id, const int *max)
 
   rom = NULL;
   bacon_form_request (codename, id);
-  if (bacon_net_init_for_page_data (request)) {
+  if (bacon_net_init_for_page_data (s_request)) {
     data = bacon_net_get_page_data ();
     if (data)
       rom = bacon_parse_for_rom (data, *max);

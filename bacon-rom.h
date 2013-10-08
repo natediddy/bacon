@@ -23,11 +23,10 @@
 
 #include "bacon-hash.h"
 
-#define BACON_ROM_NAME_MAX 128
-#define BACON_ROM_GET_MAX  8
-#define BACON_ROM_SIZE_MAX 12
-#define BACON_ROM_DATE_MAX 24
-
+#define BACON_ROM_NAME_MAX      128
+#define BACON_ROM_GET_MAX       8
+#define BACON_ROM_SIZE_MAX      12
+#define BACON_ROM_DATE_MAX      24
 #define BACON_ROM_TYPE_NONE     0
 #define BACON_ROM_TYPE_ALL      0x0200
 #define BACON_ROM_TYPE_NIGHTLY  0x0800
@@ -35,13 +34,12 @@
 #define BACON_ROM_TYPE_SNAPSHOT 0x0100
 #define BACON_ROM_TYPE_STABLE   0x0008
 #define BACON_ROM_TYPE_TEST     0x0004
-
-#define BACON_ROM_NIGHTLY  0
-#define BACON_ROM_RC       1
-#define BACON_ROM_SNAPSHOT 2
-#define BACON_ROM_STABLE   3
-#define BACON_ROM_TEST     4
-#define BACON_ROM_TOTAL    5
+#define BACON_ROM_NIGHTLY       0
+#define BACON_ROM_RC            1
+#define BACON_ROM_SNAPSHOT      2
+#define BACON_ROM_STABLE        3
+#define BACON_ROM_TEST          4
+#define BACON_ROM_TOTAL         5
 
 typedef struct BaconRom     BaconRom;
 typedef struct BaconRomList BaconRomList;

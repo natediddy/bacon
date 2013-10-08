@@ -222,7 +222,7 @@ bacon_env_set_program_data_path (void)
 
   if (!bacon_env_is_directory (g_program_data_path)) {
     if (!bacon_env_mkpath (g_program_data_path)) {
-      bacon_error ("could not create program path");
+      bacon_error ("could not create program path `%s'", g_program_data_path);
       exit (EXIT_FAILURE);
     }
     bacon_env_make_hidden (g_program_data_path);
@@ -335,7 +335,6 @@ bacon_env_mkpath (const char *path)
  
   res = true;
   ppath = bacon_env_mkabs (path);
-  bacon_debug ("ppath=\"%s\"", ppath);
   p = ppath;
 
   while (*p) {

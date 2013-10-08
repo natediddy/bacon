@@ -24,7 +24,7 @@
 #include "bacon.h"
 #include "bacon-env.h"
 
-#define BACON_DEVICE_NAME_MAX 128
+#define BACON_DEVICE_NAME_MAX           128
 #ifdef BACON_GTK
 # define BACON_DEVICE_THUMB_REQUEST_MAX 1024
 #endif

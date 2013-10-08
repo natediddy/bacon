@@ -47,11 +47,10 @@
 #define S43 15
 #define S44 21
 
-#define F(x, y, z) (((x) & (y)) | ((~x) & (z)))
-#define G(x, y, z) (((x) & (z)) | ((y) & (~z)))
-#define H(x, y, z) ((x) ^ (y) ^ (z))
-#define I(x, y, z) ((y) ^ ((x) | (~z)))
-
+#define F(x, y, z)        (((x) & (y)) | ((~x) & (z)))
+#define G(x, y, z)        (((x) & (z)) | ((y) & (~z)))
+#define H(x, y, z)        ((x) ^ (y) ^ (z))
+#define I(x, y, z)        ((y) ^ ((x) | (~z)))
 #define ROTATE_LEFT(x, n) (((x) << (n)) | ((x) >> (32 - (n))))
 
 #define FF(a, b, c, d, x, s, ac)           \
@@ -88,7 +87,7 @@ typedef struct {
   unsigned char buffer[64];
 } BaconMd5Ctx;
 
-static unsigned char padding[64] = {
+static unsigned char s_padding[64] = {
   0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -278,7 +277,7 @@ bacon_hash_final (BaconMd5Ctx *ctx,
   index = ((ctx->count[0] >> 3) & 0x3f);
   n_pad = (index < 56) ? (56 - index) : (120 - index);
 
-  bacon_hash_update (ctx, padding, n_pad);
+  bacon_hash_update (ctx, s_padding, n_pad);
   bacon_hash_update (ctx, bits, 8);
 
   bacon_hash_encode (digest, ctx->state, BACON_HASH_DIGEST_SIZE);
