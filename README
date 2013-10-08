@@ -54,7 +54,8 @@ installed, as well as GNU Autotools.
 
 On a Linux OS you can use:
 
-    ./buildhelper setup --with-gtk
+    ./buildconf
+    ./configure [--with-gtk]
     make
 
 Installing
