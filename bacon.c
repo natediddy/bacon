@@ -97,6 +97,13 @@ bacon_help (void)
     "  -d, --download             Download the latest ROM for DEVICE",
     "                             Requires specific ROM type option",
     "                             (See 'ROM Type Options' below)",
+#ifdef BACON_GTK
+    "  -G, --gtk                  Launch the GTK+ user interface",
+    "                             NOTE: when this option is used, it MUST be",
+    "                             provided as the FIRST option (so that any",
+    "                             GTK+ specific options can be provided",
+    "                             after this one on the command line)",
+#endif
     "  -i, --interactive          Interactive mode",
     "  -l, --list-devices         List all available DEVICEs",
     "  -N, --no-progress          Do not show any progress when retrieving",
@@ -107,15 +114,32 @@ bacon_help (void)
     "  -?, -h, --help             Display this help text and exit",
     "  -v, --version              Display version information and exit",
     "ROM Type Options:",
-    "  -a, --all                  Specify all ROM types [default when no",
-    "                             ROM types are given]",
-    "  -e, --experimental         Specify only Experimental",
-    "  -m, --snapshot             Specify only M Snapshot ROMs",
-    "  -n, --nightly              Specify only Nightly ROMs",
-    "  -r, --rc                   Specify only Release Candidate ROMs",
-    "  -S, --stable               Specify only Stable ROMs",
+    "  -a, --all                  Specify all ROM types",
+    "                             NOTE: this is the default if no other ROM",
+    "                             types were specified",
+    "  -e, --experimental         Specify Experimental",
+    "  -m, --snapshot             Specify M Snapshot ROMs",
+    "  -n, --nightly              Specify Nightly ROMs",
+    "  -r, --rc                   Specify Release Candidate ROMs",
+    "  -S, --stable               Specify Stable ROMs",
     "Download Options:",
-    "  -o PATH, --output=PATH     Save downloaded ROM to PATH",
+    "  -o PATH, --output=PATH     Save the downloaded ROM to PATH",
+    "                             A few things to keep in mind:",
+    "                             - If PATH is an existing directory, then",
+    "                               PATH will be appended with the ROM",
+    "                               filename.",
+    "                             - If PATH does not exist, then an attempt",
+    "                               to create PATH's parent will be made,",
+    "                               and PATH's basename will become the ROM",
+    "                               filename.",
+    "                             - If PATH is an existing file, then it",
+    "                               will be overwritten (UNLESS it is a",
+    "                               previously downloaded ROM by this",
+    "                               program, in which case an attempt to",
+    "                               resume the download will be made).",
+    "                             - If PATH exists and its MD5 hash matches",
+    "                               the remote ROM MD5 hash, then nothing",
+    "                               will be done.",
     "Show Options:",
     "  -H, --hash                 Show remote MD5 hash for each ROM",
     "                             displayed",
@@ -124,10 +148,6 @@ bacon_help (void)
     "  -M N, --max=N              Show a maximum of N ROMs for each ROM type",
     "                             specified",
     "  -U, --url                  Show download URL for each ROM displayed",
-#ifdef BACON_GTK
-    "",
-    "Providing no arguments will launch the GTK+ graphical user interface.",
-#endif
     NULL
   };
   size_t x;
@@ -441,6 +461,9 @@ bacon_parse_string_for_short_opts (const char *s)
     switch (s[x]) {
     case '?':
     case 'h':
+#ifdef BACON_GTK
+    case 'G':
+#endif
     case 'M':
     case 'v':
     case 'o':
@@ -514,7 +537,7 @@ bacon_parse_string_for_short_opts (const char *s)
 }
 
 static void
-bacon_parse_opt (char **v)
+bacon_parse_opt (int c, char **v)
 {
   size_t x;
   size_t n;
@@ -523,6 +546,14 @@ bacon_parse_opt (char **v)
   char *o;
 
   pos = 0;
+  bacon_set_program_name (v[0]);
+
+#ifdef BACON_GTK
+  if (v[1] && (bacon_streq (v[1], "-G") || bacon_streq (v[1], "--gtk"))) {
+    bacon_gtk_main (&c, &v);
+    return;
+  }
+#endif
 
   for (x = 1; v[x]; ++x) {
     addopt = true;
@@ -534,6 +565,12 @@ bacon_parse_opt (char **v)
       bacon_version ();
     else if (bacon_streq (v[x], "-H") || bacon_streq (v[x], "--hash"))
       s_show_hash = true;
+#ifdef BACON_GTK
+    else if (bacon_streq (v[x], "-G") || bacon_streq (v[x], "--gtk")) {
+      bacon_error ("invalid context for `%s' (try `--help')");
+      exit (EXIT_FAILURE);
+    }
+#endif
     else if (bacon_streq (v[x], "-l") || bacon_streq (v[x], "--list-devices"))
       s_list_all_devices = true;
     else if (bacon_streq (v[x], "-L") || bacon_streq (v[x], "--latest"))
@@ -748,16 +785,9 @@ bacon_perform (void)
 int
 main (int argc, char **argv)
 {
-  bacon_set_program_name (argv[0]);
   atexit (bacon_cleanup);
   bacon_env_set_program_data_path ();
-#ifdef BACON_GTK
-  if (argc == 1) {
-    bacon_gtk_main (&argc, &argv);
-    exit (EXIT_SUCCESS);
-  }
-#endif
-  bacon_parse_opt (argv);
+  bacon_parse_opt (argc, argv);
   bacon_perform ();
   exit (EXIT_SUCCESS);
   return 0;

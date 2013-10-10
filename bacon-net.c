@@ -70,11 +70,11 @@ typedef struct {
 } BaconNetInstance;
 
 extern bool              g_show_progress;
-static BaconNetInstance *s_net       = NULL;
-static char              s_url       [BACON_URL_MAX];
+static BaconNetInstance *s_net          = NULL;
 #ifdef BACON_GTK
-static bool              s_for_icons = false;
+static bool              s_for_icons    = false;
 #endif
+static char              s_url          [BACON_URL_MAX];
 
 static size_t
 bacon_file_write (void *p, size_t size, size_t nmemb, FILE *fp)
@@ -100,6 +100,22 @@ bacon_page_write (void *buf, size_t size, size_t nmemb, void *o)
   p->buffer[p->n] = 0;
   return n;
 }
+
+#ifdef BACON_GTK
+static int
+bacon_gtk_progress (GtkProgressBar *progress_bar, double td, double cd)
+{
+  gdouble fraction;
+
+  fraction = (cd / td);
+  if (!bacon_nan_value (fraction)) {
+    gtk_progress_bar_set_fraction (progress_bar, fraction);
+    while (gtk_events_pending ())
+      gtk_main_iteration ();
+  }
+  return 0;
+}
+#endif
 
 static int
 bacon_file_progress (void *data, double td, double cd, double tu, double cu)
@@ -157,17 +173,11 @@ bacon_file_setup (void)
   bacon_net_setopt (CURLOPT_WRITEFUNCTION, (void *) BACON_FILE_RESULT->write);
   check = bacon_net_check ();
 
-#ifdef BACON_GTK
-  if (!s_for_icons) {
-#endif
-  if (check && g_show_progress) {
+  if (check && BACON_FILE_RESULT->progress) {
     bacon_net_setopt (CURLOPT_PROGRESSFUNCTION,
                       (void *) BACON_FILE_RESULT->progress);
     check = bacon_net_check ();
   }
-#ifdef BACON_GTK
-  }
-#endif
   return check;
 }
 
@@ -183,33 +193,26 @@ bacon_page_setup (void)
   bacon_net_setopt (CURLOPT_WRITEFUNCTION, (void *) BACON_PAGE_RESULT->write);
   check = bacon_net_check ();
 
-#ifdef BACON_GTK
-  if (!s_for_icons) {
-#endif
-  if (check && g_show_progress) {
+  if (check && BACON_PAGE_RESULT->progress) {
     bacon_net_setopt (CURLOPT_PROGRESSFUNCTION,
                       (void *) BACON_PAGE_RESULT->progress);
     check = bacon_net_check ();
   }
-#ifdef BACON_GTK
-  }
-#endif
   return check;
 }
 
 static void
-bacon_net_init (BaconNetAction action,
-                long offset,
-                const char *loc)
+bacon_net_init (BaconNetAction action, long offset, const char *loc)
 {
   s_net = bacon_new (BaconNetInstance);
   s_net->action = action;
-  s_net->cp = curl_easy_init ();
 
-  if (!s_net->cp)
+  s_net->cp = curl_easy_init ();
+  if (!s_net->cp) {
     s_net->status = CURLE_FAILED_INIT;
-  else
-    s_net->status = CURLE_OK;
+    return;
+  }
+  s_net->status = CURLE_OK;
 
   if (s_net->action == BACON_NET_ACTION_GET_FILE) {
     s_net->res = bacon_new (BaconFileResult);
@@ -221,8 +224,14 @@ bacon_net_init (BaconNetAction action,
       BACON_FILE_RESULT->path = NULL;
     BACON_FILE_RESULT->setup = &bacon_file_setup;
     BACON_FILE_RESULT->write = &bacon_file_write;
+#ifdef BACON_GTK
+    if (!s_for_icons && g_show_progress)
+#else
     if (g_show_progress)
+#endif
       BACON_FILE_RESULT->progress = &bacon_file_progress;
+    else
+      BACON_FILE_RESULT->progress = NULL;
   } else {
     s_net->res = bacon_new (BaconPageResult);
     memset (&BACON_PAGE_RESULT->chunk, 0, sizeof (BaconDataChunk));
@@ -230,14 +239,22 @@ bacon_net_init (BaconNetAction action,
     BACON_PAGE_RESULT->chunk.n = 0;
     BACON_PAGE_RESULT->setup = &bacon_page_setup;
     BACON_PAGE_RESULT->write = &bacon_page_write;
+#ifdef BACON_GTK
+    if (!s_for_icons && g_show_progress)
+#else
     if (g_show_progress)
+#endif
       BACON_PAGE_RESULT->progress = &bacon_page_progress;
+    else
+      BACON_PAGE_RESULT->progress = NULL;
   }
 }
 
 static bool
 bacon_net_setup (void)
 {
+  bool null_progress_cb;
+
   bacon_net_setopt (CURLOPT_URL, s_url);
   if (!bacon_net_check ())
     return false;
@@ -250,16 +267,19 @@ bacon_net_setup (void)
   if (!bacon_net_check ())
     return false;
 
-#ifdef BACON_GTK
-  if (!s_for_icons) {
-#endif
-  if (g_show_progress)
+  if ((s_net->action == BACON_NET_ACTION_GET_FILE) &&
+      !BACON_FILE_RESULT->progress)
+    null_progress_cb = true;
+  else if ((s_net->action == BACON_NET_ACTION_GET_PAGE) &&
+           !BACON_PAGE_RESULT->progress)
+    null_progress_cb = true;
+  else
+    null_progress_cb = false;
+
+  if (!null_progress_cb)
     bacon_net_setopt (CURLOPT_NOPROGRESS, 0L);
   else
     bacon_net_setopt (CURLOPT_NOPROGRESS, 1L);
-#ifdef BACON_GTK
-  }
-#endif
   if (!bacon_net_check ())
     return false;
 
@@ -271,10 +291,18 @@ bacon_net_setup (void)
 static bool
 bacon_net_fetch (void)
 {
+#ifdef BACON_GTK
+  if (!s_for_icons && g_show_progress)
+#else
   if (g_show_progress)
+#endif
     bacon_progress_init ();
   s_net->status = curl_easy_perform (s_net->cp);
+#ifdef BACON_GTK
+  if (!s_for_icons && g_show_progress)
+#else
   if (g_show_progress)
+#endif
     bacon_progress_deinit (s_net->action == BACON_NET_ACTION_GET_FILE);
   return bacon_net_check ();
 }
@@ -331,6 +359,45 @@ bacon_net_init_for_device_icon_thumb (const char *request,
   if (bacon_net_check () && bacon_net_setup ())
     return true;
   return false;
+}
+
+bool
+bacon_net_gtk_init_for_device_list (GtkProgressBar *progress_bar)
+{
+  if (s_net)
+    bacon_net_deinit ();
+  bacon_set_url (BACON_GET_CM_URL, "");
+
+  bacon_net_init (BACON_NET_ACTION_GET_PAGE, -1, NULL);
+  if (!bacon_net_check ())
+    return false;
+
+  bacon_net_setopt (CURLOPT_URL, s_url);
+  if (!bacon_net_check ())
+    return false;
+
+  bacon_net_setopt (CURLOPT_USERAGENT, BACON_USERAGENT);
+  if (!bacon_net_check ())
+    return false;
+
+  bacon_net_setopt (CURLOPT_FOLLOWLOCATION, 1L);
+  if (!bacon_net_check ())
+    return false;
+
+  bacon_net_setopt (CURLOPT_NOPROGRESS, 0L);
+  if (!bacon_net_check ())
+    return false;
+
+  bacon_net_setopt (CURLOPT_PROGRESSFUNCTION, bacon_gtk_progress);
+  if (!bacon_net_check ())
+    return false;
+
+  bacon_net_setopt (CURLOPT_PROGRESSDATA, progress_bar);
+  if (!bacon_net_check ())
+    return false;
+
+  BACON_PAGE_RESULT->progress = NULL;
+  return BACON_PAGE_RESULT->setup ();
 }
 #endif
 

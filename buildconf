@@ -1,31 +1,41 @@
 #!/bin/sh
 
 myname=`basename $0`
+CLEAN_ONLY=0
+RUN_ALL=0
+CONFIGURE_OPTIONS=
+
+CLEAN_FILES="*~ *.bak *.in *.o .deps Makefile aclocal.m4 autom4te.cache \
+             bacon-config.h depcomp config.* configure install-sh missing \
+             stamp-h?"
+
+if test "$1" = "help" || test "$1" = "-h" || test "$1" = "--help"; then
+  echo "Usage: $0 [all CONFIGURE_SCRIPT_OPTIONS] [clean]"
+  echo "  Options:"
+  echo "    all CONFIGURE_SCRIPT_OPTIONS"
+  echo "         Run autotools, \`./configure' using the supplied"
+  echo "         CONFIGURE_SCRIPT_OPTIONS, and then \`make'"
+  echo "    clean"
+  echo "         Remove all files from previous builds"
+  exit 0
+elif test "$1" = "all"; then
+  RUN_ALL=1
+  shift
+  test "$1" != "" && CONFIGURE_OPTIONS=$@
+elif test "$1" = "clean"; then
+  CLEAN_ONLY=1
+elif test "$1" != ""; then
+  echo "$myname: error: \`$1' not recognized (try \`help')"
+  exit 1
+fi
 
 # remove everything from previous builds
 if test -f Makefile; then
   make distclean
 fi
 
-for x in *~ \
-         *.bak \
-         *.in \
-         *.o \
-         .deps \
-         Makefile \
-         aclocal.m4 \
-         autom4te.cache \
-         bacon-config.h \
-         depcomp \
-         config.* \
-         configure \
-         install-sh \
-         missing \
-         stamp-h?; do
-  rm -rf "$x"
-done
-
-test "$1" = "clean" && exit 0
+rm -rf $CLEAN_FILES
+test "$CLEAN_ONLY" = "1" && exit 0
 
 if test ! -f configure.ac || test ! -f bacon.c; then
   echo "$myname: error: cannot run from outside the bacon source directory"
@@ -56,7 +66,7 @@ if test "$1" = "2" -a "$2" -lt "57" || test "$1" -lt "2"; then
   exit 1
 fi
 
-echo "autoconf version $ac_version (ok)"
+echo "*** autoconf version $ac_version (ok)"
 
 am4te_version=`${AUTOM4TE:-autom4te} --version 2>/dev/null | \
   head -n 1 | sed -e 's/autom4te\(.*\)/\1/' -e \
@@ -68,7 +78,7 @@ if test -z "$am4te_version"; then
 fi
 
 if test "$am4te_version" = "$ac_version"; then
-  echo "autom4te version $am4te_version (ok)"
+  echo "*** autom4te version $am4te_version (ok)"
 else
   echo "$myname: error: autom4te version $am4te_version does not match"
   echo "                autoconf version $ac_version"
@@ -99,7 +109,7 @@ if test "$1" = "2" -a "$2" -lt "50" || test "$1" -lt "2"; then
   exit 1
 fi
 
-echo "autoheader version $ah_version (ok)"
+echo "*** autoheader version $ah_version (ok)"
 
 need_automake="1.7"
 am_version=`${AUTOMAKE:-automake} --version 2>/dev/null | \
@@ -126,7 +136,7 @@ if test "$1" = "1" -a "$2" -lt "7" || test "$1" -lt "1"; then
   exit 1
 fi
 
-echo "automake version $am_version (ok)"
+echo "*** automake version $am_version (ok)"
 
 acloc_version=`${ACLOCAL:-aclocal} --version 2>/dev/null | \
   head -n 1 | sed -e 's/^.* \([0-9]\)/\1/' \
@@ -138,7 +148,7 @@ if test -z "$acloc_version"; then
 fi
 
 if test "$acloc_version" = "$am_version"; then
-  echo "aclocal version $acloc_version (ok)"
+  echo "*** aclocal version $acloc_version (ok)"
 else
   echo "$myname: error: aclocal version $acloc_version does not match"
   echo "                automake version $am_version"
@@ -149,7 +159,7 @@ m4=`(${M4:-m4} --version || ${M4:-gm4} --version) 2>/dev/null | head -n 1`
 m4_version=`echo $m4 | sed -e 's/^.* \([0-9]\)/\1/' -e 's/[a-z]* *$//'`
 
 if { echo $m4 | grep "GNU" >/dev/null 2>&1; } then
-  echo "GNU m4 version $m4_version (ok)"
+  echo "*** GNU m4 version $m4_version (ok)"
 else
   if test -z "$m4"; then
     echo "$myname: error: m4 version not recognized"
@@ -161,20 +171,29 @@ else
   exit 1
 fi
 
-echo "Running: ${ACLOCAL:-aclocal} -I m4 $ACLOCAL_FLAGS"
+echo "*** Running: ${ACLOCAL:-aclocal} -I m4 $ACLOCAL_FLAGS"
 ${ACLOCAL:-aclocal} -I m4 $ACLOCAL_FLAGS ||
   { echo "$myname: error: aclocal failed"; exit 1; }
 
-echo "Running: ${AUTOHEADER:-autoheader}"
+echo "*** Running: ${AUTOHEADER:-autoheader}"
 ${AUTOHEADER:-autoheader} ||
   { echo "$myname: error: autoheader failed"; exit 1; }
 
-echo "Running: ${AUTOCONF:-autoconf}"
+echo "*** Running: ${AUTOCONF:-autoconf}"
 ${AUTOCONF:-autoconf} || { echo "$myname: error: autoconf failed"; exit 1; }
 
-echo "Running: ${AUTOMAKE:-automake} -a -c"
+echo "*** Running: ${AUTOMAKE:-automake} -a -c"
 ${AUTOMAKE:-automake} -a -c ||
   { echo "$myname: error: automake failed"; exit 1; }
+
+if test "$RUN_ALL" = "1"; then
+  echo "*** Running: ./configure $CONFIGURE_OPTIONS"
+  ./configure $CONFIGURE_OPTIONS ||
+    { echo "$myname: error: ./configure failed"; exit 1; }
+  echo "*** Running: make"
+  make
+  exit $?
+fi
 
 echo
 echo "=================================================================="

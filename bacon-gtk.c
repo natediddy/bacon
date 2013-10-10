@@ -21,6 +21,7 @@
 #ifdef BACON_GTK
 #include <string.h>
 
+#include <curl/curl.h>
 #include <gtk/gtk.h>
 
 #include "bacon.h"
@@ -31,34 +32,55 @@
 #include "bacon-net.h"
 #include "bacon-parse.h"
 #include "bacon-pixbufs.h"
+#include "bacon-progress.h"
 #include "bacon-rom.h"
 #include "bacon-util.h"
 
-#define BACON_DEVICE_ICON_SCALE_WIDTH    100
-#define BACON_DEVICE_ICON_SCALE_HEIGHT   100
-#define BACON_WINDOW_SIZE_WIDTH          900
-#define BACON_WINDOW_SIZE_HEIGHT         600
-#define BACON_DISPLAY_NAME               "Bacon"
-#define BACON_FILE_MENU_ITEM_LABEL       "File"
-#define BACON_QUIT_MENU_ITEM_LABEL       "Quit"
-#define BACON_HELP_MENU_ITEM_LABEL       "Help"
-#define BACON_ABOUT_MENU_ITEM_LABEL      "About"
-#define BACON_CONFIRM_QUIT_TITLE         "Quit"
-#define BACON_CONFIRM_QUIT_MESSAGE       "Are you sure you want to exit?"
-#define BACON_SEARCH_LABEL               "<b>Search devices:</b> "
-#define BACON_FULLNAME_COLOR             "dark cyan"
-#define BACON_CODENAME_COLOR             "dark blue"
-#define BACON_DEVICE_COUNT_COLOR         "dark blue"
-#define BACON_DISPLAY_NAME_MARKUP_FORMAT \
-  "<span color=\"" BACON_FULLNAME_COLOR "\">%s</span> " \
-  "<span color=\"" BACON_CODENAME_COLOR "\">%s</span>"
-#define BACON_DEVICE_COUNT_LABEL_DEFAULT "<b>Devices:</b>"
-#define BACON_DEVICE_COUNT_MARKUP_FORMAT \
-  BACON_DEVICE_COUNT_LABEL_DEFAULT " <span color=\"" \
-  BACON_DEVICE_COUNT_COLOR "\">%03i</span>"
+#define BACON_DEVICE_ICON_SCALE_WIDTH  100
+#define BACON_DEVICE_ICON_SCALE_HEIGHT 100
+#define BACON_WINDOW_DEFAULT_WIDTH     900
+#define BACON_WINDOW_DEFAULT_HEIGHT    600
+#define BACON_PROGRESS_WINDOW_WIDTH    400
+#define BACON_PROGRESS_WINDOW_HEIGHT   300
 
-typedef struct BaconData      BaconData;
-typedef struct BaconThumbList BaconThumbList;
+#define BACON_FILE_MENU_ITEM_LABEL  "File"
+#define BACON_QUIT_MENU_ITEM_LABEL  "Quit"
+#define BACON_HELP_MENU_ITEM_LABEL  "Help"
+#define BACON_ABOUT_MENU_ITEM_LABEL "About"
+#define BACON_CONFIRM_QUIT_TITLE    "Quit"
+#define BACON_CONFIRM_QUIT_MESSAGE  "Are you sure you want to exit?"
+#define BACON_PROGRESS_WINDOW_TITLE "Obtaining data"
+
+#define BACON_LONG_ICON_CACHE_PROGRESS_MESSAGE \
+  "Retrieving icon cache " \
+  "(this may take a while since a significant " \
+  "portion of the cache is needed)"
+
+#define BACON_ICON_CACHE_PROGRESS_MESSAGE \
+  "Refreshing icon cache"
+
+#define BACON_DEVICE_LIST_PROGRESS_MESSAGE \
+  "Refreshing device list"
+
+#define BACON_ROM_LIST_PROGRESS_MESSAGE_FORMAT \
+  "Retrieving ROM list for %s"
+
+#define BACON_ROM_PROGRESS_MESSAGE_FORMAT "Downloading %s"
+#define BACON_SEARCH_LABEL                "<b>Search devices:</b> "
+#define BACON_CODENAME_COLOR              "dark blue"
+#define BACON_DEVICE_COUNT_COLOR          "dark blue"
+
+#define BACON_DISPLAY_NAME_MARKUP_FORMAT \
+  "<b>%s <span color=\"" BACON_CODENAME_COLOR "\">%s</span></b>"
+
+#define BACON_DEVICE_COUNT_LABEL_DEFAULT "<b>Devices:</b>"
+
+#define BACON_DEVICE_COUNT_MARKUP_FORMAT \
+  BACON_DEVICE_COUNT_LABEL_DEFAULT " <b><span color=\"" \
+  BACON_DEVICE_COUNT_COLOR "\">%3i</span></b>"
+
+typedef struct BaconData           BaconData;
+typedef struct BaconThumbList      BaconThumbList;
 
 struct BaconData {
   BaconDevice *device;
@@ -73,6 +95,14 @@ struct BaconThumbList {
   BaconThumbList *next;
 };
 
+typedef enum {
+  BACON_PROGRESS_TYPE_NONE,
+  BACON_PROGRESS_TYPE_LONG_ICON_CACHE,
+  BACON_PROGRESS_TYPE_ICON_CACHE,
+  BACON_PROGRESS_TYPE_DEVICE_LIST,
+  BACON_PROGRESS_TYPE_ROM_LIST
+} BaconProgressType;
+
 enum {
   DEVICE_DISPLAY_NAME_COLUMN,
   DEVICE_FULLNAME_COLUMN,
@@ -81,16 +111,21 @@ enum {
   N_COLUMNS
 };
 
-extern BaconDeviceList *g_device_list;
-extern char *           g_program_data_path;
-static BaconThumbList * s_thumbs             = NULL;
-static BaconData *      s_data               = NULL;
-static GtkEntryBuffer * s_entry_buffer       = NULL;
-static GtkIconView *    s_icon_view          = NULL;
-static GtkLabel *       s_device_count_label = NULL;
-static GtkTreeModel *   s_model              = NULL;
-static gchar *          s_thumbs_path        = NULL;
-static gint             s_device_count       = 0;
+extern BaconDeviceList * g_device_list;
+extern char *            g_program_data_path;
+static BaconProgressType s_progress_type      = BACON_PROGRESS_TYPE_NONE;
+static BaconDevice *     s_device             = NULL;
+static BaconThumbList *  s_thumbs             = NULL;
+static BaconData *       s_data               = NULL;
+static GtkWindow *       s_progress_window    = NULL;
+static GtkProgressBar *  s_progress_bar       = NULL;
+static GtkEntryBuffer *  s_entry_buffer       = NULL;
+static GtkIconView *     s_icon_view          = NULL;
+static GtkLabel *        s_device_count_label = NULL;
+static GtkTreeModel *    s_model              = NULL;
+static GtkWindow *       s_window             = NULL;
+static gchar *           s_thumbs_path        = NULL;
+static gint              s_device_count       = 0;
 
 static void
 bacon_add_thumb (const char *name)
@@ -119,12 +154,102 @@ bacon_set_thumbs_path (void)
 }
 
 static void
+bacon_init_progress_window (BaconProgressType type)
+{
+  gint w;
+  gint h;
+  gchar *message;
+  GtkWidget *vbox;
+  GtkWidget *hbox;
+  GtkWidget *label;
+  GtkWidget *image;
+
+  switch (type) {
+  case BACON_PROGRESS_TYPE_LONG_ICON_CACHE:
+    message = g_markup_escape_text (BACON_LONG_ICON_CACHE_PROGRESS_MESSAGE,
+                                    -1);
+    break;
+  case BACON_PROGRESS_TYPE_ICON_CACHE:
+    message = g_markup_escape_text (BACON_ICON_CACHE_PROGRESS_MESSAGE, -1);
+    break;
+  case BACON_PROGRESS_TYPE_DEVICE_LIST:
+    message = g_markup_escape_text (BACON_DEVICE_LIST_PROGRESS_MESSAGE, -1);
+    break;
+  case BACON_PROGRESS_TYPE_ROM_LIST:
+    message = g_markup_printf_escaped (BACON_ROM_LIST_PROGRESS_MESSAGE_FORMAT,
+                                       s_device->codename);
+    break;
+  default:
+    message = NULL;
+    break;
+  }
+
+  s_progress_type = type;
+  if (s_progress_window)
+    gtk_widget_destroy (GTK_WIDGET (s_progress_window));
+
+  s_progress_window = GTK_WINDOW (gtk_window_new (GTK_WINDOW_TOPLEVEL));
+  gtk_window_set_title (s_progress_window, BACON_PROGRESS_WINDOW_TITLE);
+  gtk_window_set_transient_for (s_progress_window, s_window);
+  gtk_window_set_modal (s_progress_window, TRUE);
+  gtk_window_set_decorated (s_progress_window, TRUE);
+  gtk_window_set_position (s_progress_window, GTK_WIN_POS_CENTER_ON_PARENT);
+  gtk_window_set_deletable (s_progress_window, FALSE);
+
+  vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
+  gtk_container_add (GTK_CONTAINER (s_progress_window), vbox);
+
+  hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
+  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
+
+  image = gtk_image_new_from_stock (GTK_STOCK_INFO, GTK_ICON_SIZE_DIALOG);
+  gtk_box_pack_start (GTK_BOX (hbox), image, FALSE, FALSE, 0);
+
+  gtk_window_get_size (s_progress_window, &w, &h);
+
+  label = gtk_label_new (message);
+  gtk_label_set_use_markup (GTK_LABEL (label), TRUE);
+  gtk_label_set_line_wrap (GTK_LABEL (label), TRUE);
+  gtk_box_pack_start (GTK_BOX (hbox), label, FALSE, FALSE, 0);
+
+  s_progress_bar = GTK_PROGRESS_BAR (gtk_progress_bar_new ());
+  gtk_progress_bar_set_show_text (s_progress_bar, TRUE);
+  gtk_progress_bar_set_text (s_progress_bar, "");
+  gtk_box_pack_start (GTK_BOX (vbox), GTK_WIDGET (s_progress_bar),
+                      TRUE, FALSE, 0);
+
+  g_free (message);
+  gtk_widget_show_all (GTK_WIDGET (s_progress_window));
+}
+
+static void
+bacon_finish_progress_window (void)
+{
+  gtk_widget_destroy (GTK_WIDGET (s_progress_window));
+}
+
+static void
+bacon_update_progress_bar (gdouble total, gdouble current)
+{
+  gdouble fraction;
+
+  fraction = (current / total);
+  if (bacon_nan_value (fraction))
+    return;
+  gtk_progress_bar_set_fraction (s_progress_bar, fraction);
+}
+
+static void
 bacon_init_icon_cache (void)
 {
+  guint x;
+  guint icons_needed;
+  guint icons_total;
   char *data;
   char *iconpath;
   BaconDeviceThumbRequestList *p;
   BaconDeviceThumbRequestList *thumbs;
+  GtkWidget *progress_dialog;
 
   data = NULL;
   thumbs = NULL;
@@ -138,29 +263,55 @@ bacon_init_icon_cache (void)
   }
 
   bacon_set_thumbs_path ();
+  icons_needed = 0;
+  icons_total = 0;
 
   for (p = thumbs; p; p = p->next) {
     bacon_add_thumb (p->filename);
     iconpath = bacon_full_icon_path (p->filename);
-    if (bacon_env_is_file (iconpath))
-      continue;
-    g_message ("downloading thumb `%s'\n", iconpath);
-    if (bacon_net_init_for_device_icon_thumb (p->request, iconpath)) {
-      if (!bacon_net_get_file ())
-        g_printerr ("failed to download icon from '%s/%s' to '%s'\n",
-                    BACON_DEVICE_ICON_THUMB_URL, p->request, p->filename);
-      bacon_net_deinit ();
-    }
+    icons_total++;
+    if (!bacon_env_is_file (iconpath))
+      icons_needed++;
     g_free (iconpath);
     if (!p->next)
       break;
+  }
+
+  g_message ("total icons: %i needed icons:%i", icons_total, icons_needed);
+
+  if (icons_needed) {
+    if (icons_needed >= (icons_total / 3))
+      bacon_init_progress_window (BACON_PROGRESS_TYPE_LONG_ICON_CACHE);
+    else
+      bacon_init_progress_window (BACON_PROGRESS_TYPE_ICON_CACHE);
+    x = 0;
+    for (p = thumbs; p; p = p->next) {
+      iconpath = bacon_full_icon_path (p->filename);
+      if (!bacon_env_is_file (iconpath)) {
+        g_message ("downloading icon `%s'\n", iconpath);
+        if (bacon_net_init_for_device_icon_thumb (p->request, iconpath)) {
+          if (!bacon_net_get_file ())
+            g_warning ("failed to download icon from %s/%s\n",
+                        BACON_DEVICE_ICON_THUMB_URL, p->request);
+          x++;
+          bacon_net_deinit ();
+        }
+        bacon_update_progress_bar ((gdouble) icons_needed, (gdouble) x);
+        while (gtk_events_pending ())
+          gtk_main_iteration ();
+      }
+      g_free (iconpath);
+      if (!p->next)
+        break;
+    }
+    bacon_finish_progress_window ();
   }
 }
 
 static void
 bacon_init_data (void)
 {
-  char *iconpath;
+  gchar *iconpath;
   GdkPixbuf *i;
   GError *error;
   BaconData *dp;
@@ -222,6 +373,24 @@ bacon_init_data (void)
 
   if (error)
     g_error_free (error);
+}
+
+static void
+bacon_refresh_device_list (void)
+{
+  char *data;
+
+  if (g_device_list)
+    bacon_device_list_destroy (g_device_list);
+  data = NULL;
+  bacon_init_progress_window (BACON_PROGRESS_TYPE_DEVICE_LIST);
+  if (bacon_net_gtk_init_for_device_list (s_progress_bar)) {
+    data = bacon_net_get_page_data ();
+    if (data)
+      g_device_list = bacon_parse_for_device_list (data, false);
+    bacon_net_deinit ();
+  }
+  bacon_finish_progress_window ();
 }
 
 static void
@@ -310,12 +479,12 @@ bacon_entry_buffer_insert_char (gint pos, gchar c)
 }
 
 static gboolean
-bacon_confirm_quit (GtkWidget *parent)
+bacon_confirm_quit (void)
 {
   gint response;
   GtkWidget *dialog;
 
-  dialog = gtk_message_dialog_new (GTK_WINDOW (parent),
+  dialog = gtk_message_dialog_new (s_window,
                                    GTK_DIALOG_MODAL,
                                    GTK_MESSAGE_QUESTION,
                                    GTK_BUTTONS_YES_NO,
@@ -349,6 +518,17 @@ bacon_set_model (void)
   GtkListStore *store;
   BaconData *p;
 
+  if (!g_device_list)
+    bacon_refresh_device_list ();
+
+  if (!s_data) {
+    if (!s_thumbs) {
+      gtk_window_set_auto_startup_notification (FALSE);
+      bacon_init_icon_cache ();
+      gtk_window_set_auto_startup_notification (TRUE);
+    }
+    bacon_init_data ();
+  }
 
   display_name = NULL;
   store = gtk_list_store_new (N_COLUMNS, G_TYPE_STRING, G_TYPE_STRING,
@@ -390,7 +570,7 @@ bacon_set_model (void)
 static gboolean
 bacon_on_main_window_delete_event (GtkWidget *widget, gpointer data)
 {
-  if (bacon_confirm_quit (widget)) {
+  if (bacon_confirm_quit ()) {
     gtk_main_quit ();
     return FALSE;
   }
@@ -400,7 +580,7 @@ bacon_on_main_window_delete_event (GtkWidget *widget, gpointer data)
 static void
 bacon_on_menu_item_quit_activate (GtkMenuItem *menu_item, gpointer user_data)
 {
-  if (bacon_confirm_quit (GTK_WIDGET (user_data)))
+  if (bacon_confirm_quit ())
     gtk_main_quit ();
 }
 
@@ -414,15 +594,15 @@ bacon_on_menu_item_about_activate (GtkMenuItem *menu_item, gpointer user_data)
   static const gchar copyright[] = \
           "Copyright \xc2\xa9 2013 Nathan Forbes";
   static const gchar comments[] = \
-          BACON_DISPLAY_NAME " is a tool for viewing and downloading "
+          BACON_PROGRAM_NAME " is a tool for viewing and downloading "
           "CyanogenMod ROMs for Android handsets\n"
           "For more information about the CyanogenMod project, visit "
           "http://www.cyanogenmod.org/\n"
           "For more information about Android, visit http://www.android.com/";
 
 
-  gtk_show_about_dialog (GTK_WINDOW (user_data),
-                         "program-name", BACON_DISPLAY_NAME,
+  gtk_show_about_dialog (s_window,
+                         "program-name", BACON_PROGRAM_NAME,
                          "authors", authors,
                          "comments", comments,
                          "copyright", copyright,
@@ -614,10 +794,9 @@ bacon_on_entry_key_press_event (GtkWidget *widget,
   bacon_set_model ();
 }
 
-static GtkWidget *
-bacon_get_main_window (void)
+static void
+bacon_init_main_window (void)
 {
-  GtkWidget *window;
   GtkWidget *vbox;
   GtkWidget *hbox;
   GtkWidget *entry;
@@ -631,21 +810,21 @@ bacon_get_main_window (void)
   GtkWidget *help;
   GtkWidget *about;
 
-  /* setup window (contains everything) */
-  window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-  gtk_window_set_position (GTK_WINDOW (window), GTK_WIN_POS_CENTER);
-  gtk_window_set_resizable (GTK_WINDOW (window), TRUE);
-  gtk_window_set_title (GTK_WINDOW (window), BACON_DISPLAY_NAME);
-  gtk_window_set_default_size (GTK_WINDOW (window),
-                               BACON_WINDOW_SIZE_WIDTH,
-                               BACON_WINDOW_SIZE_HEIGHT);
+  /* setup s_window (contains everything) */
+  s_window = GTK_WINDOW (gtk_window_new (GTK_WINDOW_TOPLEVEL));
+  gtk_window_set_position (s_window, GTK_WIN_POS_CENTER);
+  gtk_window_set_resizable (s_window, TRUE);
+  gtk_window_set_title (s_window, BACON_PROGRAM_NAME);
+  gtk_window_set_default_size (s_window,
+                               BACON_WINDOW_DEFAULT_WIDTH,
+                               BACON_WINDOW_DEFAULT_HEIGHT);
 
-  g_signal_connect (G_OBJECT (window), "delete-event",
-                    G_CALLBACK (bacon_on_main_window_delete_event), window);
+  g_signal_connect (G_OBJECT (s_window), "delete-event",
+                    G_CALLBACK (bacon_on_main_window_delete_event), NULL);
 
   /* setup vbox (contains hbox, menu_bar, scrolled_window, and icon_view) */
   vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
-  gtk_container_add (GTK_CONTAINER (window), vbox);
+  gtk_container_add (GTK_CONTAINER (s_window), vbox);
 
   /* setup menu_bar (contains help_menu, help, about) */
   menu_bar = gtk_menu_bar_new ();
@@ -667,9 +846,9 @@ bacon_get_main_window (void)
   gtk_box_pack_start (GTK_BOX (vbox), menu_bar, FALSE, FALSE, 0);
 
   g_signal_connect (G_OBJECT (quit), "activate",
-                    G_CALLBACK (bacon_on_menu_item_quit_activate), window);
+                    G_CALLBACK (bacon_on_menu_item_quit_activate), NULL);
   g_signal_connect (G_OBJECT (about), "activate",
-                    G_CALLBACK (bacon_on_menu_item_about_activate), window);
+                    G_CALLBACK (bacon_on_menu_item_about_activate), NULL);
 
   /* setup hbox (contains entry and search_label) */
   hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
@@ -705,17 +884,9 @@ bacon_get_main_window (void)
                                        GTK_SHADOW_IN);
   gtk_box_pack_start (GTK_BOX (vbox), scrolled_window, TRUE, TRUE, 0);
 
-  /* setup s_model (contains all the device data) */
-  if (!g_device_list)
-    g_device_list = bacon_device_list_new (false);
-  bacon_init_icon_cache ();
-  bacon_init_data ();
-  bacon_set_model ();
-
   /* setup icon_view (contains s_model) */
   s_icon_view = GTK_ICON_VIEW (gtk_icon_view_new_with_model (s_model));
   gtk_icon_view_set_markup_column (s_icon_view, DEVICE_DISPLAY_NAME_COLUMN);
-  //gtk_icon_view_set_text_column (s_icon_view, DEVICE_DISPLAY_NAME_COLUMN);
   gtk_icon_view_set_pixbuf_column (s_icon_view, DEVICE_PIXBUF_COLUMN);
   gtk_icon_view_set_selection_mode (s_icon_view, GTK_SELECTION_SINGLE);
   gtk_widget_set_has_tooltip (GTK_WIDGET (s_icon_view), TRUE);
@@ -728,19 +899,19 @@ bacon_get_main_window (void)
   g_signal_connect (G_OBJECT (s_icon_view), "query-tooltip",
                     G_CALLBACK (bacon_on_icon_view_query_tooltip), NULL);
 
-  /* return window */
-  gtk_widget_show_all (window);
-  return window;
+  /* show everything in s_window */
+  gtk_widget_show_all (GTK_WIDGET (s_window));
+
+  bacon_set_model ();
 }
 
 void
 bacon_gtk_main (int *argc, char ***argv)
 {
   BaconThumbList *p;
-  GtkWidget *window;
 
   gtk_init (argc, argv);
-  window = bacon_get_main_window ();
+  bacon_init_main_window ();
   gtk_main ();
 
   bacon_free (s_thumbs_path);

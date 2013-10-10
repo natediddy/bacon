@@ -21,6 +21,10 @@
 #ifndef BACON_NET_H
 #define BACON_NET_H
 
+#ifdef BACON_GTK
+# include <gtk/gtk.h>
+#endif
+
 #include "bacon.h"
 
 /* The main URL where all the device/rom info comes from */
@@ -29,12 +33,11 @@
 #ifdef BACON_GTK
 # define BACON_DEVICE_ICONS_URL      "http://wiki.cyanogenmod.org/w/Devices#"
 # define BACON_DEVICE_ICON_THUMB_URL "http://wiki.cyanogenmod.org/images"
-#endif
 
-#ifdef BACON_GTK
 bool  bacon_net_init_for_device_icons      (void);
 bool  bacon_net_init_for_device_icon_thumb (const char *request,
                                             const char *filename);
+bool  bacon_net_gtk_init_for_device_list   (GtkProgressBar *progress_bar);
 #endif
 bool  bacon_net_init_for_page_data         (const char *request);
 bool  bacon_net_init_for_rom               (const char *request,
