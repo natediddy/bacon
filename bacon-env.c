@@ -25,6 +25,8 @@
 #include <sys/types.h>
 
 #include "bacon-env.h"
+#include "bacon-out.h"
+#include "bacon-str.h"
 #include "bacon-util.h"
 
 #ifdef BACON_OS_UNIX

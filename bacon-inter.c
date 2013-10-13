@@ -21,11 +21,14 @@
 #include <string.h>
 
 #include "bacon.h"
+#include "bacon-device.h"
 #include "bacon-env.h"
 #include "bacon-hash.h"
 #include "bacon-inter.h"
 #include "bacon-net.h"
+#include "bacon-out.h"
 #include "bacon-rom.h"
+#include "bacon-str.h"
 #include "bacon-util.h"
 
 #define BACON_ANSWER_MAX     BACON_DEVICE_NAME_MAX
@@ -114,7 +117,7 @@ bacon_get_num_answer (int *input)
     bacon_error ("failed to read from standard input");
     bacon_do_exit ();
   }
-  *input = bacon_int_from_str (answer);
+  *input = bacon_strtoint (answer);
   if ((*input == 0) && *answer) {
     n = strlen (answer);
     if (answer[n - 1] == '\n')
@@ -165,7 +168,7 @@ bacon_get_device_answer (void)
     return;
   }
 
-  idx = bacon_int_from_str (answer);
+  idx = bacon_strtoint (answer);
   bacon_set_device_from_index (&idx);
 }
 

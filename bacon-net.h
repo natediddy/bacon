@@ -27,6 +27,10 @@
 
 #include "bacon.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* The main URL where all the device/rom info comes from */
 #define BACON_GET_CM_URL             "http://get.cm"
 /* Use these URLs from the CM wiki page for device icons in the GUI */
@@ -46,6 +50,10 @@ bool bacon_net_init_for_rom (const char *request,
 void bacon_net_deinit (void);
 char *bacon_net_get_page_data (void);
 bool bacon_net_get_file (void);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* BACON_NET_H */
 

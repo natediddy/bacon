@@ -21,9 +21,15 @@
 #ifndef BACON_INTER_H
 #define BACON_INTER_H
 
-#include "bacon-device.h"
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 void bacon_interactive (void);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* BACON_INTER_H */
 

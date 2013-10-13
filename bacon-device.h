@@ -24,6 +24,10 @@
 #include "bacon.h"
 #include "bacon-env.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #define BACON_DEVICE_NAME_MAX           128
 #ifdef BACON_GTK
 # define BACON_DEVICE_THUMB_REQUEST_MAX 1024
@@ -59,6 +63,10 @@ int bacon_device_list_total (BaconDeviceList *list);
 bool bacon_device_is_valid_id (BaconDeviceList *list, const char *id);
 BaconDevice *bacon_device_get_device_from_id (BaconDeviceList *list,
                                               const char *id);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* BACON_DEVICE_H */
 

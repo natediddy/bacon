@@ -25,6 +25,7 @@
 #include "bacon-device.h"
 #include "bacon-net.h"
 #include "bacon-parse.h"
+#include "bacon-str.h"
 #include "bacon-util.h"
 
 #define BACON_DEVICE_LIST_LOCAL_FILENAME "devicelist.txt"
@@ -122,13 +123,14 @@ bacon_device_list_new (const bool force_new)
 void
 bacon_device_list_destroy (BaconDeviceList *list)
 {
-  for (; list; list = list->next) {
-    bacon_free (list->device);
-    bacon_free (list->prev);
-    if (!list->next)
+  BaconDeviceList *p;
+
+  for (p = list; p; p = p->next) {
+    bacon_free (p->device);
+    if (!p->next)
       break;
   }
-  bacon_free (list);
+  bacon_list_free (list);
 }
 
 int

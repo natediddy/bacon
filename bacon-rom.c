@@ -21,6 +21,7 @@
 #include "bacon.h"
 #include "bacon-env.h"
 #include "bacon-net.h"
+#include "bacon-out.h"
 #include "bacon-parse.h"
 #include "bacon-rom.h"
 #include "bacon-util.h"
@@ -38,7 +39,8 @@
 #define BACON_TEST_FORMAT              "test"
 #define BACON_ALL_FORMAT               ""
 #define BACON_REQUEST_FORMAT           "?device=%s&type=%s"
-#define BACON_REQUEST_MAX              128
+
+#define BACON_REQUEST_MAX 256
 
 static char s_request[BACON_REQUEST_MAX];
 
@@ -69,8 +71,8 @@ bacon_form_request (const char *codename, const int id)
     break;
   }
 
-  snprintf (s_request, BACON_REQUEST_MAX, BACON_REQUEST_FORMAT,
-            codename, type_str);
+  snprintf (s_request, BACON_REQUEST_MAX,
+            BACON_REQUEST_FORMAT, codename, type_str);
 }
 
 static BaconRom *
@@ -147,12 +149,7 @@ bacon_rom_list_destroy (BaconRomList *list)
 
   for (x = 0; x < BACON_ROM_TOTAL; ++x) {
     rom = list->roms[x];
-    for (; rom; rom = rom->next) {
-      bacon_free (rom->prev);
-      if (!rom->next)
-        break;
-    }
-    bacon_free (rom);
+    bacon_list_free (rom);
   }
   bacon_free (list);
 }

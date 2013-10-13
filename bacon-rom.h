@@ -23,6 +23,10 @@
 
 #include "bacon-hash.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #define BACON_ROM_NAME_MAX      128
 #define BACON_ROM_GET_MAX       8
 #define BACON_ROM_SIZE_MAX      12
@@ -64,6 +68,10 @@ BaconRomList *bacon_rom_list_new (const char *codename,
 void bacon_rom_list_destroy (BaconRomList *rom_list);
 const char *bacon_rom_type_str (const int index);
 bool bacon_rom_do_download (const BaconRom *rom, char *dlpath);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* BACON_ROM_H */
 

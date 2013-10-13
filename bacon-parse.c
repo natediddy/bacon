@@ -22,6 +22,7 @@
 
 #include "bacon.h"
 #include "bacon-net.h"
+#include "bacon-out.h"
 #include "bacon-parse.h"
 #include "bacon-util.h"
 
@@ -35,31 +36,8 @@
 #ifdef BACON_GTK
 # define BACON_THUMB_URL_PATTERN "wiki.cyanogenmod.org/images/"
 #endif
-#define BACON_LINE_MAX           1024
 
-#define bacon_append_new(type, root, p)   \
-  do {                                    \
-    if (!root) {                          \
-      p = bacon_new (type);               \
-      p->prev = NULL;                     \
-    } else {                              \
-      for (p = root; p; p = p->next)      \
-         if (!p->next)                    \
-            break;                        \
-      p->next = bacon_new (type);         \
-      p->next->prev = p;                  \
-      p = p->next;                        \
-    }                                     \
-    p->next = NULL;                       \
-  } while (false)
-
-#define bacon_back_to_start(root, p) \
-  do {                               \
-    for (; p; p = p->prev)           \
-      if (!p->prev)                  \
-         break;                      \
-    root = p;                        \
-  } while (false)
+#define BACON_LINE_MAX 1024
 
 #define bacon_find_and_fill(__dst, __src, __p, __np, __x, __c) \
   do {                                                         \
@@ -181,11 +159,11 @@ bacon_parse_local_for_device_list (const char *data)
     l = 0;
     if (!*line)
       break;
-    bacon_append_new (BaconDeviceList, list, p);
+    bacon_list_append (BaconDeviceList, list, p);
     p->device = bacon_new (BaconDevice);
     bacon_fill_buffer_pos (p->device->codename, line, &l, '@');
     bacon_fill_buffer_pos (p->device->fullname, line, &l, '\0');
-    bacon_back_to_start (list, p);
+    bacon_list_rewind (list, p);
   }
   return list;
 }
@@ -206,13 +184,13 @@ bacon_parse_remote_for_device_list (const char *data)
     x = strstr ((!d) ? data : d, BACON_CODENAME_TAG);
     if (x && *x) {
       x = x + s_n_codename_tag;
-      bacon_append_new (BaconDeviceList, list, p);
+      bacon_list_append (BaconDeviceList, list, p);
       p->device = bacon_new (BaconDevice);
       bacon_fill_buffer (p->device->codename, x, '<');
       d = x;
       bacon_find_and_fill (p->device->fullname, d, BACON_FULLNAME_TAG,
                            s_n_fullname_tag, x, '<');
-      bacon_back_to_start (list, p);
+      bacon_list_rewind (list, p);
     } else
       break;
   }
@@ -220,7 +198,7 @@ bacon_parse_remote_for_device_list (const char *data)
 }
 
 BaconDeviceList *
-bacon_parse_for_device_list (const char *data, const bool local)
+bacon_parse_for_device_list (const char *data, bool local)
 {
   BaconDeviceList *list;
 
@@ -232,7 +210,7 @@ bacon_parse_for_device_list (const char *data, const bool local)
 }
 
 BaconRom *
-bacon_parse_for_rom (const char *data, const int max)
+bacon_parse_for_rom (const char *data, int max)
 {
   int m;
   char *x;
@@ -250,7 +228,7 @@ bacon_parse_for_rom (const char *data, const int max)
     if (x && *x) {
       m++;
       x = x + s_n_rom_name_pattern;
-      bacon_append_new (BaconRom, rom, p);
+      bacon_list_append (BaconRom, rom, p);
       bacon_fill_buffer (p->name, x, '<');
       d = x;
       bacon_find_and_fill (p->hash.hash, d, BACON_HASH_PATTERN,
@@ -259,7 +237,7 @@ bacon_parse_for_rom (const char *data, const int max)
                            s_n_get_pattern, x, '"');
       bacon_find_and_fill (p->size, d, BACON_SIZE_TAG, s_n_size_tag, x, '<');
       bacon_find_and_fill (p->date, d, BACON_DATE_TAG, s_n_date_tag, x, '<');
-      bacon_back_to_start (rom, p);
+      bacon_list_rewind (rom, p);
     } else
       break;
   }
@@ -289,18 +267,7 @@ bacon_parse_for_device_thumb_request_list (const char *data,
       d = x;
       x = strstr (d, BACON_THUMB_URL_PATTERN);
       if (x && *x) {
-        if (!list) {
-          p = bacon_new (BaconDeviceThumbRequestList);
-          p->prev = NULL;
-        } else {
-          for (p = list; p; p = p->next)
-            if (!p->next)
-              break;
-          p->next = bacon_new (BaconDeviceThumbRequestList);
-          p->next->prev = p;
-          p = p->next;
-        }
-        p->next = NULL;
+        bacon_list_append (BaconDeviceThumbRequestList, list, p);
         x = x + s_n_thumb_url_pattern;
         bacon_fill_buffer (p->request, x, '"');
         if (p->request && *p->request) {
@@ -314,10 +281,7 @@ bacon_parse_for_device_thumb_request_list (const char *data,
                        dp->device->codename);
         snprintf (p->filename, BACON_PATH_MAX, "device-%s%s",
                   dp->device->codename, (e && *e) ? e : ".png");
-        for (; p; p = p->prev)
-          if (!p->prev)
-            break;
-        list = p;
+        bacon_list_rewind (list, p);
       }
     }
   }

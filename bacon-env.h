@@ -26,6 +26,10 @@
 #include "bacon.h"
 #include "bacon-os.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #ifdef BACON_OS_UNIX
 # define BACON_PATH_SEP           '/'
 # define bacon_env_is_path_sep(c) ((c) == BACON_PATH_SEP)
@@ -56,6 +60,10 @@ char *bacon_env_mkabs (const char *path);
 bool bacon_env_mkpath (const char *path);
 bool bacon_env_ensure_path (const char *path, const bool file);
 void bacon_env_fix_download_path (char **path, const char *name);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* BACON_ENV_H */
 

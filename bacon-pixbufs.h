@@ -1,18 +1,23 @@
 /* GdkPixbuf RGBA C-Source image dump 1-byte-run-length-encoded */
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #ifdef BACON_GTK
-/* this icon is used as a fallback for whenever
-   there is no icon of the particular device itself */
+/* this is a fallback icon for the
+   devices where a remote icon was not found */
 # ifdef __SUNPRO_C
 #  pragma align 4 (s_fallback_device_icon)
 # endif
 # ifdef __GNUC__
 static const guint8 s_fallback_device_icon[] __attribute__ ((__aligned__ (4)))
-=
+  =
 # else
 static const guint8 s_fallback_device_icon[] =
 # endif
-{ ""
+{
+  ""
   /* Pixbuf magic (0x47646b50) */
   "GdkP"
   /* length: header (24) + pixel_data (6450) */
@@ -348,7 +353,12 @@ static const guint8 s_fallback_device_icon[] =
   "\202\377\377\377\336\2\377\377\377\335\377\377\377\334\202\377\377\377"
   "\333\1\377\377\377\332\202\377\377\377\331\5\377\377\377\330\377\377"
   "\377\271\377\377\377\206\377\377\377S\377\377\377\40\264\377\377\377"
-  "\0"};
+  "\0"
+};
 
 #endif /* BACON_GTK */
+
+#ifdef __cplusplus
+}
+#endif
 

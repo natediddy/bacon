@@ -18,7 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -31,7 +30,10 @@
 #endif
 #include "bacon-inter.h"
 #include "bacon-net.h"
+#include "bacon-out.h"
 #include "bacon-rom.h"
+#include "bacon-search.h"
+#include "bacon-str.h"
 #include "bacon-util.h"
 
 #define BACON_DEFAULT_MAX_ROMS 3
@@ -275,9 +277,9 @@ bacon_set_max_roms_from_arg (const char *arg)
   size_t x;
 
   for (x = 0; arg[x]; ++x)
-    if (!isdigit (arg[x]))
+    if (!bacon_isdigit (arg[x]))
       return false;
-  g_max_roms = bacon_int_from_str (arg);
+  g_max_roms = bacon_strtoint (arg);
   if (g_max_roms <= 0)
     return false;
   return true;
@@ -779,7 +781,7 @@ bacon_parse_opt (int c, char **v)
 
 static void
 bacon_print_device_pattern_result (const char *name,
-                                   BaconQueryTokenList *query_tokens,
+                                   BaconSearchTokenList *list,
                                    int color)
 {
   unsigned int c;
@@ -788,12 +790,12 @@ bacon_print_device_pattern_result (const char *name,
   size_t name_pos;
   size_t x;
   const char *s;
-  BaconQueryTokenList *p;
+  BaconSearchTokenList *p;
 
   name_pos = 0;
   s = name;
 
-  for (p = query_tokens; p; p = p->next) {
+  for (p = list; p; p = p->next) {
     pos = bacon_strfposof (s, p->token, false);
     if (pos == -1)
       break;
@@ -822,26 +824,26 @@ bacon_find_device_pattern_and_show_results (void)
   ssize_t pos;
   char *s;
   BaconDeviceList *p;
-  BaconQueryTokenList *query_tokens;
+  BaconSearchTokenList *list;
   struct {
     BaconDevice *device;
     bool fullname_match;
     bool codename_match;
   } results[BACON_DEVICES_MAX];
 
-  query_tokens = bacon_query_token_list_new (s_query);
-  if (!query_tokens) {
-    bacon_error ("failed to create query token list from '%s'", s_query);
+  list = bacon_search_token_list_new (s_query);
+  if (!list) {
+    bacon_error ("failed to create token list from search '%s'", s_query);
     exit (EXIT_FAILURE);
   }
 
   results_pos = 0;
   for (p = g_device_list; p; p = p->next) {
-    if (bacon_search (p->device->fullname, query_tokens)) {
+    if (bacon_search (p->device->fullname, list)) {
       results[results_pos].device = p->device;
       results[results_pos].fullname_match = true;
     }
-    if (bacon_search (p->device->codename, query_tokens)) {
+    if (bacon_search (p->device->codename, list)) {
       if (!results[results_pos].device)
         results[results_pos].device = p->device;
       results[results_pos].codename_match = true;
@@ -870,7 +872,7 @@ bacon_find_device_pattern_and_show_results (void)
       else
         bacon_print_device_pattern_result (
                                         results[results_pos].device->fullname,
-                                        query_tokens,
+                                        list,
                                         BACON_FULLNAME_COLOR);
       bacon_out (" [");
       if (!results[results_pos].codename_match)
@@ -879,12 +881,12 @@ bacon_find_device_pattern_and_show_results (void)
       else
         bacon_print_device_pattern_result (
                                         results[results_pos].device->codename,
-                                        query_tokens,
+                                        list,
                                         BACON_CODENAME_COLOR);
       bacon_outln ("]");
     }
   }
-  bacon_query_token_list_free (query_tokens);
+  bacon_search_token_list_free (list);
 }
 
 static void

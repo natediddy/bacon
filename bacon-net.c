@@ -25,14 +25,19 @@
 
 #include "bacon-env.h"
 #include "bacon-net.h"
+#include "bacon-out.h"
 #include "bacon-progress.h"
+#include "bacon-str.h"
 #include "bacon-util.h"
 
 #define BACON_URL_MAX          1024
-#define BACON_USERAGENT        \
+
+#define BACON_USERAGENT \
   BACON_PROGRAM_NAME " " BACON_VERSION "/CM ROM downloader"
-#define BACON_FILE_RESULT      ((BaconFileResult *) (s_net->res))
-#define BACON_PAGE_RESULT      ((BaconPageResult *) (s_net->res))
+
+#define BACON_FILE_RESULT ((BaconFileResult *) (s_net->res))
+#define BACON_PAGE_RESULT ((BaconPageResult *) (s_net->res))
+
 #define bacon_net_setopt(o, p) \
   s_net->status = curl_easy_setopt (s_net->cp, o, p)
 

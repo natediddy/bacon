@@ -28,6 +28,8 @@
 #include "bacon.h"
 #include "bacon-env.h"
 #include "bacon-hash.h"
+#include "bacon-out.h"
+#include "bacon-str.h"
 #include "bacon-util.h"
 
 #define S11 7

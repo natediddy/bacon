@@ -25,7 +25,9 @@
 #include "bacon.h"
 #include "bacon-env.h"
 #include "bacon-os.h"
+#include "bacon-out.h"
 #include "bacon-progress.h"
+#include "bacon-str.h"
 #include "bacon-util.h"
 
 #ifdef BACON_OS_UNIX
@@ -43,6 +45,7 @@
 #define BACON_SIZE_MAX               10
 #define BACON_ETA_MAX                14
 #define BACON_SPEED_MAX              BACON_SIZE_MAX + 2
+
 #define BACON_PERCENT_DEFAULT        "0%"
 #define BACON_ETA_DEFAULT            "0s"
 #define BACON_SPEED_SUFFIX           "/s"
@@ -50,6 +53,7 @@
 #define BACON_BAR_END                ']'
 #define BACON_BAR_HAS                '#'
 #define BACON_BAR_NOT                '-'
+
 #define BACON_BAR_END_POS             \
   (s_console_width                  - \
    ((int) strlen (s_current_buffer) + \
@@ -57,6 +61,7 @@
     (int) strlen (s_speed_buffer)   + \
     (int) strlen (s_eta_buffer)     + \
     (int) strlen (s_percent_buffer)))
+
 #define BACON_PROPELLER_0            '|'
 #define BACON_PROPELLER_1            '/'
 #define BACON_PROPELLER_2            '-'
@@ -175,15 +180,15 @@ bacon_format_percent (const double x)
 }
 
 static void
-bacon_format_total (const CmByte bytes)
+bacon_format_total (unsigned long bytes)
 {
-  bacon_byte_str_format (s_total_buffer, BACON_SIZE_MAX, bytes);
+  bacon_strbytes (s_total_buffer, BACON_SIZE_MAX, bytes);
 }
 
 static void
-bacon_format_current (const CmByte bytes)
+bacon_format_current (unsigned long bytes)
 {
-  bacon_byte_str_format (s_current_buffer, BACON_SIZE_MAX, bytes);
+  bacon_strbytes (s_current_buffer, BACON_SIZE_MAX, bytes);
 }
 
 static void
@@ -191,10 +196,10 @@ bacon_format_speed (void)
 {
   if (s_per_sec < 0) {
     snprintf (s_speed_buffer, BACON_SIZE_MAX + strlen (BACON_SPEED_SUFFIX),
-        "0%c%s", BACON_BYTE_SYMBOL, BACON_SPEED_SUFFIX);
+              "0%s", BACON_SPEED_SUFFIX);
     return;
   }
-  bacon_byte_str_format (s_speed_buffer, BACON_SIZE_MAX, (CmByte) s_per_sec);
+  bacon_strbytes (s_speed_buffer, BACON_SIZE_MAX, s_per_sec);
   strncpy (s_speed_buffer + strlen (s_speed_buffer),
            BACON_SPEED_SUFFIX, strlen (BACON_SPEED_SUFFIX) + 1);
 }
@@ -263,7 +268,7 @@ bacon_progress_init (void)
 }
 
 void
-bacon_progress_deinit (const bool newline)
+bacon_progress_deinit (bool newline)
 {
   s_end_time = time (NULL);
   if (newline)
@@ -271,7 +276,7 @@ bacon_progress_deinit (const bool newline)
 }
 
 void
-bacon_progress_file (const double total, const double current)
+bacon_progress_file (double total, double current)
 {
   static struct timeval last = { -1, -1 };
 
@@ -291,8 +296,8 @@ bacon_progress_file (const double total, const double current)
 
   if ((millis == -1) || BACON_FILE_WAIT (millis)) {
     bacon_output_init ();
-    bacon_format_current ((CmByte ) current);
-    bacon_format_total ((CmByte ) total);
+    bacon_format_current ((unsigned long) current);
+    bacon_format_total ((unsigned long) total);
     x = (total - current);
     bacon_format_eta (x);
     x = (current / total);
@@ -331,7 +336,7 @@ bacon_progress_file (const double total, const double current)
 }
 
 void
-bacon_progress_page (const double total, const double current)
+bacon_progress_page (double total, const double current)
 {
   static struct timeval last = { -1, -1 };
 
@@ -350,7 +355,7 @@ bacon_progress_page (const double total, const double current)
     bacon_output_add_string ("Loading... ");
     if (s_propeller_pos == BACON_PROPELLER_SIZE)
       s_propeller_pos = 0;
-    bacon_output_add_char(s_propeller[s_propeller_pos++]);
+    bacon_output_add_char (s_propeller[s_propeller_pos++]);
     bacon_output_finish ();
     bacon_output_display ();
     if (millis == -1)

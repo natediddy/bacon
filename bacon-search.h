@@ -18,20 +18,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef BACON_GTK_H
-#define BACON_GTK_H
+#ifndef BACON_SEARCH_H
+#define BACON_SEARCH_H
+
+#include "bacon.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#ifdef BACON_GTK
-void bacon_gtk_main (int *argc, char ***argv);
-#endif
+#define BACON_SEARCH_TOKEN_MAX 256
+
+typedef struct BaconSearchTokenList BaconSearchTokenList;
+
+struct BaconSearchTokenList {
+  char token[BACON_SEARCH_TOKEN_MAX];
+  BaconSearchTokenList *next;
+  BaconSearchTokenList *prev;
+};
+
+BaconSearchTokenList *bacon_search_token_list_new (const char *query);
+void bacon_search_token_list_free (BaconSearchTokenList *list);
+bool bacon_search (const char *content, BaconSearchTokenList *list);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* BACON_GTK_H */
+#endif /* BACON_SEARCH_H */
 
