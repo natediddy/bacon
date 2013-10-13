@@ -103,13 +103,17 @@ bacon_page_write (void *buf, size_t size, size_t nmemb, void *o)
 
 #ifdef BACON_GTK
 static int
-bacon_gtk_progress (GtkProgressBar *progress_bar, double td, double cd)
+bacon_gtk_progress (void *progress_bar,
+                    double td,
+                    double cd,
+                    double tu,
+                    double cu)
 {
   gdouble fraction;
 
   fraction = (cd / td);
   if (!bacon_nan_value (fraction)) {
-    gtk_progress_bar_set_fraction (progress_bar, fraction);
+    gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (progress_bar), fraction);
     while (gtk_events_pending ())
       gtk_main_iteration ();
   }

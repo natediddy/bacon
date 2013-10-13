@@ -43,13 +43,16 @@
 #define BACON_PROGRESS_WINDOW_WIDTH    400
 #define BACON_PROGRESS_WINDOW_HEIGHT   300
 
-#define BACON_FILE_MENU_ITEM_LABEL  "File"
-#define BACON_QUIT_MENU_ITEM_LABEL  "Quit"
-#define BACON_HELP_MENU_ITEM_LABEL  "Help"
-#define BACON_ABOUT_MENU_ITEM_LABEL "About"
-#define BACON_CONFIRM_QUIT_TITLE    "Quit"
-#define BACON_CONFIRM_QUIT_MESSAGE  "Are you sure you want to exit?"
-#define BACON_PROGRESS_WINDOW_TITLE "Obtaining data"
+#define BACON_FILE_MENU_ITEM_LABEL        "File"
+#define BACON_QUIT_MENU_ITEM_LABEL        "Quit"
+#define BACON_EDIT_MENU_ITEM_LABEL        "Edit"
+#define BACON_PREFERENCES_MENU_ITEM_LABEL "Preferences"
+#define BACON_PREFERENCES_WINDOW_TITLE    "Preferences"
+#define BACON_HELP_MENU_ITEM_LABEL        "Help"
+#define BACON_ABOUT_MENU_ITEM_LABEL       "About"
+#define BACON_CONFIRM_QUIT_TITLE          "Quit"
+#define BACON_CONFIRM_QUIT_MESSAGE        "Are you sure you want to exit?"
+#define BACON_PROGRESS_WINDOW_TITLE       "Obtaining data"
 
 #define BACON_LONG_ICON_CACHE_PROGRESS_MESSAGE \
   "Retrieving icon cache " \
@@ -393,52 +396,6 @@ bacon_refresh_device_list (void)
   bacon_finish_progress_window ();
 }
 
-static void
-bacon_tolower (gchar *buf, guint n, const gchar *str)
-{
-  guint x;
-
-  for (x = 0; x < n; ++x)
-    buf[x] = g_ascii_tolower (str[x]);
-  buf[n] = '\0';
-}
-
-/* Search routine (primitive I'm sure...) */
-static gboolean
-bacon_search_compare (const gchar *fullname, const gchar *codename)
-{
-  gpointer p;
-  guint x;
-  guint n_full;
-  guint n_code;
-  guint n_query;
-
-  /* Convert strings to lowercase in order to be
-     case-insensitive. Search fullname first for the string
-     query, and if it's not found, search codename the same way. */
-
-  n_query = gtk_entry_buffer_get_length (s_entry_buffer);
-  gchar query[n_query + 1];
-  bacon_tolower (query, n_query, gtk_entry_buffer_get_text (s_entry_buffer));
-
-  n_full = strlen (fullname);
-  gchar full[n_full + 1];
-  bacon_tolower (full, n_full, fullname);
-
-  p = memmem ((gconstpointer) full, n_full, (gconstpointer) query, n_query);
-  if (p)
-    return TRUE;
-
-  n_code = strlen (codename);
-  gchar code[n_code + 1];
-  bacon_tolower (code, n_code, codename);
-
-  p = memmem ((gconstpointer) code, n_code, (gconstpointer) query, n_query);
-  if (p)
-    return TRUE;
-  return FALSE;
-}
-
 static gint
 bacon_entry_buffer_space_before_pos (gint pos)
 {
@@ -517,6 +474,7 @@ bacon_set_model (void)
   GtkTreeIter iter;
   GtkListStore *store;
   BaconData *p;
+  BaconQueryTokenList *query_tokens;
 
   if (!g_device_list)
     bacon_refresh_device_list ();
@@ -534,9 +492,13 @@ bacon_set_model (void)
   store = gtk_list_store_new (N_COLUMNS, G_TYPE_STRING, G_TYPE_STRING,
                               G_TYPE_STRING, GDK_TYPE_PIXBUF);
   s_device_count = 0;
+  query_tokens =
+    bacon_query_token_list_new (gtk_entry_buffer_get_text (s_entry_buffer));
+
   for (p = s_data; p; p = p->next) {
-    if ((gtk_entry_buffer_get_length (s_entry_buffer) > 0) &&
-        !bacon_search_compare (p->device->fullname, p->device->codename))
+    if (query_tokens &&
+        (!bacon_search (p->device->fullname, query_tokens) &&
+         !bacon_search (p->device->codename, query_tokens)))
       continue;
     s_device_count++;
     display_name = g_markup_printf_escaped (BACON_DISPLAY_NAME_MARKUP_FORMAT,
@@ -553,6 +515,8 @@ bacon_set_model (void)
       break;
   }
 
+  bacon_query_token_list_free (query_tokens);
+
   s_model = GTK_TREE_MODEL (store);
   if (s_icon_view) {
     gtk_icon_view_set_model (s_icon_view, s_model);
@@ -565,6 +529,24 @@ bacon_set_model (void)
     gtk_label_set_markup (s_device_count_label, label_markup);
     g_free (label_markup);
   }
+}
+
+static void
+bacon_show_preferences_dialog (void)
+{
+  GtkWidget *window;
+  GtkWidget *vbox;
+
+  window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
+  gtk_window_set_transient_for (GTK_WINDOW (window), s_window);
+  gtk_window_set_title (GTK_WINDOW (window), BACON_PREFERENCES_WINDOW_TITLE);
+  gtk_window_set_modal (GTK_WINDOW (window), TRUE);
+  gtk_window_set_position (GTK_WINDOW (window), GTK_WIN_POS_CENTER_ON_PARENT);
+
+  vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
+  gtk_container_add (GTK_CONTAINER (window), vbox);
+
+  gtk_widget_show_all (window);
 }
 
 static gboolean
@@ -582,6 +564,13 @@ bacon_on_menu_item_quit_activate (GtkMenuItem *menu_item, gpointer user_data)
 {
   if (bacon_confirm_quit ())
     gtk_main_quit ();
+}
+
+static void
+bacon_on_menu_item_preferences_activate (GtkMenuItem *menu_item,
+                                         gpointer user_data)
+{
+  bacon_show_preferences_dialog ();
 }
 
 static void
@@ -794,6 +783,56 @@ bacon_on_entry_key_press_event (GtkWidget *widget,
   bacon_set_model ();
 }
 
+static GtkWidget *
+bacon_get_menu_bar (void)
+{
+  GtkWidget *menu_bar;
+  GtkWidget *file_menu;
+  GtkWidget *edit_menu;
+  GtkWidget *help_menu;
+  GtkWidget *file;
+  GtkWidget *quit;
+  GtkWidget *edit;
+  GtkWidget *preferences;
+  GtkWidget *help;
+  GtkWidget *about;
+
+  menu_bar = gtk_menu_bar_new ();
+  file_menu = gtk_menu_new ();
+  edit_menu = gtk_menu_new ();
+  help_menu = gtk_menu_new ();
+
+  file = gtk_menu_item_new_with_label (BACON_FILE_MENU_ITEM_LABEL);
+  quit = gtk_menu_item_new_with_label (BACON_QUIT_MENU_ITEM_LABEL);
+  edit = gtk_menu_item_new_with_label (BACON_EDIT_MENU_ITEM_LABEL);
+  preferences =
+    gtk_menu_item_new_with_label (BACON_PREFERENCES_MENU_ITEM_LABEL);
+  help = gtk_menu_item_new_with_label (BACON_HELP_MENU_ITEM_LABEL);
+  about = gtk_menu_item_new_with_label (BACON_ABOUT_MENU_ITEM_LABEL);
+
+  gtk_menu_item_set_submenu (GTK_MENU_ITEM (file), file_menu);
+  gtk_menu_shell_append (GTK_MENU_SHELL (file_menu), quit);
+  gtk_menu_shell_append (GTK_MENU_SHELL (menu_bar), file);
+
+  gtk_menu_item_set_submenu (GTK_MENU_ITEM (edit), edit_menu);
+  gtk_menu_shell_append (GTK_MENU_SHELL (edit_menu), preferences);
+  gtk_menu_shell_append (GTK_MENU_SHELL (menu_bar), edit);
+
+  gtk_menu_item_set_submenu (GTK_MENU_ITEM (help), help_menu);
+  gtk_menu_shell_append (GTK_MENU_SHELL (help_menu), about);
+  gtk_menu_shell_append (GTK_MENU_SHELL (menu_bar), help);
+
+  g_signal_connect (G_OBJECT (quit), "activate",
+                    G_CALLBACK (bacon_on_menu_item_quit_activate), NULL);
+  g_signal_connect (G_OBJECT (preferences),
+                    "activate",
+                    G_CALLBACK (bacon_on_menu_item_preferences_activate),
+                    NULL);
+  g_signal_connect (G_OBJECT (about), "activate",
+                    G_CALLBACK (bacon_on_menu_item_about_activate), NULL);
+  return menu_bar;
+}
+
 static void
 bacon_init_main_window (void)
 {
@@ -803,12 +842,6 @@ bacon_init_main_window (void)
   GtkWidget *search_label;
   GtkWidget *scrolled_window;
   GtkWidget *menu_bar;
-  GtkWidget *file_menu;
-  GtkWidget *help_menu;
-  GtkWidget *file;
-  GtkWidget *quit;
-  GtkWidget *help;
-  GtkWidget *about;
 
   /* setup s_window (contains everything) */
   s_window = GTK_WINDOW (gtk_window_new (GTK_WINDOW_TOPLEVEL));
@@ -826,29 +859,9 @@ bacon_init_main_window (void)
   vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
   gtk_container_add (GTK_CONTAINER (s_window), vbox);
 
-  /* setup menu_bar (contains help_menu, help, about) */
-  menu_bar = gtk_menu_bar_new ();
-  file_menu = gtk_menu_new ();
-  help_menu = gtk_menu_new ();
-
-  file = gtk_menu_item_new_with_label (BACON_FILE_MENU_ITEM_LABEL);
-  quit = gtk_menu_item_new_with_label (BACON_QUIT_MENU_ITEM_LABEL);
-  help = gtk_menu_item_new_with_label (BACON_HELP_MENU_ITEM_LABEL);
-  about = gtk_menu_item_new_with_label (BACON_ABOUT_MENU_ITEM_LABEL);
-
-  gtk_menu_item_set_submenu (GTK_MENU_ITEM (file), file_menu);
-  gtk_menu_shell_append (GTK_MENU_SHELL (file_menu), quit);
-  gtk_menu_shell_append (GTK_MENU_SHELL (menu_bar), file);
-
-  gtk_menu_item_set_submenu (GTK_MENU_ITEM (help), help_menu);
-  gtk_menu_shell_append (GTK_MENU_SHELL (help_menu), about);
-  gtk_menu_shell_append (GTK_MENU_SHELL (menu_bar), help);
+  /* setup menu_bar */
+  menu_bar = bacon_get_menu_bar ();
   gtk_box_pack_start (GTK_BOX (vbox), menu_bar, FALSE, FALSE, 0);
-
-  g_signal_connect (G_OBJECT (quit), "activate",
-                    G_CALLBACK (bacon_on_menu_item_quit_activate), NULL);
-  g_signal_connect (G_OBJECT (about), "activate",
-                    G_CALLBACK (bacon_on_menu_item_about_activate), NULL);
 
   /* setup hbox (contains entry and search_label) */
   hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
@@ -901,6 +914,7 @@ bacon_init_main_window (void)
 
   /* show everything in s_window */
   gtk_widget_show_all (GTK_WIDGET (s_window));
+  gtk_widget_grab_focus (entry);
 
   bacon_set_model ();
 }

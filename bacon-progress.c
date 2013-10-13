@@ -267,7 +267,7 @@ bacon_progress_deinit (const bool newline)
 {
   s_end_time = time (NULL);
   if (newline)
-    bacon_outln(NULL);
+    bacon_outc ('\n');
 }
 
 void

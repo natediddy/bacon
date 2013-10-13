@@ -34,18 +34,18 @@
 # define BACON_DEVICE_ICONS_URL      "http://wiki.cyanogenmod.org/w/Devices#"
 # define BACON_DEVICE_ICON_THUMB_URL "http://wiki.cyanogenmod.org/images"
 
-bool  bacon_net_init_for_device_icons      (void);
-bool  bacon_net_init_for_device_icon_thumb (const char *request,
-                                            const char *filename);
-bool  bacon_net_gtk_init_for_device_list   (GtkProgressBar *progress_bar);
+bool bacon_net_init_for_device_icons (void);
+bool bacon_net_init_for_device_icon_thumb (const char *request,
+                                           const char *filename);
+bool bacon_net_gtk_init_for_device_list (GtkProgressBar *progress_bar);
 #endif
-bool  bacon_net_init_for_page_data         (const char *request);
-bool  bacon_net_init_for_rom               (const char *request,
-                                            long offset,
-                                            const char *filename);
-void  bacon_net_deinit                     (void);
-char *bacon_net_get_page_data              (void);
-bool  bacon_net_get_file                   (void);
+bool bacon_net_init_for_page_data (const char *request);
+bool bacon_net_init_for_rom (const char *request,
+                             long offset,
+                             const char *filename);
+void bacon_net_deinit (void);
+char *bacon_net_get_page_data (void);
+bool bacon_net_get_file (void);
 
 #endif /* BACON_NET_H */
 

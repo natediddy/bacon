@@ -1,17 +1,4 @@
-bin_PROGRAMS = bacon
-
-bacon_SOURCES = \
-	bacon.c \
-	bacon-device.c \
-	bacon-env.c \
-	bacon-gtk.c \
-	bacon-hash.c \
-	bacon-inter.c \
-	bacon-net.c \
-	bacon-parse.c \
-	bacon-progress.c \
-	bacon-rom.c \
-	bacon-util.c \
+noinst_HEADERS = \
 	bacon.h \
 	bacon-device.h \
 	bacon-env.h \
@@ -27,7 +14,33 @@ bacon_SOURCES = \
 	bacon-rom.h \
 	bacon-util.h
 
+bin_PROGRAMS = bacon
+
+bacon_SOURCES = \
+	bacon.c \
+	bacon-device.c \
+	bacon-env.c \
+	bacon-gtk.c \
+	bacon-hash.c \
+	bacon-inter.c \
+	bacon-net.c \
+	bacon-parse.c \
+	bacon-progress.c \
+	bacon-rom.c \
+	bacon-util.c
+
+dist_man_MANS = bacon.1
+
+DESKTOP_FILES = bacon.desktop
+
+Productivitydir = $(datadir)/applications
+Productivity_DATA = $(DESKTOP_FILES)
+
+#icon_DATA = bacon.png
+#icondir = $(datadir)/pixmaps
+
 EXTRA_DIST = \
+	$(DESKTOP_FILES) \
 	COPYING \
 	README \
 	README.md

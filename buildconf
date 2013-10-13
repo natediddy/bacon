@@ -5,9 +5,9 @@ CLEAN_ONLY=0
 RUN_ALL=0
 CONFIGURE_OPTIONS=
 
-CLEAN_FILES="*~ *.bak *.in *.o .deps Makefile aclocal.m4 autom4te.cache \
-             bacon-config.h depcomp config.* configure install-sh missing \
-             stamp-h?"
+CLEAN_FILES="*~ *.bak *.o *.in .deps Makefile aclocal.m4 \
+             autom4te.cache bacon-config.h depcomp config.* \
+             configure install-sh missing stamp-h?"
 
 if test "$1" = "help" || test "$1" = "-h" || test "$1" = "--help"; then
   echo "Usage: $0 [all CONFIGURE_SCRIPT_OPTIONS] [clean]"

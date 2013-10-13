@@ -27,12 +27,11 @@
 
 BaconDeviceList *bacon_parse_for_device_list (const char *data,
                                               const bool local);
-BaconRom *       bacon_parse_for_rom         (const char *data,
-                                              const int max);
+BaconRom *bacon_parse_for_rom (const char *data, const int max);
 #ifdef BACON_GTK
 BaconDeviceThumbRequestList *
-bacon_parse_for_device_thumb_request_list    (const char *data,
-                                              BaconDeviceList *devicelist);
+bacon_parse_for_device_thumb_request_list (const char *data,
+                                           BaconDeviceList *devicelist);
 #endif
 
 #endif /* BACON_PARSE_H */

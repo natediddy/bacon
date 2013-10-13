@@ -18,24 +18,70 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <ctype.h>
 #include <errno.h>
 #include <string.h>
 
+#include "bacon-os.h"
 #include "bacon-util.h"
 
-#define BACON_INDENT_SIZE    4
-#define BACON_KIBIBYTE_VALUE ((CmByte) 1024LU)
-#define BACON_MEBIBYTE_VALUE ((CmByte) 1048576LU)
-#define BACON_GIBIBYTE_VALUE ((CmByte) 1073741824LU)
+#define BACON_INDENT_SIZE      4
+#define BACON_COLOR_STRING_MAX 128
+#define BACON_KIBIBYTE_VALUE   ((CmByte) 1024LU)
+#define BACON_MEBIBYTE_VALUE   ((CmByte) 1048576LU)
+#define BACON_GIBIBYTE_VALUE   ((CmByte) 1073741824LU)
+
 #ifdef BACON_DEBUG
-# define BACON_DEBUG_TAG     "DEBUG: "
+# define BACON_DEBUG_TAG "DEBUG: "
 #endif
-#define BACON_ERROR_TAG      "error: "
-#define BACON_WARN_TAG       "warning: "
-#define BACON_NORMAL_TAG     ""
+#define BACON_ERROR_TAG  "error: "
+#define BACON_WARN_TAG   "warning: "
+#define BACON_NORMAL_TAG ""
+
+#ifdef BACON_OS_UNIX
+# define BACON_COLOR_CODE_BOLD    "\x1B[1m"
+# define BACON_COLOR_CODE_NONE    "\x1B[0m"
+# define BACON_COLOR_CODE_BLACK   "\x1B[30m"
+# define BACON_COLOR_CODE_RED     "\x1B[31m"
+# define BACON_COLOR_CODE_GREEN   "\x1B[32m"
+# define BACON_COLOR_CODE_YELLOW  "\x1B[33m"
+# define BACON_COLOR_CODE_BLUE    "\x1B[34m"
+# define BACON_COLOR_CODE_MAGENTA "\x1B[35m"
+# define BACON_COLOR_CODE_CYAN    "\x1B[36m"
+# define BACON_COLOR_CODE_WHITE   "\x1B[37m"
+#else
+# define BACON_COLOR_CODE_BOLD
+# define BACON_COLOR_CODE_NORMAL
+# define BACON_COLOR_CODE_BLACK
+# define BACON_COLOR_CODE_RED
+# define BACON_COLOR_CODE_GREEN
+# define BACON_COLOR_CODE_YELLOW
+# define BACON_COLOR_CODE_BLUE
+# define BACON_COLOR_CODE_MAGENTA
+# define BACON_COLOR_CODE_CYAN
+# define BACON_COLOR_CODE_WHITE
+#endif
 
 extern const char *g_program_name;
+extern bool        g_use_color;
+
+static bool
+bacon_ceq (const char c1, const char c2, bool case_sensitive)
+{
+  char cc1;
+  char cc2;
+
+  if (!case_sensitive) {
+    cc1 = bacon_tolower (c1);
+    cc2 = bacon_tolower (c2);
+  } else {
+    cc1 = c1;
+    cc2 = c2;
+  }
+
+  if (cc1 == cc2)
+    return true;
+  return false;
+}
 
 #ifdef BACON_DEBUG
 void
@@ -60,7 +106,7 @@ __bacon_debug (const char *file,
     vfprintf (stderr, msg, a);
     va_end (a);
   }
-  fputc ('\n', stderr);
+  bacon_foutc (stderr, '\n');
 }
 #endif
 
@@ -75,7 +121,7 @@ bacon_error (const char *msg, ...)
     vfprintf (stderr, msg, a);
     va_end (a);
   }
-  fputc ('\n', stderr);
+  bacon_foutc (stderr, '\n');
 }
 
 void
@@ -89,7 +135,35 @@ bacon_warn (const char *msg, ...)
     vfprintf (stderr, msg, a);
     va_end (a);
   }
-  fputc ('\n', stderr);
+  bacon_foutc (stderr, '\n');
+}
+
+void
+bacon_foutc (FILE *stream, const char c)
+{
+  fputc (c, stream);
+}
+
+void
+bacon_outc (const char c)
+{
+  bacon_foutc (stdout, c);
+}
+
+void
+bacon_foutcco (FILE *stream, int color, bool bold, const char c)
+{
+  bacon_color (color, bold, stream);
+  bacon_foutc (stream, c);
+  bacon_no_color (stream);
+}
+
+void
+bacon_outcco (int color, bool bold, const char c)
+{
+  bacon_color (color, bold, stdout);
+  bacon_outc (c);
+  bacon_no_color (stdout);
 }
 
 void
@@ -114,7 +188,36 @@ bacon_foutln (FILE *stream, const char *msg, ...)
     vfprintf (stream, msg, a);
     va_end (a);
   }
-  fputc ('\n', stream);
+  bacon_foutc (stream, '\n');
+}
+
+void
+bacon_foutco (FILE *stream, int color, bool bold, const char *msg, ...)
+{
+  va_list a;
+
+  if (msg && *msg) {
+    va_start (a, msg);
+    bacon_color (color, bold, stream);
+    vfprintf (stream, msg, a);
+    bacon_no_color (stream);
+    va_end (a);
+  }
+}
+
+void
+bacon_foutlnco (FILE *stream, int color, bool bold, const char *msg, ...)
+{
+  va_list a;
+
+  if (msg && *msg) {
+    va_start (a, msg);
+    bacon_color (color, bold, stream);
+    vfprintf (stream, msg, a);
+    bacon_no_color (stream);
+    va_end (a);
+  }
+  bacon_foutc (stream, '\n');
 }
 
 void
@@ -139,7 +242,54 @@ bacon_outln (const char *msg, ...)
     vfprintf (stdout, msg, a);
     va_end (a);
   }
-  fputc ('\n', stdout);
+  bacon_outc ('\n');
+}
+
+void
+bacon_outco (int color, bool bold, const char *msg, ...)
+{
+  va_list a;
+
+  if (msg && *msg) {
+    va_start (a, msg);
+    bacon_color (color, bold, stdout);
+    vfprintf (stdout, msg, a);
+    bacon_no_color (stdout);
+    va_end (a);
+  }
+}
+
+void
+bacon_outlnco (int color, bool bold, const char *msg, ...)
+{
+  va_list a;
+
+  if (msg && *msg) {
+    va_start (a, msg);
+    bacon_color (color, bold, stdout);
+    vfprintf (stdout, msg, a);
+    bacon_no_color (stdout);
+    va_end (a);
+  }
+  bacon_outc ('\n');
+}
+
+void
+bacon_outi (const int level, const char *msg, ...)
+{
+  int i;
+  int j;
+  va_list a;
+
+  for (i = 0; i < level; ++i)
+    for (j = 0; j < BACON_INDENT_SIZE; ++j)
+      bacon_outc (' ');
+
+  if (msg && *msg) {
+    va_start (a, msg);
+    vfprintf (stdout, msg, a);
+    va_end (a);
+  }
 }
 
 void
@@ -151,14 +301,14 @@ bacon_outlni (const int level, const char *msg, ...)
 
   for (i = 0; i < level; ++i)
     for (j = 0; j < BACON_INDENT_SIZE; ++j)
-      fputc (' ', stdout);
+      bacon_outc (' ');
 
   if (msg && *msg) {
     va_start (a, msg);
     vfprintf (stdout, msg, a);
     va_end (a);
   }
-  fputc ('\n', stdout);
+  bacon_outc ('\n');
 }
 
 void
@@ -172,7 +322,54 @@ bacon_msg (const char *msg, ...)
     vfprintf (stdout, msg, a);
     va_end (a);
   }
-  fputc ('\n', stdout);
+  bacon_outc ('\n');
+}
+
+void
+bacon_color (int color, bool bold, FILE *stream)
+{
+  if (!g_use_color)
+    return;
+
+  if (bold)
+    fputs (BACON_COLOR_CODE_BOLD, stream);
+
+  switch (color) {
+  case BACON_COLOR_BLACK:
+    fputs (BACON_COLOR_CODE_BLACK, stream);
+    break;
+  case BACON_COLOR_RED:
+    fputs (BACON_COLOR_CODE_RED, stream);
+    break;
+  case BACON_COLOR_GREEN:
+    fputs (BACON_COLOR_CODE_GREEN, stream);
+    break;
+  case BACON_COLOR_YELLOW:
+    fputs (BACON_COLOR_CODE_YELLOW, stream);
+    break;
+  case BACON_COLOR_BLUE:
+    fputs (BACON_COLOR_CODE_BLUE, stream);
+    break;
+  case BACON_COLOR_MAGENTA:
+    fputs (BACON_COLOR_CODE_MAGENTA, stream);
+    break;
+  case BACON_COLOR_CYAN:
+    fputs (BACON_COLOR_CODE_CYAN, stream);
+    break;
+  case BACON_COLOR_WHITE:
+    fputs (BACON_COLOR_CODE_WHITE, stream);
+    break;
+  default:
+    ;
+  }
+}
+
+void
+bacon_no_color (FILE *stream)
+{
+  if (!g_use_color)
+    return;
+  fputs (BACON_COLOR_CODE_NONE, stream);
 }
 
 void *
@@ -283,12 +480,255 @@ bacon_strstw (const char *str, const char *pre)
   return false;
 }
 
-bool
-bacon_strhasc (const char *str, const char c)
+char
+bacon_tolower (char c)
 {
-  if (strchr (str, c))
+  switch (c) {
+  case 'A':
+    return 'a';
+  case 'B':
+    return 'b';
+  case 'C':
+    return 'c';
+  case 'D':
+    return 'd';
+  case 'E':
+    return 'e';
+  case 'F':
+    return 'f';
+  case 'G':
+    return 'g';
+  case 'H':
+    return 'h';
+  case 'I':
+    return 'i';
+  case 'J':
+    return 'j';
+  case 'K':
+    return 'k';
+  case 'L':
+    return 'l';
+  case 'M':
+    return 'm';
+  case 'N':
+    return 'n';
+  case 'O':
+    return 'o';
+  case 'P':
+    return 'p';
+  case 'Q':
+    return 'q';
+  case 'R':
+    return 'r';
+  case 'S':
+    return 's';
+  case 'T':
+    return 't';
+  case 'U':
+    return 'u';
+  case 'V':
+    return 'v';
+  case 'W':
+    return 'w';
+  case 'X':
+    return 'x';
+  case 'Y':
+    return 'y';
+  case 'Z':
+    return 'z';
+  default:
+    ;
+  }
+  return c;
+}
+
+bool
+bacon_isdigit (char c)
+{
+  switch (c) {
+  case '0': case '1': case '2': case '3': case '4': case '5': case '7':
+  case '8': case '9':
     return true;
+  default:
+    ;
+  }
   return false;
+}
+
+bool
+bacon_isspace (char c)
+{
+  switch (c) {
+  case ' ': case '\f': case '\n': case '\r': case '\t': case '\v':
+    return true;
+  default:
+    ;
+  }
+  return false;
+}
+
+void
+bacon_strtolower (char *buf, size_t n, const char *str)
+{
+  size_t x;
+
+  for (x = 0; x < n; ++x)
+    buf[x] = bacon_tolower (str[x]);
+  buf[n] = '\0';
+}
+
+ssize_t
+bacon_strfposof (const char *str, const char *query, bool case_sensitive)
+{
+  ssize_t i;
+  ssize_t j;
+  ssize_t s;
+
+  for (i = 0; str[i]; ++i) {
+    if (bacon_ceq (str[i], query[0], case_sensitive)) {
+      s = i;
+      for (j = 1, i = i + 1; query[j] && str[i]; ++j, ++i)
+        if (!bacon_ceq (str[i], query[j], case_sensitive))
+          break;
+      if (!query[j])
+        return s;
+    }
+  }
+  return -1;
+}
+
+unsigned int
+bacon_stroccur (const char *str, const char *query, bool case_sensitive)
+{
+  unsigned int c;
+  size_t n_str;
+  size_t n_query;
+  char *p;
+  char *s;
+
+  if (!str || !*str || !query || !*query)
+    return 0;
+
+  n_str = strlen (str);
+  char strbuf[n_str + 1];
+
+  if (!case_sensitive)
+    bacon_strtolower (strbuf, n_str, str);
+  else {
+    strncpy (strbuf, str, n_str);
+    strbuf[n_str] = '\0';
+  }
+
+  n_query = strlen (query);
+  char querybuf[n_query + 1];
+
+  if (!case_sensitive)
+    bacon_strtolower (querybuf, n_query, query);
+  else {
+    strncpy (querybuf, query, n_query);
+    querybuf[n_query] = '\0';
+  }
+
+  c = 0;
+  p = strstr (strbuf, querybuf);
+  while (p) {
+    c++;
+    s = p + n_query;
+    p = strstr (s, querybuf);
+  }
+  return c;
+}
+
+BaconQueryTokenList *
+bacon_query_token_list_new (const char *query)
+{
+  size_t n;
+  size_t token_pos;
+  size_t query_pos;
+  BaconQueryTokenList *p;
+  BaconQueryTokenList *list;
+
+  list = NULL;
+  if (query && *query) {
+    query_pos = 0;
+    n = strlen (query);
+    char buffer[n + 1];
+    strncpy (buffer, query, n);
+    buffer[n] = '\0';
+    while (bacon_isspace (buffer[n - 1]))
+      buffer[n-- - 1] = '\0';
+    while (true) {
+      while (buffer[query_pos] && bacon_isspace (buffer[query_pos]))
+        query_pos++;
+      if (buffer[query_pos]) {
+        if (!list) {
+          p = bacon_new (BaconQueryTokenList);
+          p->prev = NULL;
+        } else {
+          for (p = list; p; p = p->next)
+            if (!p->next)
+              break;
+          p->next = bacon_new (BaconQueryTokenList);
+          p->next->prev = p;
+          p = p->next;
+        }
+        p->next = NULL;
+        token_pos = 0;
+        while (buffer[query_pos]) {
+          p->token[token_pos++] = bacon_tolower (buffer[query_pos++]);
+          if ((token_pos == (BACON_TOKEN_MAX - 1)) ||
+              bacon_isspace (buffer[query_pos]))
+            break;
+        }
+        p->token[token_pos] = '\0';
+        for (; p; p = p->prev)
+          if (!p->prev)
+            break;
+        list = p;
+        if (!buffer[query_pos])
+          break;
+      }
+    }
+  }
+  return list;
+}
+
+void
+bacon_query_token_list_free (BaconQueryTokenList *query_tokens)
+{
+  for (; query_tokens; query_tokens = query_tokens->next) {
+    bacon_free (query_tokens->prev);
+    if (!query_tokens->next)
+      break;
+  }
+}
+
+bool
+bacon_search (const char *content, BaconQueryTokenList *query_tokens)
+{
+  size_t n_content;
+  bool match;
+  BaconQueryTokenList *p;
+
+  match = false;
+  if (query_tokens) {
+    n_content = strlen (content);
+    if (n_content) {
+      char buffer[n_content + 1];
+      bacon_strtolower (buffer, n_content, content);
+      for (p = query_tokens; p; p = p->next) {
+        if (strstr (buffer, p->token))
+          match = true;
+        else {
+          match = false;
+          break;
+        }
+        if (!p->next)
+          break;
+      }
+    }
+  }
+  return match;
 }
 
 void
@@ -325,12 +765,12 @@ bacon_int_from_str (const char *str)
   if (str && *str) {
     g = 0LL;
     sign = 1;
-    while (isspace (*str))
+    while (bacon_isspace (*str))
       str++;
     if (*str == '-')
       sign = -1;
     while (*str) {
-      if (isdigit (*str)) {
+      if (bacon_isdigit (*str)) {
         g = g * 10LL + *str++ - '0';
         continue;
       }

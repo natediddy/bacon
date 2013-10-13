@@ -281,7 +281,7 @@ bacon_currents (void)
   bacon_out ("Current device:   ");
   if (s_device)
     bacon_out ("%s [%s]", s_device->fullname, s_device->codename);
-  bacon_outln (NULL);
+  bacon_outc ('\n');
 
   bacon_outln ("Current ROM Type: %s",
       (s_rom_type_i != -1) ? bacon_rom_type_str (s_rom_type_i) : "(none)");

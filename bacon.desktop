@@ -1,0 +1,13 @@
+[Desktop Entry]
+_Name=Bacon
+_GenericName=CyanogenMod ROM Download Helper
+_X-GNOME-FullName=Bacon
+_Comment=Download and view CyanogenMod ROMs for supported Android devices
+Exec=bacon --gtk %U
+Icon=bacon
+Terminal=false
+TryExec=bacon --gtk
+Type=Application
+MimeType=application/;
+Categories=Network;GTK;
+X-AppInstall-Keywords=bacon cyanogenmod android
