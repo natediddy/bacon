@@ -358,7 +358,7 @@ done:
 }
 
 bool
-bacon_env_ensure_path (const char *path, const bool file)
+bacon_env_ensure_path (const char *path, bool file)
 {
   char *dn;
   char *abs;

@@ -34,7 +34,7 @@
 #define BACON_GIBI_VALUE 1073741824LU
 
 static bool
-bacon_ceq (const char c1, const char c2, bool case_sensitive)
+bacon_ceq (char c1, char c2, bool case_sensitive)
 {
   char cc1;
   char cc2;

@@ -21,6 +21,8 @@
 #ifndef BACON_SEARCH_H
 #define BACON_SEARCH_H
 
+#include <stddef.h>
+
 #include "bacon.h"
 
 #ifdef __cplusplus
@@ -37,9 +39,17 @@ struct BaconSearchTokenList {
   BaconSearchTokenList *prev;
 };
 
+typedef enum {
+  BACON_SEARCH_RESULT_NO_MATCHES = -1,
+  BACON_SEARCH_RESULT_PARTIAL_MATCHES,
+  BACON_SEARCH_RESULT_ALL_MATCHES
+} BaconSearchResult;
+
 BaconSearchTokenList *bacon_search_token_list_new (const char *query);
 void bacon_search_token_list_free (BaconSearchTokenList *list);
-bool bacon_search (const char *content, BaconSearchTokenList *list);
+size_t bacon_search_token_list_total (BaconSearchTokenList *list);
+BaconSearchResult bacon_search (const char *content,
+                                BaconSearchTokenList *list);
 
 #ifdef __cplusplus
 }

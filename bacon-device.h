@@ -57,7 +57,7 @@ struct BaconDeviceList {
   BaconDeviceList *prev;
 };
 
-BaconDeviceList *bacon_device_list_new (const bool local);
+BaconDeviceList *bacon_device_list_new (bool local);
 void bacon_device_list_destroy (BaconDeviceList *list);
 int bacon_device_list_total (BaconDeviceList *list);
 bool bacon_device_is_valid_id (BaconDeviceList *list, const char *id);

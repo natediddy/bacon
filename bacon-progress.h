@@ -28,9 +28,9 @@ extern "C" {
 #endif
 
 void bacon_progress_init (void);
-void bacon_progress_deinit (const bool newline);
-void bacon_progress_file (const double total, const double current);
-void bacon_progress_page (const double total, const double current);
+void bacon_progress_deinit (bool newline);
+void bacon_progress_file (double total, double current);
+void bacon_progress_page (double total, double current);
 
 #ifdef __cplusplus
 }

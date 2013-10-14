@@ -58,7 +58,7 @@ char *bacon_env_dirname (const char *path);
 char *bacon_env_basename (const char *path);
 char *bacon_env_mkabs (const char *path);
 bool bacon_env_mkpath (const char *path);
-bool bacon_env_ensure_path (const char *path, const bool file);
+bool bacon_env_ensure_path (const char *path, bool file);
 void bacon_env_fix_download_path (char **path, const char *name);
 
 #ifdef __cplusplus

@@ -95,7 +95,7 @@ bacon_device_local_data (void)
 }
 
 BaconDeviceList *
-bacon_device_list_new (const bool force_new)
+bacon_device_list_new (bool force_new)
 {
   char *data;
   BaconDeviceList *list;

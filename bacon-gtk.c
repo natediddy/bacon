@@ -352,18 +352,7 @@ bacon_init_data (void)
   error = NULL;
 
   for (p = g_device_list; p; p = p->next) {
-    if (!s_data) {
-      dp = bacon_new (BaconData);
-      dp->prev = NULL;
-    } else {
-      for (dp = s_data; dp; dp = dp->next)
-        if (!dp->next)
-          break;
-      dp->next = bacon_new (BaconData);
-      dp->next->prev = dp;
-      dp = dp->next;
-    }
-    dp->next = NULL;
+    bacon_list_append (BaconData, s_data, dp);
     dp->device = p->device;
     tp = s_thumbs;
     while (tp) {
@@ -394,10 +383,7 @@ bacon_init_data (void)
       }
     }
     dp->rom_list = NULL;
-    for (; dp; dp = dp->prev)
-      if (!dp->prev)
-        break;
-    s_data = dp;
+    bacon_list_rewind (s_data, dp);
     if (!p->next)
       break;
   }

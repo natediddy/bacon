@@ -73,33 +73,50 @@ bacon_search_token_list_free (BaconSearchTokenList *list)
   bacon_list_free (list);
 }
 
-bool
+size_t
+bacon_search_token_list_total (BaconSearchTokenList *list)
+{
+  unsigned int result;
+  BaconSearchTokenList *p;
+
+  result = 0;
+  for (p = list; p; p = p->next) {
+    result++;
+    if (!p->next)
+      break;
+  }
+  return result;
+}
+
+BaconSearchResult
 bacon_search (const char *content, BaconSearchTokenList *list)
 {
-  bool result;
+  size_t n_matches;
+  size_t total_tokens;
   size_t n_content;
   BaconSearchTokenList *p;
 
-  result = false;
+  n_matches = 0;
+  total_tokens = bacon_search_token_list_total (list);
+
   if (list) {
     n_content = strlen (content);
     if (n_content) {
       char buffer[n_content + 1];
       bacon_strtolower (buffer, n_content, content);
       for (p = list; p; p = p->next) {
-        if (strstr (buffer, p->token)) {
-          if (!result)
-            result = true;
-        } else {
-          if (result)
-            result = false;
-          break;
-        }
+        if (strstr (buffer, p->token))
+          n_matches++;
         if (!p->next)
           break;
       }
     }
   }
-  return result;
+
+  if (n_matches == total_tokens)
+    return BACON_SEARCH_RESULT_ALL_MATCHES;
+  if ((n_matches < total_tokens) && (n_matches > 0))
+    return BACON_SEARCH_RESULT_PARTIAL_MATCHES;
+  return BACON_SEARCH_RESULT_NO_MATCHES;
 }
 

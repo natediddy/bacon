@@ -151,14 +151,14 @@ bacon_output_add_string (const char *s)
 }
 
 static void
-bacon_output_add_char (const char c)
+bacon_output_add_char (char c)
 {
   s_output_buffer[s_output_pos++] = c;
   s_output_rem--;
 }
 
 static void
-bacon_set_bytes_per_sec (const double current)
+bacon_set_bytes_per_sec (double current)
 {
   if (current <= 0.0) {
     s_per_sec = -1;
@@ -170,7 +170,7 @@ bacon_set_bytes_per_sec (const double current)
 }
 
 static void
-bacon_format_percent (const double x)
+bacon_format_percent (double x)
 {
   if (bacon_nan_value (x) || bacon_nan_value (x * 100)) {
     strncpy (s_percent_buffer, BACON_PERCENT_DEFAULT, BACON_PERCENT_MAX);
@@ -205,7 +205,7 @@ bacon_format_speed (void)
 }
 
 static void
-bacon_format_eta (const double x)
+bacon_format_eta (double x)
 {
   int d;
   int h;
@@ -336,7 +336,7 @@ bacon_progress_file (double total, double current)
 }
 
 void
-bacon_progress_page (double total, const double current)
+bacon_progress_page (double total, double current)
 {
   static struct timeval last = { -1, -1 };
 

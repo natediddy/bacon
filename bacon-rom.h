@@ -62,11 +62,9 @@ struct BaconRomList {
   BaconRom *roms[BACON_ROM_TOTAL];
 };
 
-BaconRomList *bacon_rom_list_new (const char *codename,
-                                  int type,
-                                  const int max);
+BaconRomList *bacon_rom_list_new (const char *codename, int type, int max);
 void bacon_rom_list_destroy (BaconRomList *rom_list);
-const char *bacon_rom_type_str (const int index);
+const char *bacon_rom_type_str (int index);
 bool bacon_rom_do_download (const BaconRom *rom, char *dlpath);
 
 #ifdef __cplusplus

@@ -55,7 +55,7 @@
 #define BACON_DEVICE_CODENAME_TYPE 1
 
 typedef enum {
-  BACON_OT_NO_COLOR,
+  BACON_OT_COLOR,
   BACON_OT_DOWNLOAD,
   BACON_OT_FIND_DEVICE,
   BACON_OT_INTERACTIVE,
@@ -82,7 +82,7 @@ char *                      g_out_path           = NULL;
 int                         g_max_roms           = BACON_DEFAULT_MAX_ROMS;
 int                         g_rom_type           = BACON_ROM_TYPE_NONE;
 bool                        g_show_progress      = true;
-bool                        g_use_color          = true;
+bool                        g_use_color          = false;
 static char *               s_query              = NULL;
 static bool                 s_find_device        = false;
 static bool                 s_list_all_devices   = false;
@@ -115,7 +115,7 @@ bacon_help (void)
   /* each item in array gets its own line */
   static const char *const help[] = {
     "General Options:",
-    "  -c, --no-color             Disable all colored output",
+    "  -c, --color                Enable colored terminal output",
     "  -d, --download             Download the latest ROM for DEVICE",
     "                             Requires specific ROM type option",
     "                             (See 'ROM Type Options' below)",
@@ -292,9 +292,9 @@ bacon_get_specific_option (BaconOptionType otype)
 
   for (x = 0; s_opt[x]; ++x) {
     switch (otype) {
-    case BACON_OT_NO_COLOR:
+    case BACON_OT_COLOR:
       if (bacon_streq (s_opt[x], "-c") ||
-          bacon_streq (s_opt[x], "--no-color"))
+          bacon_streq (s_opt[x], "--color"))
         return s_opt[x];
       break;
     case BACON_OT_DOWNLOAD:
@@ -536,7 +536,7 @@ bacon_parse_string_for_short_opts (const char *s)
       bacon_error ("invalid context for `-%c' (try `--help')", s[x]);
       exit (EXIT_FAILURE);
     case 'c':
-      g_use_color = false;
+      g_use_color = true;
       s_opt[s_opt_pos++] = "-c";
       break;
     case 'd':
@@ -619,9 +619,11 @@ bacon_parse_opt (int c, char **v)
   bacon_set_program_name (v[0]);
 
 #ifdef BACON_GTK
-  if (v[1] && bacon_streq (v[1], "--gtk")) {
-    bacon_gtk_main (&c, &v);
-    return;
+  for (x = 1; v[x]; ++x) {
+    if (bacon_streq (v[x], "--gtk")) {
+      bacon_gtk_main (&c, &v);
+      return;
+    }
   }
 #endif
 
@@ -633,8 +635,8 @@ bacon_parse_opt (int c, char **v)
       bacon_help ();
     else if (bacon_streq (v[x], "-v") || bacon_streq (v[x], "--version"))
       bacon_version ();
-    else if (bacon_streq (v[x], "-c") || bacon_streq (v[x], "--no-color"))
-      g_use_color = false;
+    else if (bacon_streq (v[x], "-c") || bacon_streq (v[x], "--color"))
+      g_use_color = true;
     else if (bacon_streq (v[x], "-H") || bacon_streq (v[x], "--hash"))
       s_show_hash = true;
     else if (bacon_streq (v[x], "-f") ||
@@ -659,14 +661,8 @@ bacon_parse_opt (int c, char **v)
       s_query = o;
       s_opt[s_opt_pos++] = "--find-device";
       addopt = false;
-    }
-#ifdef BACON_GTK
-    else if (bacon_streq (v[x], "--gtk")) {
-      bacon_error ("invalid context for `--gtk' (try `--help')");
-      exit (EXIT_FAILURE);
-    }
-#endif
-    else if (bacon_streq (v[x], "-l") || bacon_streq (v[x], "--list-devices"))
+    } else if (bacon_streq (v[x], "-l") ||
+               bacon_streq (v[x], "--list-devices"))
       s_list_all_devices = true;
     else if (bacon_streq (v[x], "-L") || bacon_streq (v[x], "--latest"))
       s_latest = true;
@@ -779,32 +775,73 @@ bacon_parse_opt (int c, char **v)
   bacon_check_opts ();
 }
 
+typedef struct {
+  ssize_t pos;
+  char *token;
+} BaconTokenPosition;
+
+static void
+bacon_rearrange_ascending_token_positions (BaconTokenPosition *positions,
+                                           size_t n)
+{
+  size_t i;
+  size_t j;
+  ssize_t t_pos;
+  char *t_token;
+
+  for (i = 0; i < n; ++i) {
+    for (j = i + 1; j < n; ++j) {
+      if (positions[i].pos > positions[j].pos) {
+        t_pos = positions[i].pos;
+        t_token = bacon_strdup (positions[i].token);
+        positions[i].pos = positions[j].pos;
+        bacon_free (positions[i].token);
+        positions[i].token = bacon_strdup (positions[j].token);
+        positions[j].pos = t_pos;
+        bacon_free (positions[j].token);
+        positions[j].token = t_token;
+      }
+    }
+  }
+}
+
 static void
 bacon_print_device_pattern_result (const char *name,
                                    BaconSearchTokenList *list,
                                    int color)
 {
-  unsigned int c;
-  unsigned int i;
   ssize_t pos;
   size_t name_pos;
+  size_t i;
   size_t x;
-  const char *s;
+  size_t total_tokens;
   BaconSearchTokenList *p;
 
-  name_pos = 0;
-  s = name;
+  total_tokens = bacon_search_token_list_total (list);
 
+  BaconTokenPosition token_positions[total_tokens];
+
+  i = 0;
   for (p = list; p; p = p->next) {
-    pos = bacon_strfposof (s, p->token, false);
-    if (pos == -1)
+    token_positions[i].pos = bacon_strfposof (name, p->token, false);
+    token_positions[i++].token = bacon_strdup (p->token);
+    if (!p->next)
       break;
-    for (x = 0; x < pos; ++x, ++name_pos)
-      bacon_outcco (color, false, s[x]);
-    s = s + x;
-    for (x = 0; p->token[x]; ++x, ++name_pos)
-      bacon_outcco (BACON_FIND_PATTERN_COLOR, true, s[x]);
-    s = s + x;
+  }
+
+  bacon_rearrange_ascending_token_positions (token_positions, total_tokens);
+
+  i = 0;
+  name_pos = 0;
+  for (p = list; p; p = p->next) {
+    pos = token_positions[i].pos;
+    if (pos >= 0) {
+      for (; name_pos < pos; ++name_pos)
+        bacon_outcco (color, false, name[name_pos]);
+      for (x = 0; token_positions[i].token[x]; ++x, ++name_pos)
+        bacon_outcco (BACON_FIND_PATTERN_COLOR, true, name[name_pos]);
+    }
+    i++;
     if (!p->next)
       break;
   }
@@ -823,6 +860,8 @@ bacon_find_device_pattern_and_show_results (void)
   size_t y;
   ssize_t pos;
   char *s;
+  BaconSearchResult rfull;
+  BaconSearchResult rcode;
   BaconDeviceList *p;
   BaconSearchTokenList *list;
   struct {
@@ -839,17 +878,20 @@ bacon_find_device_pattern_and_show_results (void)
 
   results_pos = 0;
   for (p = g_device_list; p; p = p->next) {
-    if (bacon_search (p->device->fullname, list)) {
-      results[results_pos].device = p->device;
+    rfull = bacon_search (p->device->fullname, list);
+    rcode = bacon_search (p->device->codename, list);
+    if ((rfull == BACON_SEARCH_RESULT_PARTIAL_MATCHES) &&
+        (rcode == BACON_SEARCH_RESULT_PARTIAL_MATCHES))
+    {
       results[results_pos].fullname_match = true;
-    }
-    if (bacon_search (p->device->codename, list)) {
-      if (!results[results_pos].device)
-        results[results_pos].device = p->device;
       results[results_pos].codename_match = true;
-    }
-    if (results[results_pos].device)
-      results_pos++;
+    } else if (rfull == BACON_SEARCH_RESULT_ALL_MATCHES)
+      results[results_pos].fullname_match = true;
+    else if (rcode == BACON_SEARCH_RESULT_ALL_MATCHES)
+      results[results_pos].codename_match = true;
+    if (results[results_pos].fullname_match ||
+        results[results_pos].codename_match)
+      results[results_pos++].device = p->device;
     if (!p->next)
       break;
   }
@@ -860,7 +902,7 @@ bacon_find_device_pattern_and_show_results (void)
   bacon_outln ("':");
 
   if (!results[0].device)
-    bacon_outln ("   None");
+    bacon_outlnco (BACON_COLOR_BLUE, false, "   None");
   else {
     for (results_pos = 0; results[results_pos].device; ++results_pos) {
       bacon_outco (BACON_NUMBER_LIST_COLOR, false, "%4i",

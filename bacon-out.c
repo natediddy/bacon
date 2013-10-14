@@ -114,7 +114,7 @@ bacon_warn (const char *msg, ...)
 }
 
 void
-bacon_foutc (FILE *stream, const char c)
+bacon_foutc (FILE *stream, char c)
 {
   fputc (c, stream);
 }
@@ -126,7 +126,7 @@ bacon_outc (const char c)
 }
 
 void
-bacon_foutcco (FILE *stream, int color, bool bold, const char c)
+bacon_foutcco (FILE *stream, int color, bool bold, char c)
 {
   bacon_color (color, bold, stream);
   bacon_foutc (stream, c);
@@ -134,7 +134,7 @@ bacon_foutcco (FILE *stream, int color, bool bold, const char c)
 }
 
 void
-bacon_outcco (int color, bool bold, const char c)
+bacon_outcco (int color, bool bold, char c)
 {
   bacon_color (color, bold, stdout);
   bacon_outc (c);

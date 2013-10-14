@@ -55,10 +55,10 @@ void __bacon_debug (const char *file,
 #endif
 void bacon_error (const char *msg, ...);
 void bacon_warn (const char *msg, ...);
-void bacon_foutc (FILE *stream, const char c);
+void bacon_foutc (FILE *stream, char c);
 void bacon_outc (const char c);
-void bacon_foutcco (FILE *stream, int color, bool bold, const char c);
-void bacon_outcco (int color, bool bold, const char c);
+void bacon_foutcco (FILE *stream, int color, bool bold, char c);
+void bacon_outcco (int color, bool bold, char c);
 void bacon_fout (FILE *stream, const char *msg, ...);
 void bacon_foutln (FILE *stream, const char *msg, ...);
 void bacon_foutco (FILE *stream, int color, bool bold, const char *msg, ...);
