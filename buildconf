@@ -7,7 +7,7 @@ CONFIGURE_OPTIONS=
 
 CLEAN_FILES="*~ *.bak *.o *.in .deps Makefile aclocal.m4 \
              autom4te.cache bacon-config.h depcomp config.* \
-             configure install-sh missing stamp-h?"
+             configure install-sh missing stamp-h? compile"
 
 if test "$1" = "help" || test "$1" = "-h" || test "$1" = "--help"; then
   echo "Usage: $0 [all CONFIGURE_SCRIPT_OPTIONS] [clean]"
@@ -171,8 +171,8 @@ else
   exit 1
 fi
 
-echo "*** Running: ${ACLOCAL:-aclocal} -I m4 $ACLOCAL_FLAGS"
-${ACLOCAL:-aclocal} -I m4 $ACLOCAL_FLAGS ||
+echo "*** Running: ${ACLOCAL:-aclocal} $ACLOCAL_FLAGS"
+${ACLOCAL:-aclocal} $ACLOCAL_FLAGS ||
   { echo "$myname: error: aclocal failed"; exit 1; }
 
 echo "*** Running: ${AUTOHEADER:-autoheader}"

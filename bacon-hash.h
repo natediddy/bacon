@@ -35,7 +35,8 @@ typedef struct {
 } BaconHash;
 
 void bacon_hash_from_file (BaconHash *hash, const char *filename);
-bool bacon_hash_match (const BaconHash *hash1, const BaconHash *hash2);
+BaconBoolean bacon_hash_match (const BaconHash *hash1,
+                               const BaconHash *hash2);
 
 #ifdef __cplusplus
 }

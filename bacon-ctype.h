@@ -18,8 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef BACON_PROGRESS_H
-#define BACON_PROGRESS_H
+#ifndef BACON_CTYPE_H
+#define BACON_CTYPE_H
 
 #include "bacon.h"
 
@@ -27,14 +27,15 @@
 extern "C" {
 #endif
 
-void bacon_progress_init (void);
-void bacon_progress_deinit (BaconBoolean newline);
-void bacon_progress_file (double total, double current);
-void bacon_progress_page (double total, double current);
+BaconBoolean bacon_isalpha (char c);
+BaconBoolean bacon_isdigit (char c);
+BaconBoolean bacon_islower (char c);
+BaconBoolean bacon_isspace (char c);
+char bacon_tolower (char c);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* BACON_PROGRESS_H */
+#endif /* BACON_CTYPE_H */
 

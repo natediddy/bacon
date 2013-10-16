@@ -21,11 +21,11 @@
 #ifndef BACON_NET_H
 #define BACON_NET_H
 
+#include "bacon.h"
+
 #ifdef BACON_GTK
 # include <gtk/gtk.h>
 #endif
-
-#include "bacon.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -37,19 +37,22 @@ extern "C" {
 #ifdef BACON_GTK
 # define BACON_DEVICE_ICONS_URL      "http://wiki.cyanogenmod.org/w/Devices#"
 # define BACON_DEVICE_ICON_THUMB_URL "http://wiki.cyanogenmod.org/images"
-
-bool bacon_net_init_for_device_icons (void);
-bool bacon_net_init_for_device_icon_thumb (const char *request,
-                                           const char *filename);
-bool bacon_net_gtk_init_for_device_list (GtkProgressBar *progress_bar);
 #endif
-bool bacon_net_init_for_page_data (const char *request);
-bool bacon_net_init_for_rom (const char *request,
-                             long offset,
-                             const char *filename);
+
+BaconBoolean bacon_net_init_for_page_data (const char *request);
+BaconBoolean bacon_net_init_for_rom (const char *request,
+                                     unsigned long offset,
+                                     const char *filename);
 void bacon_net_deinit (void);
 char *bacon_net_get_page_data (void);
-bool bacon_net_get_file (void);
+BaconBoolean bacon_net_get_file (void);
+#ifdef BACON_GTK
+BaconBoolean bacon_net_init_for_device_icons (void);
+BaconBoolean bacon_net_init_for_device_icon_thumb (const char *request,
+                                                   const char *filename);
+BaconBoolean
+bacon_net_gtk_init_for_device_list (GtkProgressBar *progress_bar);
+#endif
 
 #ifdef __cplusplus
 }

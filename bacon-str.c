@@ -18,8 +18,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "bacon.h"
+
 #include <string.h>
 
+#include "bacon-ctype.h"
 #include "bacon-out.h"
 #include "bacon-str.h"
 #include "bacon-util.h"
@@ -33,8 +36,8 @@
 #define BACON_MEBI_VALUE 1048576LU
 #define BACON_GIBI_VALUE 1073741824LU
 
-static bool
-bacon_ceq (char c1, char c2, bool case_sensitive)
+static BaconBoolean
+bacon_ceq (char c1, char c2, BaconBoolean case_sensitive)
 {
   char cc1;
   char cc2;
@@ -48,8 +51,8 @@ bacon_ceq (char c1, char c2, bool case_sensitive)
   }
 
   if (cc1 == cc2)
-    return true;
-  return false;
+    return BACON_TRUE;
+  return BACON_FALSE;
 }
 
 char *
@@ -96,7 +99,7 @@ bacon_strf (const char *fmt, ...)
     return NULL;
 
   str = bacon_newa (char, size);
-  while (true) {
+  while (BACON_TRUE) {
     va_start (a, fmt);
     n = vsnprintf (str, size, fmt, a);
     va_end (a);
@@ -112,113 +115,65 @@ bacon_strf (const char *fmt, ...)
   return str;
 }
 
-bool
+BaconBoolean
 bacon_streq (const char *str1, const char *str2)
 {
   size_t n;
 
   n = strlen (str1);
   if ((n == strlen (str2)) && (memcmp (str1, str2, n) == 0))
-    return true;
-  return false;
+    return BACON_TRUE;
+  return BACON_FALSE;
 }
 
-bool
+BaconBoolean
+bacon_streqci (const char *str1, const char *str2)
+{
+  size_t i;
+  size_t n;
+
+  n = strlen (str1);
+  if (n == strlen (str2)) {
+    for (i = 0; i < n; ++i)
+      if (bacon_tolower (str1[i]) != bacon_tolower (str2[i]))
+        break;
+    if (i == n)
+      return BACON_TRUE;
+  }
+  return BACON_FALSE;
+}
+
+BaconBoolean
 bacon_strstw (const char *str, const char *pre)
 {
   size_t n;
 
   n = strlen (pre);
   if ((strlen (str) >= n) && (memcmp (str, pre, n) == 0))
-    return true;
-  return false;
+    return BACON_TRUE;
+  return BACON_FALSE;
 }
 
-char
-bacon_tolower (char c)
+BaconBoolean
+bacon_strew (const char *str, const char *suf, BaconBoolean case_sensitive)
 {
-  switch (c) {
-  case 'A':
-    return 'a';
-  case 'B':
-    return 'b';
-  case 'C':
-    return 'c';
-  case 'D':
-    return 'd';
-  case 'E':
-    return 'e';
-  case 'F':
-    return 'f';
-  case 'G':
-    return 'g';
-  case 'H':
-    return 'h';
-  case 'I':
-    return 'i';
-  case 'J':
-    return 'j';
-  case 'K':
-    return 'k';
-  case 'L':
-    return 'l';
-  case 'M':
-    return 'm';
-  case 'N':
-    return 'n';
-  case 'O':
-    return 'o';
-  case 'P':
-    return 'p';
-  case 'Q':
-    return 'q';
-  case 'R':
-    return 'r';
-  case 'S':
-    return 's';
-  case 'T':
-    return 't';
-  case 'U':
-    return 'u';
-  case 'V':
-    return 'v';
-  case 'W':
-    return 'w';
-  case 'X':
-    return 'x';
-  case 'Y':
-    return 'y';
-  case 'Z':
-    return 'z';
-  default:
-    ;
-  }
-  return c;
-}
+  size_t n_str;
+  size_t n_suf;
+  ssize_t i;
+  ssize_t j;
 
-bool
-bacon_isdigit (char c)
-{
-  switch (c) {
-  case '0': case '1': case '2': case '3': case '4': case '5': case '7':
-  case '8': case '9':
-    return true;
-  default:
-    ;
-  }
-  return false;
-}
+  n_str = strlen (str);
+  n_suf = strlen (suf);
 
-bool
-bacon_isspace (char c)
-{
-  switch (c) {
-  case ' ': case '\f': case '\n': case '\r': case '\t': case '\v':
-    return true;
-  default:
-    ;
+  if (n_str >= n_suf) {
+    for (i = n_str - 1, j = n_suf - 1; ((i >= 0) && (j >= 0)); --i, --j) {
+      if (!bacon_ceq (str[i], suf[j], case_sensitive))
+        break;
+      if ((j == 0) && (i == (n_str - n_suf)))
+        return BACON_TRUE;
+    }
   }
-  return false;
+  return BACON_FALSE;
 }
 
 void
@@ -232,7 +187,9 @@ bacon_strtolower (char *buf, size_t n, const char *str)
 }
 
 ssize_t
-bacon_strfposof (const char *str, const char *query, bool case_sensitive)
+bacon_strfposof (const char *str,
+                 const char *query,
+                 BaconBoolean case_sensitive)
 {
   ssize_t i;
   ssize_t j;
@@ -252,7 +209,9 @@ bacon_strfposof (const char *str, const char *query, bool case_sensitive)
 }
 
 unsigned int
-bacon_stroccurs (const char *str, const char *query, bool case_sensitive)
+bacon_stroccurs (const char *str,
+                 const char *query,
+                 BaconBoolean case_sensitive)
 {
   unsigned int c;
   size_t n_str;

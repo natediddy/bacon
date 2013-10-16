@@ -21,10 +21,9 @@
 #ifndef BACON_ENV_H
 #define BACON_ENV_H
 
-#include <stdio.h>
-
 #include "bacon.h"
-#include "bacon-os.h"
+
+#include <stdio.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -40,11 +39,12 @@ extern "C" {
 
 #define BACON_PATH_MAX 1024
 
-bool bacon_env_is_directory (const char *path);
-bool bacon_env_is_file (const char *path);
+BaconBoolean bacon_env_is_directory (const char *path);
+BaconBoolean bacon_env_is_file (const char *path);
 void bacon_env_delete (const char *path);
-long bacon_env_size_of (const char *path);
+unsigned long bacon_env_size_of_file (const char *path);
 FILE *bacon_env_fopen (const char *path, const char *mode);
+void bacon_env_fclose (FILE *fp);
 char *bacon_env_getenv (const char *key);
 char *bacon_env_home_path (void);
 #ifdef BACON_OS_UNIX
@@ -57,8 +57,8 @@ char *bacon_env_cwd (void);
 char *bacon_env_dirname (const char *path);
 char *bacon_env_basename (const char *path);
 char *bacon_env_mkabs (const char *path);
-bool bacon_env_mkpath (const char *path);
-bool bacon_env_ensure_path (const char *path, bool file);
+BaconBoolean bacon_env_mkpath (const char *path);
+BaconBoolean bacon_env_ensure_path (const char *path, BaconBoolean file);
 void bacon_env_fix_download_path (char **path, const char *name);
 
 #ifdef __cplusplus

@@ -18,6 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "bacon.h"
+
 #include <errno.h>
 #include <string.h>
 
@@ -50,17 +52,18 @@ bacon_realloc (void *ptr, size_t n)
   return pptr;
 }
 
-bool
+BaconBoolean
 bacon_nan_value (double v)
 {
   volatile double x;
 
   x = v;
   if (x != x)
-    return true;
-  return false;
+    return BACON_TRUE;
+  return BACON_FALSE;
 }
 
+#ifdef HAVE_SYS_TIME_H
 void
 bacon_get_time_of_day (struct timeval *tv)
 {
@@ -81,4 +84,5 @@ bacon_get_millis (const struct timeval *s, const struct timeval *e)
   usec = ((e->tv_usec - s->tv_usec) / BACON_SEC_MILLIS);
   return (sec + usec);
 }
+#endif
 

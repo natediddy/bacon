@@ -18,89 +18,69 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "bacon.h"
+
 #include <errno.h>
-#include <stdlib.h>
 #include <string.h>
-#include <sys/stat.h>
-#include <sys/types.h>
 
 #include "bacon-env.h"
 #include "bacon-out.h"
 #include "bacon-str.h"
 #include "bacon-util.h"
 
-#ifdef BACON_OS_UNIX
-# include <unistd.h>
-#endif
-
-#ifdef BACON_OS_WINDOWS
-# include <direct.h>
-# include <windows.h>
-#endif
-
-#ifdef BACON_OS_UNIX
-# define BACON_DELETE_FILE(p) (unlink (p) == 0)
-# define BACON_GETCWD(buf, n) (getcwd (buf, n) != NULL)
-# define BACON_MKDIR(p)       mkdir (p, S_IRWXU)
-#endif
-
-#ifdef BACON_OS_WINDOWS
-# define BACON_DELETE_FILE(p) (DeleteFile (p))
-# define BACON_GETCWD(buf, n) (GetCurrentDirectory (n, buf) != 0)
-# define BACON_MKDIR(p)       _mkdir (p)
-#endif
-
 #define BACON_PROGRAM_DIRNAME  "." BACON_PROGRAM_NAME
-#define BACON_GETENV_VALUE_MAX (BACON_PATH_MAX * 2)
 
 char *g_program_data_path = NULL;
 
-bool
+BaconBoolean
 bacon_env_is_directory (const char *path)
 {
   struct stat s;
 
   memset (&s, 0, sizeof (struct stat));
-  if ((stat (path, &s) == 0) && S_ISDIR (s.st_mode))
-    return true;
-  return false;
+  if (stat (path, &s) == 0) {
+    if (S_ISDIR (s.st_mode))
+      return BACON_TRUE;
+  } else if (errno != ENOENT)
+    bacon_debug ("failed to stat `%s': %s", path, strerror (errno));
+  return BACON_FALSE;
 }
 
-bool
+BaconBoolean
 bacon_env_is_file (const char *path)
 {
   struct stat s;
 
   memset (&s, 0, sizeof (struct stat));
-  if ((stat (path, &s) == 0) && S_ISREG(s.st_mode))
-    return true;
-  return false;
+  if (stat (path, &s) == 0) {
+    if (S_ISREG (s.st_mode))
+      return BACON_TRUE;
+  } else if (errno != ENOENT)
+    bacon_debug ("failed to stat `%s': %s", path, strerror (errno));
+  return BACON_FALSE;
 }
 
 void
 bacon_env_delete (const char *path)
 {
-  if (bacon_env_is_directory (path))
-    return;
-
   if (bacon_env_is_file (path)) {
-    if (!BACON_DELETE_FILE (path)) {
+    if (!bacon_delete_file (path)) {
       bacon_error ("failed to delete file `%s' (%s)", path, strerror (errno));
       exit (EXIT_FAILURE);
     }
   }
 }
 
-long
-bacon_env_size_of (const char *path)
+unsigned long
+bacon_env_size_of_file (const char *path)
 {
-  long res;
+  unsigned long res;
   struct stat s;
 
   res = 0;
   memset (&s, 0, sizeof (struct stat));
   if (stat (path, &s) == 0)
-    res = s.st_size;
+    res = ((unsigned long) s.st_size);
   return res;
 }
 
@@ -120,10 +100,9 @@ bacon_env_fopen (const char *path, const char *mode)
 void
 bacon_env_fclose (FILE *fp)
 {
-  if (!fp)
-    return;
-  if (fclose (fp) != 0)
-    bacon_warn ("failed to close file (%s)", strerror (errno));
+  if (fp)
+    if (fclose (fp) != 0)
+      bacon_warn ("failed to close file (%s)", strerror (errno));
 }
 
 char *
@@ -236,7 +215,7 @@ bacon_env_cwd (void)
 {
   char cwd[BACON_PATH_MAX];
 
-  if (BACON_GETCWD (cwd, BACON_PATH_MAX))
+  if (bacon_getcwd (cwd, BACON_PATH_MAX))
     return bacon_strdup (cwd);
   return NULL;
 }
@@ -327,15 +306,15 @@ bacon_env_exppath (char *path)
   home = bacon_env_home_path ();
 }*/
 
-bool
+BaconBoolean
 bacon_env_mkpath (const char *path)
 {
-  bool res;
+  BaconBoolean res;
   char c;
   char *p;
   char *ppath;
  
-  res = true;
+  res = BACON_TRUE;
   ppath = bacon_env_mkabs (path);
   p = ppath;
 
@@ -345,8 +324,8 @@ bacon_env_mkpath (const char *path)
       p++;
     c = *p;
     *p = '\0';
-    if (BACON_MKDIR (ppath) == -1 && errno != EEXIST) {
-      res = false;
+    if ((bacon_mkdir (ppath) == -1) && (errno != EEXIST)) {
+      res = BACON_FALSE;
       goto done;
     }
     *p = c;
@@ -357,12 +336,12 @@ done:
   return res;
 }
 
-bool
-bacon_env_ensure_path (const char *path, bool file)
+BaconBoolean
+bacon_env_ensure_path (const char *path, BaconBoolean file)
 {
   char *dn;
   char *abs;
-  bool ret;
+  BaconBoolean ret;
 
   if (file) {
     abs = bacon_env_mkabs (path);

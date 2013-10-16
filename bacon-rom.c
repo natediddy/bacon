@@ -96,7 +96,6 @@ BaconRomList *
 bacon_rom_list_new (const char *codename, int type, int max)
 {
   int x;
-  char *data;
   BaconRomList *list;
 
   list = bacon_new (BaconRomList);
@@ -174,17 +173,17 @@ bacon_rom_type_str (int index)
   return NULL;
 }
 
-bool
+BaconBoolean
 bacon_rom_do_download (const BaconRom *rom, char *dlpath)
 {
-  long offset;
-  bool dlres;
+  unsigned long offset;
+  BaconBoolean dlres;
   BaconHash hash;
 
   bacon_env_fix_download_path (&dlpath, rom->name);
-  if (!bacon_env_ensure_path (dlpath, true)) {
+  if (!bacon_env_ensure_path (dlpath, BACON_TRUE)) {
     bacon_error ("`%s' is an invalid path", dlpath);
-    return false;
+    return BACON_FALSE;
   }
 
   offset = 0L;
@@ -192,28 +191,28 @@ bacon_rom_do_download (const BaconRom *rom, char *dlpath)
     bacon_hash_from_file (&hash, dlpath);
     if (bacon_hash_match (&hash, &rom->hash)) {
       bacon_msg ("`%s' already exists - no need to redownload", dlpath);
-      return true;
+      return BACON_TRUE;
     }
     bacon_msg ("resuming download of `%s'", dlpath);
-    offset = bacon_env_size_of (dlpath);
+    offset = bacon_env_size_of_file (dlpath);
   }
 
-  dlres = true;
+  dlres = BACON_TRUE;
   if (bacon_net_init_for_rom (rom->get, offset, dlpath)) {
     if (!bacon_net_get_file ())
-      dlres = false;
+      dlres = BACON_FALSE;
     bacon_net_deinit ();
   } else
-    dlres = false;
+    dlres = BACON_FALSE;
 
   if (dlres) {
     bacon_hash_from_file (&hash, dlpath);
     if (!bacon_hash_match (&hash, &rom->hash)) {
       bacon_warn ("checksum mismatch for `%s' (possibly corrupt)", dlpath);
-      return false;
+      return BACON_FALSE;
     }
-    return true;
+    return BACON_TRUE;
   }
-  return false;
+  return BACON_FALSE;
 }
 

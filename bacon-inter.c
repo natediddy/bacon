@@ -18,9 +18,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "bacon.h"
+
 #include <string.h>
 
-#include "bacon.h"
 #include "bacon-device.h"
 #include "bacon-env.h"
 #include "bacon-hash.h"
@@ -32,40 +33,16 @@
 #include "bacon-util.h"
 
 #define BACON_ANSWER_MAX     BACON_DEVICE_NAME_MAX
-#define BACON_ANSWER_INVALID 0
-#define BACON_ANSWER_YES     1
-#define BACON_ANSWER_NO      2
 
 extern BaconDeviceList *g_device_list;
 extern char *           g_out_path;
 extern int              g_max_roms;
 extern int              g_rom_type;
-static BaconRomList *   s_rom_list        = NULL;
-static BaconRom *       s_rom             = NULL;
-static BaconDevice *    s_device          = NULL;
-static char *           s_dirpath         = NULL;
-static int              s_rom_type_i      = -1;
-static const char *     s_yesno_answers[] = {
-  "y", "Y", "yes", "YES", "yEs", "YeS", "yES", "yeS", "Yes", "YEs",
-  "n", "N", "no", "NO", "nO", "No",
-  NULL
-};
-
-static int
-bacon_valid_yesno_answer (const char *ans)
-{
-  size_t x;
-
-  for (x = 0; s_yesno_answers[x]; ++x) {
-    if (bacon_streq (ans, s_yesno_answers[x])) {
-      if ((*ans == 'y') || (*ans == 'Y'))
-        return BACON_ANSWER_YES;
-      if ((*ans == 'n') || (*ans == 'N'))
-        return BACON_ANSWER_NO;
-    }
-  }
-  return BACON_ANSWER_INVALID;
-}
+static BaconRomList *   s_rom_list   = NULL;
+static BaconRom *       s_rom        = NULL;
+static BaconDevice *    s_device     = NULL;
+static char *           s_dirpath    = NULL;
+static int              s_rom_type_i = -1;
 
 static void
 bacon_do_cleanup (void)
@@ -81,33 +58,7 @@ bacon_do_exit (void)
   exit (EXIT_FAILURE);
 }
 
-static bool
-bacon_yesno (const char *question, ...)
-{
-  va_list a;
-  char answer[BACON_ANSWER_MAX];
-
-  while (true) {
-    va_start (a, question);
-    vfprintf (stdout, question, a);
-    va_end (a);
-    fputs ("? [y/n] ", stdout);
-    if (!fgets (answer, BACON_ANSWER_MAX, stdin)) {
-      bacon_error ("failed to read from standard input");
-      bacon_do_exit ();
-    }
-    switch (bacon_valid_yesno_answer (answer)) {
-    case BACON_ANSWER_YES:
-      return true;
-    case BACON_ANSWER_NO:
-      return false;
-    default:
-      bacon_warn ("`%s' unrecognized - try again...", answer);
-    }
-  }
-}
-
-static bool
+static BaconBoolean
 bacon_get_num_answer (int *input)
 {
   size_t n;
@@ -123,9 +74,9 @@ bacon_get_num_answer (int *input)
     if (answer[n - 1] == '\n')
       answer[n - 1] = '\0';
     bacon_warn ("'%s' not valid - please try again...", answer);
-    return false;
+    return BACON_FALSE;
   }
-  return true;
+  return BACON_TRUE;
 }
 
 static void
@@ -270,12 +221,12 @@ bacon_license (void)
   bacon_outln (text);
 }
 
-static bool
+static BaconBoolean
 bacon_all_currents_satisfied (void)
 {
   if (s_device && s_rom && (s_rom_type_i != -1))
-    return true;
-  return false;
+    return BACON_TRUE;
+  return BACON_FALSE;
 }
 
 static void
@@ -300,7 +251,7 @@ static void
 bacon_choose_device (void)
 {
   bacon_display_device_choices ();
-  while (true) {
+  while (BACON_TRUE) {
     bacon_out ("Enter choice: [1-%i or codename] ",
         bacon_device_list_total (g_device_list));
     bacon_get_device_answer ();
@@ -314,7 +265,7 @@ static void
 bacon_choose_rom_type (void)
 {
   bacon_display_rom_type_choices ();
-  while (true) {
+  while (BACON_TRUE) {
     bacon_out ("Enter number: [1-%i] ", BACON_ROM_TOTAL);
     if (!bacon_get_num_answer (&s_rom_type_i))
       continue;
@@ -352,7 +303,7 @@ bacon_choose_rom (void)
   if (!total)
     return;
 
-  while (true) {
+  while (BACON_TRUE) {
     bacon_out ("Enter number: [1-%i] ", total);
     if (!bacon_get_num_answer (&idx))
       continue;
@@ -371,7 +322,7 @@ bacon_specify_download_path (void)
   size_t n;
   char answer[BACON_PATH_MAX];
 
-  while (true) {
+  while (BACON_TRUE) {
     bacon_out ("Enter path [without file basename]: ");
     if (!fgets (answer, BACON_PATH_MAX, stdin)) {
       bacon_error ("failed to read from standard input");
@@ -385,8 +336,8 @@ bacon_specify_download_path (void)
     bacon_outln ("`%s' exists and is a file - try again", answer);
   }
 
-  if (!bacon_env_ensure_path (answer, false)) {
-    bacon_debug ("BUG: bacon_env_ensure_path (\"%s\", false) == false",
+  if (!bacon_env_ensure_path (answer, BACON_FALSE)) {
+    bacon_debug ("BUG: bacon_env_ensure_path (\"%s\", BACON_FALSE) == BACON_FALSE",
                  answer);
     bacon_do_exit ();
   }
@@ -397,7 +348,7 @@ bacon_specify_download_path (void)
 static void
 bacon_download (void)
 {
-  bool ret;
+  BaconBoolean ret;
 
   bacon_outln ("\n==========================================");
   bacon_outln ("device:      %s [%s]",
@@ -444,10 +395,10 @@ bacon_main_menu (void)
   };
   int choice;
   size_t x;
-  bool stop;
+  BaconBoolean stop;
 
-  stop = false;
-  while (true) {
+  stop = BACON_FALSE;
+  while (BACON_TRUE) {
     for (x = 0; text[x]; ++x)
       bacon_outln (text[x]);
     bacon_currents ();
@@ -502,7 +453,7 @@ bacon_main_menu (void)
       bacon_license ();
       break;
     case 8:
-      stop = true;
+      stop = BACON_TRUE;
       break;
     default:
       bacon_outln ("Invalid reponse - please try again");

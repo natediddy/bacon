@@ -18,13 +18,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "bacon.h"
+
 #ifdef BACON_GTK
 #include <string.h>
 
 #include <curl/curl.h>
 #include <gtk/gtk.h>
 
-#include "bacon.h"
 #include "bacon-device.h"
 #include "bacon-env.h"
 #include "bacon-gtk.h"
@@ -45,6 +46,7 @@
 #define BACON_PROGRESS_WINDOW_HEIGHT    100
 #define BACON_PREFERENCES_WINDOW_WIDTH  450
 #define BACON_PREFERENCES_WINDOW_HEIGHT 300
+#define BACON_ICON_VIEW_ITEM_WIDTH      200
 
 #define BACON_FILE_MENU_ITEM_LABEL         "File"
 #define BACON_QUIT_MENU_ITEM_LABEL         "Quit"
@@ -87,7 +89,7 @@
 
 #define BACON_DEVICE_COUNT_MARKUP_FORMAT \
   BACON_DEVICE_COUNT_LABEL_DEFAULT " <b><span color=\"" \
-  BACON_DEVICE_COUNT_COLOR "\">%3i</span></b>"
+  BACON_DEVICE_COUNT_COLOR "\">%03i</span></b>"
 
 typedef struct BaconData           BaconData;
 typedef struct BaconThumbList      BaconThumbList;
@@ -134,6 +136,8 @@ static GtkIconView *     s_icon_view          = NULL;
 static GtkLabel *        s_device_count_label = NULL;
 static GtkTreeModel *    s_model              = NULL;
 static GtkWindow *       s_window             = NULL;
+static gint              s_window_cur_width   = -1;
+static gint              s_window_cur_height  = -1;
 static gchar *           s_thumbs_path        = NULL;
 static gint              s_device_count       = 0;
 
@@ -186,8 +190,6 @@ bacon_vbox_new (gint spacing)
 static void
 bacon_init_progress_window (BaconProgressType type)
 {
-  gint w;
-  gint h;
   gchar *message;
   GtkWidget *vbox;
   GtkWidget *hbox;
@@ -280,7 +282,6 @@ bacon_init_icon_cache (void)
   char *iconpath;
   BaconDeviceThumbRequestList *p;
   BaconDeviceThumbRequestList *thumbs;
-  GtkWidget *progress_dialog;
 
   data = NULL;
   thumbs = NULL;
@@ -343,7 +344,6 @@ static void
 bacon_init_data (void)
 {
   gchar *iconpath;
-  GdkPixbuf *i;
   GError *error;
   BaconData *dp;
   BaconDeviceList *p;
@@ -404,7 +404,7 @@ bacon_refresh_device_list (void)
   if (bacon_net_gtk_init_for_device_list (s_progress_bar)) {
     data = bacon_net_get_page_data ();
     if (data)
-      g_device_list = bacon_parse_for_device_list (data, false);
+      g_device_list = bacon_parse_for_device_list (data, BACON_FALSE);
     bacon_net_deinit ();
   }
   bacon_finish_progress_window ();
@@ -476,8 +476,10 @@ bacon_set_icon_view_attributes (void)
   gtk_icon_view_set_row_spacing (s_icon_view, 0);
   gtk_icon_view_set_column_spacing (s_icon_view, 0);
   gtk_icon_view_set_margin (s_icon_view, 0);
-  gtk_icon_view_set_item_width (s_icon_view, 200);
-  gtk_icon_view_set_columns (s_icon_view, -1);
+  gtk_icon_view_set_item_width (s_icon_view, BACON_ICON_VIEW_ITEM_WIDTH);
+  gtk_icon_view_set_columns (s_icon_view,
+                             (s_window_cur_width /
+                              BACON_ICON_VIEW_ITEM_WIDTH));
 }
 
 static void
@@ -488,7 +490,7 @@ bacon_set_model (void)
   GtkTreeIter iter;
   GtkListStore *store;
   BaconData *p;
-  BaconSearchTokenList *token_list;
+  BaconSearchTokenList *search_list;
 
   if (!g_device_list)
     bacon_refresh_device_list ();
@@ -509,13 +511,15 @@ bacon_set_model (void)
                               G_TYPE_STRING,
                               GDK_TYPE_PIXBUF);
   s_device_count = 0;
-  token_list =
+  search_list =
     bacon_search_token_list_new (gtk_entry_buffer_get_text (s_entry_buffer));
 
   for (p = s_data; p; p = p->next) {
-    if (token_list &&
-        (!bacon_search (p->device->fullname, token_list) &&
-         !bacon_search (p->device->codename, token_list)))
+    if (search_list &&
+        ((bacon_search (p->device->fullname, search_list) ==
+          BACON_SEARCH_RESULT_NO_MATCHES) &&
+         (bacon_search (p->device->codename, search_list) ==
+          BACON_SEARCH_RESULT_NO_MATCHES)))
       continue;
     s_device_count++;
     display_name = g_markup_printf_escaped (BACON_DISPLAY_NAME_MARKUP_FORMAT,
@@ -532,7 +536,7 @@ bacon_set_model (void)
       break;
   }
 
-  bacon_search_token_list_free (token_list);
+  bacon_search_token_list_free (search_list);
 
   s_model = GTK_TREE_MODEL (store);
   if (s_icon_view) {
@@ -647,6 +651,33 @@ bacon_on_main_window_delete_event (GtkWidget *widget, gpointer data)
   return TRUE;
 }
 
+static gboolean
+bacon_on_main_window_configure_event (GtkWidget *widget,
+                                      GdkEvent *event,
+                                      gpointer user_data)
+{
+  gint width;
+  gint height;
+  gboolean resized;
+
+  width = event->configure.width;
+  height = event->configure.height;
+  resized = FALSE;
+
+  if ((width != s_window_cur_width) || (height != s_window_cur_height))
+  {
+    if (width != s_window_cur_width)
+      s_window_cur_width = width;
+    if (height != s_window_cur_height)
+      s_window_cur_height = height;
+    resized = TRUE;
+  }
+
+  if (resized)
+    bacon_set_model ();
+  return FALSE;
+}
+
 static void
 bacon_on_menu_item_quit_activate (GtkMenuItem *menu_item, gpointer user_data)
 {
@@ -689,7 +720,7 @@ bacon_on_menu_item_about_activate (GtkMenuItem *menu_item, gpointer user_data)
                          /* "translator-credits", "translator-credits", */
                          "version", BACON_VERSION,
                          "website", PACKAGE_URL,
-                         "website-label", "github.com/natediddy",
+                         "website-label", "Github",
                          NULL);
 }
 
@@ -758,15 +789,11 @@ bacon_on_entry_key_press_event (GtkWidget *widget,
                                 GdkEvent *event,
                                 gpointer user_data)
 {
-  gchar buffer[2];
-  const gchar *text;
   gint cursor_pos;
   gint space_pos;
-  guint i;
-  guint j;
 
   if (event->type != GDK_KEY_PRESS)
-    return;
+    return FALSE;
 
   g_object_get (G_OBJECT (widget), "cursor-position", &cursor_pos, NULL);
 
@@ -805,7 +832,7 @@ bacon_on_entry_key_press_event (GtkWidget *widget,
     break;
   case GDK_KEY_v:
     if (event->key.state & GDK_CONTROL_MASK) {
-      /* copy text from clipboard */;
+      /* paste text from clipboard? */;
     } else {
       bacon_entry_buffer_insert_char (cursor_pos, event->key.keyval);
       cursor_pos++;
@@ -869,6 +896,7 @@ bacon_on_entry_key_press_event (GtkWidget *widget,
                          GTK_MOVEMENT_VISUAL_POSITIONS,
                          cursor_pos, FALSE, NULL);
   bacon_set_model ();
+  return TRUE;
 }
 
 static GtkWidget *
@@ -910,14 +938,20 @@ bacon_get_menu_bar (void)
   gtk_menu_shell_append (GTK_MENU_SHELL (help_menu), about);
   gtk_menu_shell_append (GTK_MENU_SHELL (menu_bar), help);
 
-  g_signal_connect (G_OBJECT (quit), "activate",
-                    G_CALLBACK (bacon_on_menu_item_quit_activate), NULL);
+  g_signal_connect (G_OBJECT (quit),
+                    "activate",
+                    G_CALLBACK (bacon_on_menu_item_quit_activate),
+                    NULL);
+
   g_signal_connect (G_OBJECT (preferences),
                     "activate",
                     G_CALLBACK (bacon_on_menu_item_preferences_activate),
                     NULL);
-  g_signal_connect (G_OBJECT (about), "activate",
-                    G_CALLBACK (bacon_on_menu_item_about_activate), NULL);
+
+  g_signal_connect (G_OBJECT (about),
+                    "activate",
+                    G_CALLBACK (bacon_on_menu_item_about_activate),
+                    NULL);
   return menu_bar;
 }
 
@@ -939,9 +973,17 @@ bacon_init_main_window (void)
   gtk_window_set_default_size (s_window,
                                BACON_WINDOW_DEFAULT_WIDTH,
                                BACON_WINDOW_DEFAULT_HEIGHT);
+  gtk_window_get_size (s_window, &s_window_cur_width, &s_window_cur_height);
 
-  g_signal_connect (G_OBJECT (s_window), "delete-event",
-                    G_CALLBACK (bacon_on_main_window_delete_event), NULL);
+  g_signal_connect (G_OBJECT (s_window),
+                    "delete-event",
+                    G_CALLBACK (bacon_on_main_window_delete_event),
+                    NULL);
+
+  g_signal_connect (G_OBJECT (s_window),
+                    "configure-event",
+                    G_CALLBACK (bacon_on_main_window_configure_event),
+                    NULL);
 
   /* setup vbox (contains hbox, menu_bar, scrolled_window, and icon_view) */
   vbox = bacon_vbox_new (0);
@@ -973,8 +1015,10 @@ bacon_init_main_window (void)
   gtk_box_pack_end (GTK_BOX (hbox), entry, FALSE, FALSE, 10);
   gtk_box_pack_end (GTK_BOX (hbox), search_label, FALSE, FALSE, 10);
 
-  g_signal_connect (G_OBJECT (entry), "key-press-event",
-                    G_CALLBACK (bacon_on_entry_key_press_event), NULL);
+  g_signal_connect (G_OBJECT (entry),
+                    "key-press-event",
+                    G_CALLBACK (bacon_on_entry_key_press_event),
+                    NULL);
 
   /* setup scrolled_window (contains s_icon_view) */
   scrolled_window = gtk_scrolled_window_new (NULL, NULL);
@@ -995,10 +1039,15 @@ bacon_init_main_window (void)
   gtk_scrolled_window_add_with_viewport
     (GTK_SCROLLED_WINDOW (scrolled_window), GTK_WIDGET (s_icon_view));
 
-  g_signal_connect (G_OBJECT (s_icon_view), "button-press-event",
-                    G_CALLBACK (bacon_on_icon_view_button_press_event), NULL);
-  g_signal_connect (G_OBJECT (s_icon_view), "query-tooltip",
-                    G_CALLBACK (bacon_on_icon_view_query_tooltip), NULL);
+  g_signal_connect (G_OBJECT (s_icon_view),
+                    "button-press-event",
+                    G_CALLBACK (bacon_on_icon_view_button_press_event),
+                    NULL);
+
+  g_signal_connect (G_OBJECT (s_icon_view),
+                    "query-tooltip",
+                    G_CALLBACK (bacon_on_icon_view_query_tooltip),
+                    NULL);
 
   /* show everything in s_window */
   gtk_widget_show_all (GTK_WIDGET (s_window));

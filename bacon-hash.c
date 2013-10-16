@@ -21,11 +21,12 @@
  * the RSA Data Security, Inc. MD5 Message-Digest Algorithm.
  */
 
+#include "bacon.h"
+
 #include <errno.h>
 #include <stdio.h>
 #include <string.h>
 
-#include "bacon.h"
 #include "bacon-env.h"
 #include "bacon-hash.h"
 #include "bacon-out.h"
@@ -60,28 +61,28 @@
     (a) += F ((b), (c), (d)) + (x) + (ac); \
     (a) = ROTATE_LEFT ((a), (s));          \
     (a) += (b);                            \
-  } while (false)
+  } while (BACON_FALSE)
 
 #define GG(a, b, c, d, x, s, ac)           \
   do {                                     \
     (a) += G ((b), (c), (d)) + (x) + (ac); \
     (a) = ROTATE_LEFT ((a), (s));          \
     (a) += (b);                            \
-  } while (false)
+  } while (BACON_FALSE)
 
 #define HH(a, b, c, d, x, s, ac)           \
   do {                                     \
     (a) += H ((b), (c), (d)) + (x) + (ac); \
     (a) = ROTATE_LEFT ((a), (s));          \
     (a) += (b);                            \
-  } while (false)
+  } while (BACON_FALSE)
 
 #define II(a, b, c, d, x, s, ac)           \
   do {                                     \
     (a) += I ((b), (c), (d)) + (x) + (ac); \
     (a) = ROTATE_LEFT ((a), (s));          \
     (a) += (b);                            \
-  } while (false)
+  } while (BACON_FALSE)
 
 typedef struct {
   unsigned int state[4];
@@ -259,7 +260,7 @@ bacon_hash_update_from_file (BaconMd5Ctx *ctx, FILE *fp)
   unsigned char buffer[1024];
   unsigned int n;
 
-  while (true) {
+  while (BACON_TRUE) {
     n = fread (buffer, 1, 1024, fp);
     if (!n)
       break;
@@ -313,7 +314,7 @@ bacon_hash_from_file (BaconHash *hash, const char *path)
   bacon_env_fclose (fp);
 }
 
-bool
+BaconBoolean
 bacon_hash_match (const BaconHash *hash1, const BaconHash *hash2)
 {
   return bacon_streq (hash1->hash, hash2->hash);

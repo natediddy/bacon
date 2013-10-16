@@ -18,8 +18,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "bacon.h"
+
 #include <string.h>
 
+#include "bacon-ctype.h"
 #include "bacon-search.h"
 #include "bacon-str.h"
 #include "bacon-util.h"
@@ -38,11 +41,12 @@ bacon_search_token_list_new (const char *query)
     query_pos = 0;
     n = strlen (query);
     char buffer[n + 1];
-    bacon_strtolower (buffer, n, query);
+    strncpy (buffer, query, n);
+    buffer[n] = '\0';
     /* remove trailing whitespace */
     while (bacon_isspace (buffer[n - 1]))
       buffer[n-- - 1] = '\0';
-    while (true) {
+    while (BACON_TRUE) {
       /* skip leading whitespace */
       while (buffer[query_pos] && bacon_isspace (buffer[query_pos]))
         query_pos++;
@@ -51,7 +55,7 @@ bacon_search_token_list_new (const char *query)
         token_pos = 0;
         /* add token to list */
         while (buffer[query_pos]) {
-          p->token[token_pos++] = buffer[query_pos++];
+          p->token[token_pos++] = bacon_tolower (buffer[query_pos++]);
           if ((token_pos == (BACON_SEARCH_TOKEN_MAX - 1)) ||
               bacon_isspace (buffer[query_pos]))
             break;

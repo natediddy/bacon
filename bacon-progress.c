@@ -18,26 +18,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "bacon.h"
+
 #include <stdio.h>
 #include <string.h>
-#include <sys/time.h>
+#ifdef HAVE_SYS_IOCTL_H
+# include <sys/ioctl.h>
+#endif
+#include <time.h>
+#ifdef HAVE_UNISTD_H
+# include <unistd.h>
+#endif
+#ifdef HAVE_WINDOWS_H
+# include <windows.h>
+#endif
 
-#include "bacon.h"
+#include "bacon-ctype.h"
+#include "bacon-colors.h"
 #include "bacon-env.h"
-#include "bacon-os.h"
 #include "bacon-out.h"
 #include "bacon-progress.h"
 #include "bacon-str.h"
 #include "bacon-util.h"
-
-#ifdef BACON_OS_UNIX
-# include <sys/ioctl.h>
-# include <unistd.h>
-#endif
-
-#ifdef BACON_OS_WINDOWS
-# include <windows.h>
-#endif
 
 #define BACON_FALLBACK_CONSOLE_WIDTH 40
 #define BACON_OUTPUT_MAX             1024
@@ -74,6 +76,7 @@
 #define BACON_MIN_SECS               60
 #define BACON_MOD_SEC                60
 
+BaconBoolean      g_in_progress    = BACON_FALSE;
 static int        s_console_width  = BACON_FALLBACK_CONSOLE_WIDTH;
 static int        s_output_pos     = 0;
 static int        s_output_rem     = 0;
@@ -81,7 +84,6 @@ static long       s_per_sec        = -1;
 static time_t     s_start_time     = -1;
 static time_t     s_end_time       = -1;
 static size_t     s_propeller_pos  = 0;
-static char       s_output_buffer  [BACON_OUTPUT_MAX];
 static char       s_current_buffer [BACON_SIZE_MAX];
 static char       s_total_buffer   [BACON_SIZE_MAX];
 static char       s_percent_buffer [BACON_PERCENT_MAX];
@@ -101,18 +103,18 @@ bacon_output_init (void)
 
   width = -1;
 
-#ifdef BACON_OS_UNIX
+#ifdef HAVE_SYS_IOCTL_H
   struct winsize x;
 
   if (ioctl (STDOUT_FILENO, TIOCGWINSZ, &x) != -1)
     width = x.ws_col;
-#endif
-
-#ifdef BACON_OS_WINDOWS
+#else
+# ifdef HAVE_WINDOWS_H
   CONSOLE_SCREEN_BUFFER_INFO x;
 
   if (GetConsoleScreenBufferInfo (GetStdHandle (STD_OUTPUT_HANDLE), &x))
     width = x.dwSize.X;
+# endif
 #endif
 
   if (width == -1)
@@ -140,20 +142,25 @@ bacon_output_init (void)
 }
 
 static void
-bacon_output_add_string (const char *s)
+bacon_output_string (const char *s, int color, BaconBoolean bold)
 {
   size_t n;
 
   n = strlen (s);
-  strncpy (s_output_buffer + s_output_pos, s, n);
-  s_output_pos += n;
+  if (color >= 0)
+    bacon_outco (color, bold, s);
+  else
+    bacon_out (s);
   s_output_rem -= n;
 }
 
 static void
-bacon_output_add_char (char c)
+bacon_output_char (char c, int color, BaconBoolean bold)
 {
-  s_output_buffer[s_output_pos++] = c;
+  if (color >= 0)
+    bacon_outcco (color, bold, c);
+  else
+    bacon_outc (c);
   s_output_rem--;
 }
 
@@ -176,7 +183,7 @@ bacon_format_percent (double x)
     strncpy (s_percent_buffer, BACON_PERCENT_DEFAULT, BACON_PERCENT_MAX);
     return;
   }
-  snprintf (s_percent_buffer, BACON_PERCENT_MAX, "%.0f%%", (x * 100));
+  snprintf (s_percent_buffer, BACON_PERCENT_MAX, "%.0f", (x * 100));
 }
 
 static void
@@ -247,29 +254,23 @@ static void
 bacon_output_finish (void)
 {
   while (s_output_rem > 2) {
-    s_output_buffer[s_output_pos++] = ' ';
+    bacon_outc (' ');
     s_output_rem--;
   }
-  s_output_buffer[s_output_pos++] = '\r';
-  s_output_buffer[s_output_pos] = '\0';
-}
-
-static void
-bacon_output_display (void)
-{
-  bacon_out (s_output_buffer);
-  fflush (stdout);
+  bacon_outc ('\r');
 }
 
 void
 bacon_progress_init (void)
 {
+  g_in_progress = BACON_TRUE;
   s_start_time = time (NULL);
 }
 
 void
-bacon_progress_deinit (bool newline)
+bacon_progress_deinit (BaconBoolean newline)
 {
+  g_in_progress = BACON_FALSE;
   s_end_time = time (NULL);
   if (newline)
     bacon_outc ('\n');
@@ -298,34 +299,64 @@ bacon_progress_file (double total, double current)
     bacon_output_init ();
     bacon_format_current ((unsigned long) current);
     bacon_format_total ((unsigned long) total);
+
     x = (total - current);
     bacon_format_eta (x);
+
     x = (current / total);
     bacon_format_percent (x);
     bacon_set_bytes_per_sec (current);
     bacon_format_speed ();
-    bacon_output_add_string (s_current_buffer);
-    bacon_output_add_char ('/');
-    bacon_output_add_string (s_total_buffer);
-    bacon_output_add_char (' ');
+
+    bacon_output_string (s_current_buffer,
+                         BACON_CURRENT_BYTES_COLOR,
+                         BACON_FALSE);
+
+    bacon_output_char ('/', -1, BACON_FALSE);
+
+    bacon_output_string (s_total_buffer,
+                         BACON_TOTAL_BYTES_COLOR,
+                         BACON_FALSE);
+    bacon_output_char (' ', -1, BACON_FALSE);
     bar_end_pos = BACON_BAR_END_POS - 8;
+
     if (bar_end_pos) {
-      bacon_output_add_char (BACON_BAR_START);
+      bacon_output_char (BACON_BAR_START, -1, BACON_FALSE);
       has_stop_pos = bacon_round (x * bar_end_pos);
       for (i = 0; i < has_stop_pos; ++i)
-        bacon_output_add_char (BACON_BAR_HAS);
+        bacon_output_char (BACON_BAR_HAS,
+                           BACON_BAR_HAS_CHAR_COLOR,
+                           BACON_FALSE);
       for (; i < bar_end_pos; ++i)
-        bacon_output_add_char (BACON_BAR_NOT);
-      bacon_output_add_char (BACON_BAR_END);
+        bacon_output_char (BACON_BAR_NOT,
+                           BACON_BAR_NOT_CHAR_COLOR,
+                           BACON_FALSE);
+      bacon_output_char (BACON_BAR_END, -1, BACON_FALSE);
     }
-    bacon_output_add_char (' ');
-    bacon_output_add_string (s_speed_buffer);
-    bacon_output_add_char (' ');
-    bacon_output_add_string (s_eta_buffer);
-    bacon_output_add_char (' ');
-    bacon_output_add_string (s_percent_buffer);
+
+    bacon_output_char (' ', -1, BACON_FALSE);
+    bacon_output_string (s_speed_buffer, BACON_SPEED_COLOR, BACON_FALSE);
+    bacon_output_char (' ', -1, BACON_FALSE);
+
+    for (i = 0; s_eta_buffer[i]; ++i) {
+      if (bacon_isdigit (s_eta_buffer[i]))
+        bacon_output_char (s_eta_buffer[i],
+                           BACON_ETA_DIGIT_COLOR,
+                           BACON_FALSE);
+      else if (bacon_isalpha (s_eta_buffer[i]))
+        bacon_output_char (s_eta_buffer[i],
+                           BACON_ETA_ALPHA_COLOR,
+                           BACON_FALSE);
+      else
+        bacon_output_char (s_eta_buffer[i], -1, BACON_FALSE);
+    }
+
+    bacon_output_char (' ', -1, BACON_FALSE);
+    bacon_output_string (s_percent_buffer, BACON_PERCENT_COLOR, BACON_FALSE);
+    bacon_output_char ('%', BACON_PERCENT_COLOR, BACON_FALSE);
     bacon_output_finish ();
-    bacon_output_display ();
+    fflush (stdout);
+
     if (millis == -1)
       bacon_get_time_of_day (&last);
     else {
@@ -352,12 +383,14 @@ bacon_progress_page (double total, double current)
 
   if ((millis == -1) || BACON_PAGE_WAIT (millis)) {
     bacon_output_init ();
-    bacon_output_add_string ("Loading... ");
+    bacon_output_string ("Loading... ", BACON_LOADING_COLOR, BACON_FALSE);
     if (s_propeller_pos == BACON_PROPELLER_SIZE)
       s_propeller_pos = 0;
-    bacon_output_add_char (s_propeller[s_propeller_pos++]);
+    bacon_output_char (s_propeller[s_propeller_pos++],
+                       BACON_PROPELLER_COLOR,
+                       BACON_TRUE);
     bacon_output_finish ();
-    bacon_output_display ();
+    fflush (stdout);
     if (millis == -1)
       bacon_get_time_of_day (&last);
     else {

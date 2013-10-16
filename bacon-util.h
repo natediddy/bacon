@@ -21,10 +21,11 @@
 #ifndef BACON_UTIL_H
 #define BACON_UTIL_H
 
-#include <stdlib.h>
-#include <sys/time.h>
-
 #include "bacon.h"
+
+#ifdef HAVE_SYS_TIME_H
+# include <sys/time.h>
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -40,7 +41,7 @@ extern "C" {
       break;          \
     free ((p));       \
     (p) = NULL;       \
-  } while (false)
+  } while (BACON_FALSE)
 
 #define bacon_round(x) \
   (((x) >= 0) ? ((int) ((x) + 0.5)) : ((int) ((x) - 0.5)))
@@ -59,7 +60,7 @@ extern "C" {
       p = p->next; \
     } \
     p->next = NULL; \
-  } while (false)
+  } while (BACON_FALSE)
 
 #define bacon_list_rewind(root, p) \
   do { \
@@ -67,7 +68,7 @@ extern "C" {
       if (!p->prev) \
         break; \
     root = p; \
-  } while (false)
+  } while (BACON_FALSE)
 
 #define bacon_list_free(root) \
   do { \
@@ -77,13 +78,15 @@ extern "C" {
         break; \
     } \
     bacon_free (root); \
-  } while (false)
+  } while (BACON_FALSE)
 
 void *bacon_malloc (size_t n);
 void *bacon_realloc (void *ptr, size_t n);
-bool bacon_nan_value (double v);
+BaconBoolean bacon_nan_value (double v);
+#ifdef HAVE_SYS_TIME_H
 void bacon_get_time_of_day (struct timeval *tv);
 long bacon_get_millis (const struct timeval *s, const struct timeval *e);
+#endif
 
 #ifdef __cplusplus
 }

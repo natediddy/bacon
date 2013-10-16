@@ -23,22 +23,25 @@
 
 #ifdef HAVE_CONFIG_H
 # include "bacon-config.h"
-# define BACON_PROGRAM_NAME     PACKAGE_NAME
-# define BACON_VERSION          PACKAGE_VERSION
-# define BACON_BUG_REPORT_EMAIL PACKAGE_BUGREPORT
+#endif
+#include "bacon-sys.h"
+
+#ifdef PACKAGE_NAME
+# define BACON_PROGRAM_NAME PACKAGE_NAME
 #else
-# define BACON_PROGRAM_NAME     "bacon"
-# define BACON_VERSION          "3.0"
-# define BACON_BUG_REPORT_EMAIL "me@nathanforbes.com"
+# define BACON_PROGRAM_NAME "bacon"
 #endif
 
-#ifndef __cplusplus
-typedef unsigned char bool;
-# define bool bool
-# undef false
-# define false (0)
-# undef true
-# define true (!false)
+#ifdef PACKAGE_VERSION
+# define BACON_VERSION PACKAGE_VERSION
+#else
+# define BACON_VERSION "3.0"
+#endif
+
+#ifdef PACKAGE_BUGREPORT
+# define BACON_BUG_REPORT_EMAIL PACKAGE_BUGREPORT
+#else
+# define BACON_BUG_REPORT_EMAIL "me@nathanforbes.com"
 #endif
 
 #endif /* BACON_H */

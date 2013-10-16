@@ -18,7 +18,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "bacon-os.h"
+#include "bacon.h"
+
+#ifdef HAVE_UNISTD_H
+# include <unistd.h>
+#endif
+
+#include "bacon-colors.h"
 #include "bacon-out.h"
 
 #define BACON_INDENT_SIZE      4
@@ -55,8 +61,9 @@
 # define BACON_COLOR_CODE_WHITE
 #endif
 
-extern const char *g_program_name;
-extern bool        g_use_color;
+extern char *       g_program_name;
+extern BaconBoolean g_use_color;
+extern BaconBoolean g_in_progress;
 
 #ifdef BACON_DEBUG
 void
@@ -69,14 +76,19 @@ __bacon_debug (const char *file,
   va_list a;
 
   if (msg && *msg) {
-    fprintf (stderr, "%s:", g_program_name);
+    bacon_foutco (stderr, BACON_PROGRAM_NAME_COLOR,
+                  BACON_TRUE, "%s:", BACON_PRINT_PROGRAM_NAME);
     if (file && *file)
-      fprintf (stderr, "%s:", file);
+      bacon_foutco (stderr, BACON_DEBUG_FILE_TAG_COLOR,
+                    BACON_TRUE, "%s:", file);
     if (func && *func)
-      fprintf (stderr, "%s:", func);
+      bacon_foutco (stderr, BACON_DEBUG_FUNC_TAG_COLOR,
+                    BACON_TRUE, "%s:", func);
     if (line >= 0)
-      fprintf (stderr, "%i:", line);
-    fputs (BACON_DEBUG_TAG, stderr);
+      bacon_foutco (stderr, BACON_DEBUG_LINE_TAG_COLOR,
+                    BACON_TRUE, "%i:", line);
+    bacon_foutco (stderr, BACON_DEBUG_TAG_COLOR,
+                  BACON_TRUE, BACON_DEBUG_TAG);
     va_start (a, msg);
     vfprintf (stderr, msg, a);
     va_end (a);
@@ -91,7 +103,9 @@ bacon_error (const char *msg, ...)
   va_list a;
 
   if (msg && *msg) {
-    fprintf (stderr, "%s: " BACON_ERROR_TAG, g_program_name);
+    bacon_foutco (stderr, BACON_PROGRAM_NAME_COLOR,
+                  BACON_TRUE, "%s: ", BACON_PRINT_PROGRAM_NAME);
+    bacon_foutco (stderr, BACON_ERROR_TAG_COLOR, BACON_TRUE, BACON_ERROR_TAG);
     va_start (a, msg);
     vfprintf (stderr, msg, a);
     va_end (a);
@@ -105,7 +119,9 @@ bacon_warn (const char *msg, ...)
   va_list a;
 
   if (msg && *msg) {
-    fprintf (stderr, "%s: " BACON_WARN_TAG, g_program_name);
+    bacon_foutco (stderr, BACON_PROGRAM_NAME_COLOR,
+                  BACON_TRUE, "%s: ", BACON_PRINT_PROGRAM_NAME);
+    bacon_foutco (stderr, BACON_ERROR_TAG_COLOR, BACON_TRUE, BACON_WARN_TAG);
     va_start (a, msg);
     vfprintf (stderr, msg, a);
     va_end (a);
@@ -116,6 +132,10 @@ bacon_warn (const char *msg, ...)
 void
 bacon_foutc (FILE *stream, char c)
 {
+#ifdef HAVE_ISATTY
+  if (g_in_progress && !isatty (fileno (stream)))
+    return;
+#endif
   fputc (c, stream);
 }
 
@@ -126,15 +146,19 @@ bacon_outc (const char c)
 }
 
 void
-bacon_foutcco (FILE *stream, int color, bool bold, char c)
+bacon_foutcco (FILE *stream, int color, BaconBoolean bold, char c)
 {
+#ifdef HAVE_ISATTY
+  if (g_in_progress && !isatty (fileno (stream)))
+    return;
+#endif
   bacon_color (color, bold, stream);
   bacon_foutc (stream, c);
   bacon_no_color (stream);
 }
 
 void
-bacon_outcco (int color, bool bold, char c)
+bacon_outcco (int color, BaconBoolean bold, char c)
 {
   bacon_color (color, bold, stdout);
   bacon_outc (c);
@@ -145,6 +169,11 @@ void
 bacon_fout (FILE *stream, const char *msg, ...)
 {
   va_list a;
+
+#ifdef HAVE_ISATTY
+  if (g_in_progress && !isatty (fileno (stream)))
+    return;
+#endif
 
   if (msg && *msg) {
     va_start (a, msg);
@@ -158,6 +187,11 @@ bacon_foutln (FILE *stream, const char *msg, ...)
 {
   va_list a;
 
+#ifdef HAVE_ISATTY
+  if (g_in_progress && !isatty (fileno (stream)))
+    return;
+#endif
+
   if (msg && *msg) {
     va_start (a, msg);
     vfprintf (stream, msg, a);
@@ -167,9 +201,18 @@ bacon_foutln (FILE *stream, const char *msg, ...)
 }
 
 void
-bacon_foutco (FILE *stream, int color, bool bold, const char *msg, ...)
+bacon_foutco (FILE *stream,
+              int color,
+              BaconBoolean bold,
+              const char *msg,
+              ...)
 {
   va_list a;
+
+#ifdef HAVE_ISATTY
+  if (g_in_progress && !isatty (fileno (stream)))
+    return;
+#endif
 
   if (msg && *msg) {
     va_start (a, msg);
@@ -181,9 +224,18 @@ bacon_foutco (FILE *stream, int color, bool bold, const char *msg, ...)
 }
 
 void
-bacon_foutlnco (FILE *stream, int color, bool bold, const char *msg, ...)
+bacon_foutlnco (FILE *stream,
+                int color,
+                BaconBoolean bold,
+                const char *msg,
+                ...)
 {
   va_list a;
+
+#ifdef HAVE_ISATTY
+  if (g_in_progress && !isatty (fileno (stream)))
+    return;
+#endif
 
   if (msg && *msg) {
     va_start (a, msg);
@@ -221,7 +273,7 @@ bacon_outln (const char *msg, ...)
 }
 
 void
-bacon_outco (int color, bool bold, const char *msg, ...)
+bacon_outco (int color, BaconBoolean bold, const char *msg, ...)
 {
   va_list a;
 
@@ -235,7 +287,7 @@ bacon_outco (int color, bool bold, const char *msg, ...)
 }
 
 void
-bacon_outlnco (int color, bool bold, const char *msg, ...)
+bacon_outlnco (int color, BaconBoolean bold, const char *msg, ...)
 {
   va_list a;
 
@@ -292,7 +344,8 @@ bacon_msg (const char *msg, ...)
   va_list a;
 
   if (msg && *msg) {
-    fprintf (stdout, "%s: " BACON_NORMAL_TAG, g_program_name);
+    bacon_foutco (stdout, BACON_PROGRAM_NAME_COLOR,
+                  BACON_TRUE, "%s: ", BACON_PRINT_PROGRAM_NAME);
     va_start (a, msg);
     vfprintf (stdout, msg, a);
     va_end (a);
@@ -301,7 +354,7 @@ bacon_msg (const char *msg, ...)
 }
 
 void
-bacon_color (int color, bool bold, FILE *stream)
+bacon_color (int color, BaconBoolean bold, FILE *stream)
 {
   if (!g_use_color)
     return;
@@ -345,5 +398,4 @@ bacon_no_color (FILE *stream)
   if (g_use_color)
     bacon_fout (stream, BACON_COLOR_CODE_NONE);
 }
-
 

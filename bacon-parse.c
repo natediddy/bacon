@@ -18,9 +18,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "bacon.h"
+
 #include <string.h>
 
-#include "bacon.h"
 #include "bacon-net.h"
 #include "bacon-out.h"
 #include "bacon-parse.h"
@@ -47,7 +48,7 @@
       bacon_fill_buffer (__dst, __x, __c);                     \
       __src = __x;                                             \
     }                                                          \
-  } while (false)
+  } while (BACON_FALSE)
 
 static size_t s_n_codename_tag      = 0;
 static size_t s_n_fullname_tag      = 0;
@@ -143,7 +144,6 @@ bacon_fill_buffer (char *dst, const char *src, const char stop)
 static BaconDeviceList *
 bacon_parse_local_for_device_list (const char *data)
 {
-  size_t x;
   size_t l;
   size_t pos;
   char line[BACON_LINE_MAX];
@@ -154,7 +154,7 @@ bacon_parse_local_for_device_list (const char *data)
   list = NULL;
   bacon_set_size_values ();
 
-  while (true) {
+  while (BACON_TRUE) {
     bacon_get_line (line, data, &pos);
     l = 0;
     if (!*line)
@@ -180,7 +180,7 @@ bacon_parse_remote_for_device_list (const char *data)
   list = NULL;
   bacon_set_size_values ();
 
-  while (true) {
+  while (BACON_TRUE) {
     x = strstr ((!d) ? data : d, BACON_CODENAME_TAG);
     if (x && *x) {
       x = x + s_n_codename_tag;
@@ -198,7 +198,7 @@ bacon_parse_remote_for_device_list (const char *data)
 }
 
 BaconDeviceList *
-bacon_parse_for_device_list (const char *data, bool local)
+bacon_parse_for_device_list (const char *data, BaconBoolean local)
 {
   BaconDeviceList *list;
 
@@ -256,6 +256,7 @@ bacon_parse_for_device_thumb_request_list (const char *data,
   BaconDeviceThumbRequestList *p;
   BaconDeviceThumbRequestList *list;
 
+  e = NULL;
   x = NULL;
   list = NULL;
   bacon_set_size_values ();

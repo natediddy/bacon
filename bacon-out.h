@@ -21,10 +21,10 @@
 #ifndef BACON_OUT_H
 #define BACON_OUT_H
 
+#include "bacon.h"
+
 #include <stdarg.h>
 #include <stdio.h>
-
-#include "bacon.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -38,6 +38,9 @@ extern "C" {
 #define BACON_COLOR_MAGENTA 5
 #define BACON_COLOR_CYAN    6
 #define BACON_COLOR_WHITE   7
+
+#define BACON_PRINT_PROGRAM_NAME \
+  ((g_program_name && *g_program_name) ? g_program_name : "")
 
 #ifdef BACON_DEBUG
 # define bacon_debug(msg, ...) \
@@ -57,24 +60,27 @@ void bacon_error (const char *msg, ...);
 void bacon_warn (const char *msg, ...);
 void bacon_foutc (FILE *stream, char c);
 void bacon_outc (const char c);
-void bacon_foutcco (FILE *stream, int color, bool bold, char c);
-void bacon_outcco (int color, bool bold, char c);
+void bacon_foutcco (FILE *stream, int color, BaconBoolean bold, char c);
+void bacon_outcco (int color, BaconBoolean bold, char c);
 void bacon_fout (FILE *stream, const char *msg, ...);
 void bacon_foutln (FILE *stream, const char *msg, ...);
-void bacon_foutco (FILE *stream, int color, bool bold, const char *msg, ...);
+void bacon_foutco (FILE *stream,
+                   int color,
+                   BaconBoolean bold,
+                   const char *msg, ...);
 void bacon_foutlnco (FILE *stream,
                      int color,
-                     bool bold,
+                     BaconBoolean bold,
                      const char *msg,
                      ...);
 void bacon_out (const char *msg, ...);
 void bacon_outln (const char *msg, ...);
-void bacon_outco (int color, bool bold, const char *msg, ...);
-void bacon_outlnco (int color, bool bold, const char *msg, ...);
+void bacon_outco (int color, BaconBoolean bold, const char *msg, ...);
+void bacon_outlnco (int color, BaconBoolean bold, const char *msg, ...);
 void bacon_outi (int level, const char *msg, ...);
 void bacon_outlni (int level, const char *msg, ...);
 void bacon_msg (const char *msg, ...);
-void bacon_color (int color, bool bold, FILE *stream);
+void bacon_color (int color, BaconBoolean bold, FILE *stream);
 void bacon_no_color (FILE *stream);
 
 #ifdef __cplusplus

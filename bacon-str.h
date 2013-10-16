@@ -21,8 +21,6 @@
 #ifndef BACON_STR_H
 #define BACON_STR_H
 
-#include <stdlib.h>
-
 #include "bacon.h"
 
 #ifdef __cplusplus
@@ -32,18 +30,19 @@ extern "C" {
 char *bacon_strdup (const char *str);
 char *bacon_strndup (const char *str, size_t n);
 char *bacon_strf (const char *fmt, ...);
-bool bacon_streq (const char *str1, const char *str2);
-bool bacon_strstw (const char *str, const char *pre);
-char bacon_tolower (char c);
-bool bacon_isdigit (char c);
-bool bacon_isspace (char c);
+BaconBoolean bacon_streq (const char *str1, const char *str2);
+BaconBoolean bacon_streqci (const char *str1, const char *str2);
+BaconBoolean bacon_strstw (const char *str, const char *pre);
+BaconBoolean bacon_strew (const char *str,
+                          const char *suf,
+                          BaconBoolean case_sensitive);
 void bacon_strtolower (char *buf, size_t n, const char *str);
 ssize_t bacon_strfposof (const char *str,
                          const char *query,
-                         bool case_sensitive);
+                         BaconBoolean case_sensitive);
 unsigned int bacon_stroccurs (const char *str,
                               const char *query,
-                              bool case_sensitive);
+                              BaconBoolean case_sensitive);
 void bacon_strbytes (char *buf, size_t n, unsigned long bytes);
 int bacon_strtoint (const char *str);
 

@@ -21,16 +21,18 @@
 #ifndef BACON_GTK_H
 #define BACON_GTK_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #ifdef BACON_GTK
-void bacon_gtk_main (int *argc, char ***argv);
-#endif
 
-#ifdef __cplusplus
+# ifdef __cplusplus
+extern "C" {
+# endif
+
+void bacon_gtk_main (int *argc, char ***argv);
+
+# ifdef __cplusplus
 }
+# endif
+
 #endif
 
 #endif /* BACON_GTK_H */

@@ -21,6 +21,7 @@
 #ifndef BACON_ROM_H
 #define BACON_ROM_H
 
+#include "bacon.h"
 #include "bacon-hash.h"
 
 #ifdef __cplusplus
@@ -65,7 +66,7 @@ struct BaconRomList {
 BaconRomList *bacon_rom_list_new (const char *codename, int type, int max);
 void bacon_rom_list_destroy (BaconRomList *rom_list);
 const char *bacon_rom_type_str (int index);
-bool bacon_rom_do_download (const BaconRom *rom, char *dlpath);
+BaconBoolean bacon_rom_do_download (const BaconRom *rom, char *dlpath);
 
 #ifdef __cplusplus
 }

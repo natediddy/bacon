@@ -29,7 +29,8 @@
 extern "C" {
 #endif
 
-BaconDeviceList *bacon_parse_for_device_list (const char *data, bool local);
+BaconDeviceList *bacon_parse_for_device_list (const char *data,
+                                              BaconBoolean local);
 BaconRom *bacon_parse_for_rom (const char *data, int max);
 #ifdef BACON_GTK
 BaconDeviceThumbRequestList *

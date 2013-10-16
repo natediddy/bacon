@@ -1,5 +1,7 @@
 noinst_HEADERS = \
 	bacon.h \
+	bacon-colors.h \
+	bacon-ctype.h \
 	bacon-device.h \
 	bacon-env.h \
 	bacon-gtk.h \
@@ -7,7 +9,6 @@ noinst_HEADERS = \
 	bacon-inter.h \
 	bacon-license.h \
 	bacon-net.h \
-	bacon-os.h \
 	bacon-out.h \
 	bacon-parse.h \
 	bacon-pixbufs.h \
@@ -15,12 +16,14 @@ noinst_HEADERS = \
 	bacon-rom.h \
 	bacon-search.h \
 	bacon-str.h \
+	bacon-sys.h \
 	bacon-util.h
 
 bin_PROGRAMS = bacon
 
 bacon_SOURCES = \
 	bacon.c \
+	bacon-ctype.c \
 	bacon-device.c \
 	bacon-env.c \
 	bacon-gtk.c \
