@@ -14,7 +14,7 @@ Usage
 Options
 -------
     General Options:
-        -c, --no-color             Disable all colored output
+        -c, --color                Enable colored output
         -d, --download             Download the latest ROM for DEVICE
                                    Requires specific ROM type option
                                    (See 'ROM Type Options' below)

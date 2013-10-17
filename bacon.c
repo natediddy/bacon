@@ -111,7 +111,7 @@ bacon_help (void)
   /* each item in array gets its own line */
   static const char *const help[] = {
     "General Options:",
-    "  -c, --color                Enable colored terminal output",
+    "  -c, --color                Enable colored output",
     "  -d, --download             Download the latest ROM for DEVICE",
     "                             Requires specific ROM type option",
     "                             (See 'ROM Type Options' below)",
