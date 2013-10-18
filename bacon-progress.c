@@ -34,7 +34,6 @@
 #endif
 
 #include "bacon-ctype.h"
-#include "bacon-colors.h"
 #include "bacon-env.h"
 #include "bacon-out.h"
 #include "bacon-progress.h"
@@ -142,25 +141,19 @@ bacon_output_init (void)
 }
 
 static void
-bacon_output_string (const char *s, int color, BaconBoolean bold)
+bacon_output_string (const char *s, int colorp)
 {
   size_t n;
 
   n = strlen (s);
-  if (color >= 0)
-    bacon_outco (color, bold, s);
-  else
-    bacon_out (s);
+  bacon_outco (colorp, s);
   s_output_rem -= n;
 }
 
 static void
-bacon_output_char (char c, int color, BaconBoolean bold)
+bacon_output_char (char c, int colorp)
 {
-  if (color >= 0)
-    bacon_outcco (color, bold, c);
-  else
-    bacon_outc (c);
+  bacon_outcco (colorp, c);
   s_output_rem--;
 }
 
@@ -308,52 +301,40 @@ bacon_progress_file (double total, double current)
     bacon_set_bytes_per_sec (current);
     bacon_format_speed ();
 
-    bacon_output_string (s_current_buffer,
-                         BACON_CURRENT_BYTES_COLOR,
-                         BACON_FALSE);
+    bacon_output_string (s_current_buffer, BACON_CURRENT_BYTES_COLOR);
 
-    bacon_output_char ('/', -1, BACON_FALSE);
+    bacon_output_char ('/', BACON_COLOR_NONE);
 
-    bacon_output_string (s_total_buffer,
-                         BACON_TOTAL_BYTES_COLOR,
-                         BACON_FALSE);
-    bacon_output_char (' ', -1, BACON_FALSE);
+    bacon_output_string (s_total_buffer, BACON_TOTAL_BYTES_COLOR);
+    bacon_output_char (' ', BACON_COLOR_NONE);
     bar_end_pos = BACON_BAR_END_POS - 8;
 
     if (bar_end_pos) {
-      bacon_output_char (BACON_BAR_START, -1, BACON_FALSE);
+      bacon_output_char (BACON_BAR_START, BACON_COLOR_NONE);
       has_stop_pos = bacon_round (x * bar_end_pos);
       for (i = 0; i < has_stop_pos; ++i)
-        bacon_output_char (BACON_BAR_HAS,
-                           BACON_BAR_HAS_CHAR_COLOR,
-                           BACON_FALSE);
+        bacon_output_char (BACON_BAR_HAS, BACON_BAR_HAS_CHAR_COLOR);
       for (; i < bar_end_pos; ++i)
-        bacon_output_char (BACON_BAR_NOT,
-                           BACON_BAR_NOT_CHAR_COLOR,
-                           BACON_FALSE);
-      bacon_output_char (BACON_BAR_END, -1, BACON_FALSE);
+        bacon_output_char (BACON_BAR_NOT, BACON_BAR_NOT_CHAR_COLOR);
+      bacon_output_char (BACON_BAR_END, BACON_COLOR_NONE);
     }
 
-    bacon_output_char (' ', -1, BACON_FALSE);
-    bacon_output_string (s_speed_buffer, BACON_SPEED_COLOR, BACON_FALSE);
-    bacon_output_char (' ', -1, BACON_FALSE);
+    bacon_output_char (' ', BACON_COLOR_NONE);
+    bacon_output_string (s_speed_buffer, BACON_SPEED_COLOR);
+    bacon_output_char (' ', BACON_COLOR_NONE);
 
     for (i = 0; s_eta_buffer[i]; ++i) {
       if (bacon_isdigit (s_eta_buffer[i]))
-        bacon_output_char (s_eta_buffer[i],
-                           BACON_ETA_DIGIT_COLOR,
-                           BACON_FALSE);
+        bacon_output_char (s_eta_buffer[i], BACON_ETA_DIGIT_COLOR);
       else if (bacon_isalpha (s_eta_buffer[i]))
-        bacon_output_char (s_eta_buffer[i],
-                           BACON_ETA_ALPHA_COLOR,
-                           BACON_FALSE);
+        bacon_output_char (s_eta_buffer[i], BACON_ETA_ALPHA_COLOR);
       else
-        bacon_output_char (s_eta_buffer[i], -1, BACON_FALSE);
+        bacon_output_char (s_eta_buffer[i], BACON_COLOR_NONE);
     }
 
-    bacon_output_char (' ', -1, BACON_FALSE);
-    bacon_output_string (s_percent_buffer, BACON_PERCENT_COLOR, BACON_FALSE);
-    bacon_output_char ('%', BACON_PERCENT_COLOR, BACON_FALSE);
+    bacon_output_char (' ', BACON_COLOR_NONE);
+    bacon_output_string (s_percent_buffer, BACON_PERCENT_COLOR);
+    bacon_output_char ('%', BACON_PERCENT_COLOR);
     bacon_output_finish ();
     fflush (stdout);
 
@@ -383,12 +364,10 @@ bacon_progress_page (double total, double current)
 
   if ((millis == -1) || BACON_PAGE_WAIT (millis)) {
     bacon_output_init ();
-    bacon_output_string ("Loading... ", BACON_LOADING_COLOR, BACON_FALSE);
+    bacon_output_string ("Loading... ", BACON_LOADING_COLOR);
     if (s_propeller_pos == BACON_PROPELLER_SIZE)
       s_propeller_pos = 0;
-    bacon_output_char (s_propeller[s_propeller_pos++],
-                       BACON_PROPELLER_COLOR,
-                       BACON_TRUE);
+    bacon_output_char (s_propeller[s_propeller_pos++], BACON_PROPELLER_COLOR);
     bacon_output_finish ();
     fflush (stdout);
     if (millis == -1)

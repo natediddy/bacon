@@ -18,6 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#if 0
 #include "bacon.h"
 #include "bacon-ctype.h"
 
@@ -36,6 +37,18 @@ bacon_isalpha (char c)
   case 'h': case 'i': case 'j': case 'k': case 'l': case 'm': case 'n':
   case 'o': case 'p': case 'q': case 'r': case 's': case 't': case 'u':
   case 'v': case 'w': case 'x': case 'z':
+    return BACON_TRUE;
+  default:
+    ;
+  }
+  return BACON_FALSE;
+}
+
+BaconBoolean
+bacon_isblank (char c)
+{
+  switch (c) {
+  case ' ': case '\t':
     return BACON_TRUE;
   default:
     ;
@@ -143,4 +156,5 @@ char bacon_tolower (char c)
   }
   return c;
 }
+#endif
 

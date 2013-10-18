@@ -516,10 +516,10 @@ bacon_set_model (void)
 
   for (p = s_data; p; p = p->next) {
     if (search_list &&
-        ((bacon_search (p->device->fullname, search_list) ==
-          BACON_SEARCH_RESULT_NO_MATCHES) &&
-         (bacon_search (p->device->codename, search_list) ==
-          BACON_SEARCH_RESULT_NO_MATCHES)))
+        ((bacon_search (p->device->fullname, search_list) !=
+          BACON_SEARCH_RESULT_ALL_MATCHES) &&
+         (bacon_search (p->device->codename, search_list) !=
+          BACON_SEARCH_RESULT_ALL_MATCHES)))
       continue;
     s_device_count++;
     display_name = g_markup_printf_escaped (BACON_DISPLAY_NAME_MARKUP_FORMAT,

@@ -23,6 +23,7 @@
 #include <string.h>
 
 #include "bacon-ctype.h"
+#include "bacon-out.h"
 #include "bacon-search.h"
 #include "bacon-str.h"
 #include "bacon-util.h"
@@ -44,20 +45,21 @@ bacon_search_token_list_new (const char *query)
     strncpy (buffer, query, n);
     buffer[n] = '\0';
     /* remove trailing whitespace */
-    while (bacon_isspace (buffer[n - 1]))
+    while (bacon_isblank (buffer[n - 1]))
       buffer[n-- - 1] = '\0';
     while (BACON_TRUE) {
       /* skip leading whitespace */
-      while (buffer[query_pos] && bacon_isspace (buffer[query_pos]))
+      while (buffer[query_pos] && bacon_isblank (buffer[query_pos]))
         query_pos++;
       if (buffer[query_pos]) {
         bacon_list_append (BaconSearchTokenList, list, p);
         token_pos = 0;
         /* add token to list */
         while (buffer[query_pos]) {
-          p->token[token_pos++] = bacon_tolower (buffer[query_pos++]);
+          p->token[token_pos++] = bacon_tolower (buffer[query_pos]);
+          query_pos++;
           if ((token_pos == (BACON_SEARCH_TOKEN_MAX - 1)) ||
-              bacon_isspace (buffer[query_pos]))
+              bacon_isblank (buffer[query_pos]))
             break;
         }
         p->token[token_pos] = '\0';
