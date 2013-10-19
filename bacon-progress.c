@@ -33,6 +33,7 @@
 # include <windows.h>
 #endif
 
+#include "bacon-colors.h"
 #include "bacon-ctype.h"
 #include "bacon-env.h"
 #include "bacon-out.h"
@@ -146,14 +147,14 @@ bacon_output_string (const char *s, int colorp)
   size_t n;
 
   n = strlen (s);
-  bacon_outco (colorp, s);
+  bacon_out ("%s", BACON_COLOR_S (colorp, s));
   s_output_rem -= n;
 }
 
 static void
 bacon_output_char (char c, int colorp)
 {
-  bacon_outcco (colorp, c);
+  bacon_out ("%s", BACON_COLOR_C (colorp, c));
   s_output_rem--;
 }
 

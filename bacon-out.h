@@ -26,8 +26,6 @@
 #include <stdarg.h>
 #include <stdio.h>
 
-#include "bacon-colors.h"
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -53,21 +51,13 @@ void bacon_error (const char *msg, ...);
 void bacon_warn (const char *msg, ...);
 void bacon_foutc (FILE *stream, char c);
 void bacon_outc (const char c);
-void bacon_foutcco (FILE *stream, int colorp, char c);
-void bacon_outcco (int colorp, char c);
 void bacon_fout (FILE *stream, const char *msg, ...);
 void bacon_foutln (FILE *stream, const char *msg, ...);
-void bacon_foutco (FILE *stream, int colorp, const char *msg, ...);
-void bacon_foutlnco (FILE *stream, int colorp, const char *msg, ...);
 void bacon_out (const char *msg, ...);
 void bacon_outln (const char *msg, ...);
-void bacon_outco (int colorp, const char *msg, ...);
-void bacon_outlnco (int colorp, const char *msg, ...);
 void bacon_outi (int level, const char *msg, ...);
 void bacon_outlni (int level, const char *msg, ...);
 void bacon_msg (const char *msg, ...);
-void bacon_color (FILE *stream, int colorp);
-void bacon_no_color (FILE *stream);
 
 #ifdef __cplusplus
 }

@@ -23,6 +23,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "bacon-colors.h"
 #include "bacon-ctype.h"
 #include "bacon-device.h"
 #include "bacon-env.h"
@@ -266,23 +267,26 @@ bacon_cleanup (void)
 static void
 bacon_list_all_devices (void)
 {
+  int i;
   int n;
+  int n_total_digits;
   BaconDeviceList *p;
 
-  n = 0;
-  bacon_outln ("Available Devices:");
+  n = 1;
+  n_total_digits = bacon_ndigits (bacon_device_list_total (g_device_list));
+
+  bacon_outln ("All Available Devices:");
   for (p = g_device_list; p; p = p->next) {
-    bacon_outco (BACON_NUMBER_LIST_COLOR, "  %4i", ++n);
-    bacon_out (") ");
-    if (*p->device->codename)
-      bacon_outco (BACON_CODENAME_COLOR, p->device->codename);
-    if (*p->device->fullname) {
-      bacon_out (" - ");
-      bacon_outco (BACON_FULLNAME_COLOR, p->device->fullname);
-    }
-    bacon_outc ('\n');
+    bacon_outi (1, NULL);
+    for (i = bacon_ndigits (n); i < n_total_digits; ++i)
+      bacon_outc (' ');
+    bacon_outln ("%s) %s - %s",
+                 BACON_COLOR_I (BACON_NUMBER_LIST_COLOR, n),
+                 BACON_COLOR_S (BACON_CODENAME_COLOR, p->device->codename),
+                 BACON_COLOR_S (BACON_FULLNAME_COLOR, p->device->fullname));
     if (!p->next)
       break;
+    ++n;
   }
 }
 
@@ -846,9 +850,11 @@ bacon_print_device_pattern_result (const char *name,
     pos = token_positions[i].pos;
     if (pos >= 0) {
       for (; name_pos < pos; ++name_pos)
-        bacon_outcco (colorp, name[name_pos]);
+        bacon_out ("%s", BACON_COLOR_C (colorp, name[name_pos]));
       for (x = 0; token_positions[i].token[x]; ++x, ++name_pos)
-        bacon_outcco (BACON_FIND_PATTERN_COLOR, name[name_pos]);
+        bacon_out ("%s",
+                   BACON_COLOR_C (BACON_FIND_PATTERN_COLOR,
+                                  name[name_pos]));
     }
     i++;
     if (!p->next)
@@ -856,12 +862,15 @@ bacon_print_device_pattern_result (const char *name,
   }
 
   for (; name[name_pos]; ++name_pos)
-    bacon_outcco (colorp, name[name_pos]);
+    bacon_out ("%s", BACON_COLOR_C (colorp, name[name_pos]));
 }
 
 static void
 bacon_find_device_pattern_and_show_results (void)
 {
+  int i;
+  int n_total_digits;
+  int total_results;
   size_t results_pos;
   BaconDeviceList *p;
   BaconSearchTokenList *list;
@@ -896,20 +905,28 @@ bacon_find_device_pattern_and_show_results (void)
       break;
   }
   results[results_pos].device = NULL;
+  total_results = ((int) results_pos);
 
-  bacon_out ("Device search results for '");
-  bacon_outco (BACON_FIND_PATTERN_COLOR, s_query);
-  bacon_outln ("':");
+  bacon_outln ("Device search results for '%s':",
+               BACON_COLOR_S (BACON_FIND_PATTERN_COLOR, s_query));
 
   if (!results[0].device)
-    bacon_outlnco (BACON_BLUE, "   None");
+    bacon_outln ("   %s", BACON_COLOR_S (BACON_BLUE, "None"));
   else {
+    n_total_digits = bacon_ndigits (total_results);
     for (results_pos = 0; results[results_pos].device; ++results_pos) {
-      bacon_outco (BACON_NUMBER_LIST_COLOR, "%4i", ((int) (results_pos + 1)));
-      bacon_out (") ");
+      bacon_outi (1, NULL);
+      for (i = bacon_ndigits (((int) (results_pos + 1)));
+           i < n_total_digits;
+           ++i)
+        bacon_outc (' ');
+      bacon_out ("%s) ",
+                 BACON_COLOR_I (BACON_NUMBER_LIST_COLOR,
+                                ((int) (results_pos + 1))));
       if (!results[results_pos].fullname_match)
-        bacon_outco (BACON_FULLNAME_COLOR,
-                     results[results_pos].device->fullname);
+        bacon_out ("%s ",
+                   BACON_COLOR_S (BACON_FULLNAME_COLOR,
+                                  results[results_pos].device->fullname));
       else
         bacon_print_device_pattern_result (
                                         results[results_pos].device->fullname,
@@ -917,8 +934,9 @@ bacon_find_device_pattern_and_show_results (void)
                                         BACON_FULLNAME_COLOR);
       bacon_out (" [");
       if (!results[results_pos].codename_match)
-        bacon_outco (BACON_CODENAME_COLOR,
-                     results[results_pos].device->codename);
+        bacon_out ("%s",
+                   BACON_COLOR_S (BACON_CODENAME_COLOR,
+                                  results[results_pos].device->codename));
       else
         bacon_print_device_pattern_result (
                                         results[results_pos].device->codename,
@@ -937,43 +955,44 @@ bacon_show_rom_list (const BaconDevice *device, const BaconRomList *list)
   int x;
   BaconRom *rom;
 
-  bacon_outco (BACON_FULLNAME_COLOR, device->fullname);
-  bacon_out (" [");
-  bacon_outco (BACON_CODENAME_COLOR, device->codename);
-  bacon_outln ("]:");
+  bacon_outln ("%s [%s]:",
+               BACON_COLOR_S (BACON_FULLNAME_COLOR, device->fullname),
+               BACON_COLOR_S (BACON_CODENAME_COLOR, device->codename));
   for (x = 0; x < BACON_ROM_TOTAL; ++x) {
     rom = list->roms[x];
     if (!rom)
       continue;
     bacon_outi (1, NULL);
-    bacon_outco (BACON_ROM_TYPE_COLOR, "%s%s",
-                 (!s_latest) ? "" : "Latest ",
-                 bacon_rom_type_str (x));
-    bacon_outln (":");
+    if (s_latest)
+      bacon_out ("Latest ");
+    bacon_outln ("%s:",
+                 BACON_COLOR_S (BACON_ROM_TYPE_COLOR,
+                                bacon_rom_type_str (x)));
     n = 0;
     for (; rom; rom = rom->next) {
       if (!s_latest) {
-        bacon_outi (2, NULL);
-        bacon_outco (BACON_NUMBER_LIST_COLOR, "%i", n + 1);
-        bacon_out (") ");
-        bacon_outlnco (BACON_ROM_NAME_COLOR, rom->name);
-      } else {
-        bacon_outi (2, NULL);
-        bacon_outlnco (BACON_ROM_NAME_COLOR, rom->name);
-      }
-      bacon_outi (3, "released: ");
-      bacon_outlnco (BACON_ROM_DATE_COLOR, rom->date);
-      bacon_outi (3, "size:     ");
-      bacon_outlnco (BACON_ROM_SIZE_COLOR, rom->size);
-      if (s_show_hash) {
-        bacon_outi (3, "hash:     ");
-        bacon_outlnco (BACON_ROM_HASH_COLOR, rom->hash.hash);
-      }
-      if (s_show_url) {
-        bacon_outi (3, "url:      ");
-        bacon_outlnco (BACON_ROM_URL_COLOR, "%s/%s",
-                       BACON_GET_CM_URL, rom->get);
-      }
+        bacon_outlni (2, "%s) %s",
+                      BACON_COLOR_I (BACON_NUMBER_LIST_COLOR, n + 1),
+                      BACON_COLOR_S (BACON_ROM_NAME_COLOR, rom->name));
+      } else
+        bacon_outlni (2, "%s",
+                      BACON_COLOR_S (BACON_ROM_NAME_COLOR, rom->name));
+      bacon_outlni (3, "%s: %s",
+                    BACON_COLOR_S (BACON_ROM_INFO_TAG_COLOR, "released"),
+                    BACON_COLOR_S (BACON_ROM_INFO_COLOR, rom->date));
+      bacon_outlni (3, "%s:     %s",
+                    BACON_COLOR_S (BACON_ROM_INFO_TAG_COLOR, "size"),
+                    BACON_COLOR_S (BACON_ROM_INFO_COLOR, rom->size));
+      if (s_show_hash)
+        bacon_outlni (3, "%s:     %s",
+                      BACON_COLOR_S (BACON_ROM_INFO_TAG_COLOR, "hash"),
+                      BACON_COLOR_S (BACON_ROM_INFO_COLOR, rom->hash.hash));
+      if (s_show_url)
+        bacon_outlni (3, "%s:      %s%s%s",
+                      BACON_COLOR_S (BACON_ROM_INFO_TAG_COLOR, "url"),
+                      BACON_COLOR_S (BACON_ROM_INFO_COLOR, BACON_GET_CM_URL),
+                      BACON_COLOR_C (BACON_ROM_INFO_COLOR, '/'),
+                      BACON_COLOR_S (BACON_ROM_INFO_COLOR, rom->get));
       if (!rom->next)
         break;
       ++n;
@@ -1053,6 +1072,7 @@ bacon_perform (void)
 int
 main (int argc, char **argv)
 {
+  bacon_init_color ();
   atexit (bacon_cleanup);
   bacon_env_set_program_data_path ();
   bacon_parse_opt (argc, argv);

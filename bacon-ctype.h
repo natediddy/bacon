@@ -25,19 +25,43 @@
 extern "C" {
 #endif
 
-#if 0
-BaconBoolean bacon_isalpha (char c);
-BaconBoolean bacon_isblank (char c);
-BaconBoolean bacon_isdigit (char c);
-BaconBoolean bacon_islower (char c);
-BaconBoolean bacon_isspace (char c);
-char bacon_tolower (char c);
+#undef BACON_ASCII
+
+#if (' ' == 32) && ('!' == 33) && ('"' == 34) && ('#' == 35) && \
+    ('%' == 37) && ('&' == 38) && ('\'' == 39) && ('(' == 40) && \
+    (')' == 41) && ('*' == 42) && ('+' == 43) && (',' == 44) && \
+    ('-' == 45) && ('.' == 46) && ('/' == 47) && ('0' == 48) && \
+    ('1' == 49) && ('2' == 50) && ('3' == 51) && ('4' == 52) && \
+    ('5' == 53) && ('6' == 54) && ('7' == 55) && ('8' == 56) && \
+    ('9' == 57) && (':' == 58) && (';' == 59) && ('<' == 60) && \
+    ('=' == 61) && ('>' == 62) && ('?' == 63) && ('A' == 65) && \
+    ('B' == 66) && ('C' == 67) && ('D' == 68) && ('E' == 69) && \
+    ('F' == 70) && ('G' == 71) && ('H' == 72) && ('I' == 73) && \
+    ('J' == 74) && ('K' == 75) && ('L' == 76) && ('M' == 77) && \
+    ('N' == 78) && ('O' == 79) && ('P' == 80) && ('Q' == 81) && \
+    ('R' == 82) && ('S' == 83) && ('T' == 84) && ('U' == 85) && \
+    ('V' == 86) && ('W' == 87) && ('X' == 88) && ('Y' == 89) && \
+    ('Z' == 90) && ('[' == 91) && ('\\' == 92) && (']' == 93) && \
+    ('^' == 94) && ('_' == 95) && ('a' == 97) && ('b' == 98) && \
+    ('c' == 99) && ('d' == 100) && ('e' == 101) && ('f' == 102) && \
+    ('g' == 103) && ('h' == 104) && ('i' == 105) && ('j' == 106) && \
+    ('k' == 107) && ('l' == 108) && ('m' == 109) && ('n' == 110) && \
+    ('o' == 111) && ('p' == 112) && ('q' == 113) && ('r' == 114) && \
+    ('s' == 115) && ('t' == 116) && ('u' == 117) && ('v' == 118) && \
+    ('w' == 119) && ('x' == 120) && ('y' == 121) && ('z' == 122) && \
+    ('{' == 123) && ('|' == 124) && ('}' == 125) && ('~' == 126)
+# define BACON_ASCII
 #endif
+
 
 /* The macros below are very basic <ctype.h>
    replacements that do not assume the ASCII character set. */
 
-#define bacon_isalpha(c) \
+#ifdef BACON_ASCII
+# define bacon_isalpha(c) \
+  (((((int) (c)) & ~0x20) >= 'A') && ((((int) (c)) & ~0x20) <= 'Z'))
+#else
+# define bacon_isalpha(c) \
   (((c) == 'A') || ((c) == 'B') || ((c) == 'C') || ((c) == 'D') || \
    ((c) == 'E') || ((c) == 'F') || ((c) == 'G') || ((c) == 'H') || \
    ((c) == 'I') || ((c) == 'J') || ((c) == 'K') || ((c) == 'L') || \
@@ -51,16 +75,24 @@ char bacon_tolower (char c);
    ((c) == 'o') || ((c) == 'p') || ((c) == 'q') || ((c) == 'r') || \
    ((c) == 's') || ((c) == 't') || ((c) == 'u') || ((c) == 'v') || \
    ((c) == 'w') || ((c) == 'x') || ((c) == 'y') || ((c) == 'z'))
+#endif
 
 #define bacon_isblank(c) \
   (((c) == ' ') || ((c) == '\t'))
 
-#define bacon_isdigit(c) \
+#ifdef BACON_ASCII
+# define bacon_isdigit(c) ((((int) (c)) >= '0') && (((int) (c)) <= '9'))
+#else
+# define bacon_isdigit(c) \
   (((c) == '0') || ((c) == '1') || ((c) == '2') || ((c) == '3') || \
    ((c) == '4') || ((c) == '5') || ((c) == '6') || ((c) == '7') || \
    ((c) == '8') || ((c) == '9'))
+#endif
 
-#define bacon_islower(c) \
+#ifdef BACON_ASCII
+# define bacon_islower(c) ((((int) (c)) >= 'a') && (((int) (c)) <= 'z'))
+#else
+# define bacon_islower(c) \
   (((c) == 'a') || ((c) == 'b') || ((c) == 'c') || ((c) == 'd') || \
    ((c) == 'e') || ((c) == 'f') || ((c) == 'g') || ((c) == 'h') || \
    ((c) == 'i') || ((c) == 'j') || ((c) == 'k') || ((c) == 'l') || \
@@ -68,20 +100,22 @@ char bacon_tolower (char c);
    ((c) == 'q') || ((c) == 'r') || ((c) == 's') || ((c) == 't') || \
    ((c) == 'u') || ((c) == 'v') || ((c) == 'w') || ((c) == 'x') || \
    ((c) == 'y') || ((c) == 'z'))
+#endif
 
 #define bacon_isspace(c) \
   (((c) == ' ') || ((c) == '\t') || ((c) == '\n') || ((c) == '\v') || \
    ((c) == '\f') || ((c) == '\r'))
 
 /*
- * XXX: this can't be used with something like:
- *
+ * XXX: this should never be used with something like:
  *          foo[i++] = bacon_tolower (bar[j++]);
- *
- *      Because it will increment 'j' until the character
- *      is found (or 26 times if not and leave the result empty).
+ *      Because 'j' will be incremented at least a handful of times.
  */
-#define bacon_tolower(c) \
+#ifdef BACON_ASCII
+# define bacon_tolower(c) \
+  ((((int) (c)) >= 'A') && (((int) (c)) <= 'Z')) ? ((c) - 'A' + 'a') : (c)
+#else
+# define bacon_tolower(c) \
   (((c) == 'A') ? 'a' : ((c) == 'B') ? 'b' : ((c) == 'C') ? 'c' : \
    ((c) == 'D') ? 'd' : ((c) == 'E') ? 'e' : ((c) == 'F') ? 'f' : \
    ((c) == 'G') ? 'g' : ((c) == 'H') ? 'h' : ((c) == 'I') ? 'i' : \
@@ -91,6 +125,7 @@ char bacon_tolower (char c);
    ((c) == 'S') ? 's' : ((c) == 'T') ? 't' : ((c) == 'U') ? 'u' : \
    ((c) == 'V') ? 'v' : ((c) == 'W') ? 'w' : ((c) == 'X') ? 'x' : \
    ((c) == 'Y') ? 'y' : ((c) == 'Z') ? 'z' : (c))
+#endif
 
 #ifdef __cplusplus
 }

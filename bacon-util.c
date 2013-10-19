@@ -63,6 +63,22 @@ bacon_nan_value (double v)
   return BACON_FALSE;
 }
 
+int
+bacon_ndigits (int v)
+{
+  int digits;
+
+  if (v == 0)
+    return 1;
+
+  digits = 0;
+  while (v) {
+    v /= 10;
+    ++digits;
+  }
+  return digits;
+}
+
 #ifdef HAVE_SYS_TIME_H
 void
 bacon_get_time_of_day (struct timeval *tv)

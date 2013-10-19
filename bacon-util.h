@@ -83,6 +83,7 @@ extern "C" {
 void *bacon_malloc (size_t n);
 void *bacon_realloc (void *ptr, size_t n);
 BaconBoolean bacon_nan_value (double v);
+int bacon_ndigits (int v);
 #ifdef HAVE_SYS_TIME_H
 void bacon_get_time_of_day (struct timeval *tv);
 long bacon_get_millis (const struct timeval *s, const struct timeval *e);

@@ -23,7 +23,7 @@ bin_PROGRAMS = bacon
 
 bacon_SOURCES = \
 	bacon.c \
-	bacon-ctype.c \
+	bacon-colors.c \
 	bacon-device.c \
 	bacon-env.c \
 	bacon-gtk.c \

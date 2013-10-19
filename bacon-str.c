@@ -129,15 +129,17 @@ bacon_streq (const char *str1, const char *str2)
 BaconBoolean
 bacon_streqci (const char *str1, const char *str2)
 {
-  size_t i;
   size_t n;
 
   n = strlen (str1);
   if (n == strlen (str2)) {
-    for (i = 0; i < n; ++i)
-      if (bacon_tolower (str1[i]) != bacon_tolower (str2[i]))
-        break;
-    if (i == n)
+    char buf1[n + 1];
+    char buf2[n + 1];
+    bacon_strtolower (buf1, n, str1);
+    buf1[n] = '\0';
+    bacon_strtolower (buf2, n, str2);
+    buf2[n] = '\0';
+    if (memcmp (buf1, buf2, n) == 0)
       return BACON_TRUE;
   }
   return BACON_FALSE;

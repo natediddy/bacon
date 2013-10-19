@@ -22,6 +22,7 @@
 
 #include <string.h>
 
+#include "bacon-colors.h"
 #include "bacon-device.h"
 #include "bacon-env.h"
 #include "bacon-hash.h"
@@ -126,71 +127,112 @@ bacon_get_device_answer (void)
 static void
 bacon_display_device_choices (void)
 {
-  int idx;
+  int i;
+  int n;
+  int n_total_digits;
   BaconDeviceList *p;
 
-  idx = 1;
+  n = 1;
+  n_total_digits = bacon_ndigits (bacon_device_list_total (g_device_list));
+
   bacon_outln ("Devices:");
   for (p = g_device_list; p; p = p->next) {
-    bacon_outln ("%4i) %s - %s",
-        idx, p->device->codename, p->device->fullname);
+    bacon_outi (1, NULL);
+    for (i = bacon_ndigits (n); i < n_total_digits; ++i)
+      bacon_outc (' ');
+    bacon_outln ("%s) %s - %s",
+                 BACON_COLOR_I (BACON_NUMBER_LIST_COLOR, n),
+                 BACON_COLOR_S (BACON_CODENAME_COLOR, p->device->codename),
+                 BACON_COLOR_S (BACON_FULLNAME_COLOR, p->device->fullname));
     if (!p->next)
       break;
-    idx++;
+    ++n;
   }
 }
 
 static void
 bacon_display_rom_type_choices (void)
 {
-  int type;
+  int i;
+  int n;
+  int n_total_digits;
+
+  n_total_digits = bacon_ndigits (BACON_ROM_TOTAL);
 
   bacon_outln ("ROM Types:");
-  for (type = 0; type < BACON_ROM_TOTAL; ++type)
-    bacon_outln ("%4i) %s", type + 1, bacon_rom_type_str (type));
+  for (n = 0; n < BACON_ROM_TOTAL; ++n) {
+    bacon_outi (1, NULL);
+    for (i = bacon_ndigits (n + 1); i < n_total_digits; ++i)
+      bacon_outc (' ');
+    bacon_outln ("%s) %s",
+                 BACON_COLOR_I (BACON_NUMBER_LIST_COLOR, n + 1),
+                 BACON_COLOR_S (BACON_ROM_TYPE_COLOR,
+                                bacon_rom_type_str (n)));
+  }
 }
 
 static void
 bacon_display_rom_choices (const BaconRomList *list, int *total_choices)
 {
-  int idx;
+  int n;
+  BaconRom *rom;
 
-  idx = 0;
-  /* add some extra spaces here to cover up the "Loading..." propeller */
-  bacon_outlni (0, "%s:         ", bacon_rom_type_str (s_rom_type_i));
-  s_rom = list->roms[s_rom_type_i];
-  if (s_rom) {
-    idx = 1;
-    for (; s_rom; s_rom = s_rom->next) {
-      bacon_outlni (1, "%i) %s", idx, s_rom->name);
-      bacon_outlni (2, "released: %s", s_rom->date);
-      bacon_outlni (2, "size:     %s", s_rom->size);
-      if (!s_rom->next)
+  /* add some extra spaces here to cover up the "Loading..." progress */
+  bacon_outln ("%s:        ",
+               BACON_COLOR_S (BACON_ROM_TYPE_COLOR,
+                              bacon_rom_type_str (s_rom_type_i)));
+  rom = list->roms[s_rom_type_i];
+  if (rom) {
+    *total_choices = bacon_rom_total (rom);
+    n = 1;
+    for (; rom; rom = rom->next) {
+      bacon_outlni (1, "%s) %s",
+                    BACON_COLOR_I (BACON_NUMBER_LIST_COLOR, n),
+                    BACON_COLOR_S (BACON_ROM_NAME_COLOR, rom->name));
+      bacon_outlni (2, "%s: %s",
+                    BACON_COLOR_S (BACON_ROM_INFO_TAG_COLOR, "released"),
+                    BACON_COLOR_S (BACON_ROM_INFO_COLOR, rom->date));
+      bacon_outlni (2, "%s:     %s",
+                    BACON_COLOR_S (BACON_ROM_INFO_TAG_COLOR, "size"),
+                    BACON_COLOR_S (BACON_ROM_INFO_COLOR, rom->size));
+      bacon_outlni (2, "%s:     %s",
+                    BACON_COLOR_S (BACON_ROM_INFO_TAG_COLOR, "hash"),
+                    BACON_COLOR_S (BACON_ROM_INFO_COLOR, rom->hash.hash));
+      bacon_outlni (2, "%s:      %s%s%s",
+                    BACON_COLOR_S (BACON_ROM_INFO_TAG_COLOR, "url"),
+                    BACON_COLOR_S (BACON_ROM_INFO_COLOR, BACON_GET_CM_URL),
+                    BACON_COLOR_C (BACON_ROM_INFO_COLOR, '/'),
+                    BACON_COLOR_S (BACON_ROM_INFO_COLOR, rom->get));
+      if (!rom->next)
         break;
-      ++idx;
+      ++n;
     }
-  } else
-    bacon_outlni (1, "none");
-  *total_choices = idx;
+  } else {
+    bacon_outlni (1, "%s", BACON_COLOR_S (BACON_BLUE, "None"));
+    *total_choices = 0;
+  }
 }
 
-static BaconRom *
-bacon_get_rom_by_index (const BaconRomList *list, const int index)
+static void
+bacon_set_rom_by_index (const BaconRomList *list, int index)
 {
   int idx;
+  BaconRom *rom;
 
-  s_rom = list->roms[s_rom_type_i];
-  if (s_rom) {
+  rom = list->roms[s_rom_type_i];
+  if (rom) {
     idx = 0;
-    for (; s_rom; s_rom = s_rom->next) {
-      if (idx == index)
-        return s_rom;
-      if (!s_rom->next)
+    for (; rom; rom = rom->next) {
+      if (idx == index) {
+        s_rom = rom;
+        return;
+      }
+      if (!rom->next)
         break;
       ++idx;
     }
   }
-  return NULL;
+  s_rom = NULL;
 }
 
 static void
@@ -234,14 +276,25 @@ bacon_currents (void)
 {
   bacon_out ("Current device:   ");
   if (s_device)
-    bacon_out ("%s [%s]", s_device->fullname, s_device->codename);
-  bacon_outc ('\n');
+    bacon_outln ("%s [%s]",
+                 BACON_COLOR_S (BACON_FULLNAME_COLOR, s_device->fullname),
+                 BACON_COLOR_S (BACON_CODENAME_COLOR, s_device->codename));
+  else
+    bacon_outln ("");
 
-  bacon_outln ("Current ROM Type: %s",
-      (s_rom_type_i != -1) ? bacon_rom_type_str (s_rom_type_i) : "(none)");
+  bacon_out ("Current ROM Type: ");
+  if (s_rom_type_i != -1)
+    bacon_outln ("%s",
+                 BACON_COLOR_S (BACON_ROM_TYPE_COLOR,
+                                bacon_rom_type_str (s_rom_type_i)));
+  else
+    bacon_outln ("");
 
-  bacon_outln ("Current ROM:      %s",
-      (s_rom) ? s_rom->name : "(none)");
+  bacon_out ("Current ROM:      ");
+  if (s_rom)
+    bacon_outln ("%s", BACON_COLOR_S (BACON_ROM_NAME_COLOR, s_rom->name));
+  else
+    bacon_outln ("");
 
   if (bacon_all_currents_satisfied ())
     bacon_outln ("Ready to download!");
@@ -252,8 +305,12 @@ bacon_choose_device (void)
 {
   bacon_display_device_choices ();
   while (BACON_TRUE) {
-    bacon_out ("Enter choice: [1-%i or codename] ",
-        bacon_device_list_total (g_device_list));
+    bacon_out ("%s: [%s-%s or %s]: ",
+               BACON_COLOR_S (BACON_CYAN, "Enter choice"),
+               BACON_COLOR_C (BACON_BOLD, '1'),
+               BACON_COLOR_I (BACON_BOLD,
+                              bacon_device_list_total (g_device_list)),
+               BACON_COLOR_S (BACON_BOLD, "codename"));
     bacon_get_device_answer ();
     if (s_device)
       break;
@@ -266,7 +323,10 @@ bacon_choose_rom_type (void)
 {
   bacon_display_rom_type_choices ();
   while (BACON_TRUE) {
-    bacon_out ("Enter number: [1-%i] ", BACON_ROM_TOTAL);
+    bacon_out ("%s: [%s-%s]: ",
+               BACON_COLOR_S (BACON_CYAN, "Enter number"),
+               BACON_COLOR_C (BACON_BOLD, '1'),
+               BACON_COLOR_I (BACON_BOLD, BACON_ROM_TOTAL));
     if (!bacon_get_num_answer (&s_rom_type_i))
       continue;
     --s_rom_type_i;
@@ -281,7 +341,8 @@ bacon_choose_rom_type (void)
     else if (s_rom_type_i == BACON_ROM_TEST)
       g_rom_type |= BACON_ROM_TYPE_TEST;
     else {
-      bacon_warn ("'%i' not valid - please try again...", s_rom_type_i);
+      bacon_warn ("'%s' not valid - please try again...",
+                  BACON_COLOR_I (BACON_BOLD, s_rom_type_i));
       continue;
     }
     break;
@@ -294,22 +355,28 @@ bacon_choose_rom (void)
   int idx;
   int total;
 
+  total = 0;
   g_max_roms = 20;
   bacon_rom_list_destroy (s_rom_list);
-  s_rom_list = bacon_rom_list_new (s_device->codename, g_rom_type, g_max_roms);
-  total = 1;
+  s_rom_list = bacon_rom_list_new (s_device->codename,
+                                   g_rom_type,
+                                   g_max_roms);
 
   bacon_display_rom_choices (s_rom_list, &total);
   if (!total)
     return;
 
   while (BACON_TRUE) {
-    bacon_out ("Enter number: [1-%i] ", total);
+    bacon_out ("%s: [%s-%s]: ",
+               BACON_COLOR_S (BACON_CYAN, "Enter number"),
+               BACON_COLOR_C (BACON_BOLD, '1'),
+               BACON_COLOR_I (BACON_BOLD, total));
     if (!bacon_get_num_answer (&idx))
       continue;
-    s_rom = bacon_get_rom_by_index (s_rom_list, idx - 1);
+    bacon_set_rom_by_index (s_rom_list, idx - 1);
     if (!s_rom) {
-      bacon_warn ("'%i' not valid - please try again...", idx);
+      bacon_warn ("'%s' not valid - please try again...",
+                  BACON_COLOR_I (BACON_BOLD, idx));
       continue;
     }
     break;
@@ -323,7 +390,9 @@ bacon_specify_download_path (void)
   char answer[BACON_PATH_MAX];
 
   while (BACON_TRUE) {
-    bacon_out ("Enter path [without file basename]: ");
+    bacon_out ("%s [%s]: ",
+               BACON_COLOR_S (BACON_CYAN, "Enter path"),
+               BACON_COLOR_S (BACON_BOLD, "without basename"));
     if (!fgets (answer, BACON_PATH_MAX, stdin)) {
       bacon_error ("failed to read from standard input");
       bacon_do_exit ();
@@ -333,11 +402,13 @@ bacon_specify_download_path (void)
       answer[n - 1] = '\0';
     if (!bacon_env_is_file (answer))
       break;
-    bacon_outln ("`%s' exists and is a file - try again", answer);
+    bacon_outln ("`%s' exists and is a file - try again",
+                 BACON_COLOR_S (BACON_BOLD, answer));
   }
 
   if (!bacon_env_ensure_path (answer, BACON_FALSE)) {
-    bacon_debug ("BUG: bacon_env_ensure_path (\"%s\", BACON_FALSE) == BACON_FALSE",
+    bacon_debug ("BUG: bacon_env_ensure_path (\"%s\", BACON_FALSE) == "
+                   "BACON_FALSE",
                  answer);
     bacon_do_exit ();
   }
@@ -350,22 +421,48 @@ bacon_download (void)
 {
   BaconBoolean ret;
 
-  bacon_outln ("\n==========================================");
-  bacon_outln ("device:      %s [%s]",
-               s_device->fullname,
-               s_device->codename);
-  bacon_outln ("type:        %s", bacon_rom_type_str (s_rom_type_i));
-  bacon_outln ("filename:    %s", s_rom->name);
-  bacon_outln ("released on: %s", s_rom->date);
-  bacon_outln ("size:        %s", s_rom->size);
-  bacon_outln ("url:         %s/%s", BACON_GET_CM_URL, s_rom->get);
-  bacon_outln ("md5:         %s", s_rom->hash.hash);
+  bacon_outln ("\n%s",
+               BACON_COLOR_S (BACON_BOLD,
+                              "=========================================="));
+  bacon_outln ("%s:      %s [%s]",
+               BACON_COLOR_S (BACON_BOLD, "device"),
+               BACON_COLOR_S (BACON_FULLNAME_COLOR, s_device->fullname),
+               BACON_COLOR_S (BACON_CODENAME_COLOR, s_device->codename));
+  bacon_outln ("%s:        %s",
+               BACON_COLOR_S (BACON_BOLD, "type"),
+               BACON_COLOR_S (BACON_ROM_TYPE_COLOR,
+                              bacon_rom_type_str (s_rom_type_i)));
+  bacon_outln ("%s:    %s",
+               BACON_COLOR_S (BACON_BOLD, "filename"),
+               BACON_COLOR_S (BACON_ROM_NAME_COLOR, s_rom->name));
+  bacon_outln ("%s: %s",
+               BACON_COLOR_S (BACON_BOLD, "released on"),
+               BACON_COLOR_S (BACON_ROM_INFO_COLOR, s_rom->date));
+  bacon_outln ("%s:        %s",
+               BACON_COLOR_S (BACON_BOLD, "size"),
+               BACON_COLOR_S (BACON_ROM_INFO_COLOR, s_rom->size));
+  bacon_outln ("%s:         %s%s%s",
+               BACON_COLOR_S (BACON_BOLD, "url"),
+               BACON_COLOR_S (BACON_ROM_INFO_COLOR, BACON_GET_CM_URL),
+               BACON_COLOR_C (BACON_ROM_INFO_COLOR, '/'),
+               BACON_COLOR_S (BACON_ROM_INFO_COLOR, s_rom->get));
+  bacon_outln ("%s:         %s",
+               BACON_COLOR_S (BACON_BOLD, "md5"),
+               BACON_COLOR_S (BACON_ROM_INFO_COLOR, s_rom->hash.hash));
+  bacon_out ("%s:   ", BACON_COLOR_S (BACON_BOLD, "saving to"));
   if (s_dirpath)
-    bacon_outln ("saving to:   %s%c%s", s_dirpath,
-                 BACON_PATH_SEP, s_rom->name);
+    bacon_outln ("%s%s%s",
+                 BACON_COLOR_S (BACON_YELLOW, s_dirpath),
+                 BACON_COLOR_C (BACON_YELLOW, BACON_PATH_SEP),
+                 BACON_COLOR_S (BACON_YELLOW, s_rom->name));
   else
-    bacon_outln ("saving to:   %s", (!g_out_path) ? "." : g_out_path);
-  bacon_outln ("==========================================\n");
+    bacon_outln ("%s",
+                 (!g_out_path) ?
+                   BACON_COLOR_C (BACON_YELLOW, '.') :
+                   BACON_COLOR_S (BACON_YELLOW, g_out_path));
+  bacon_outln ("%s",
+               BACON_COLOR_S (BACON_BOLD,
+                              "=========================================="));
 
   if (s_dirpath)
     ret = bacon_rom_do_download (s_rom, s_dirpath);

@@ -154,9 +154,9 @@ bacon_rom_list_destroy (BaconRomList *list)
 }
 
 const char *
-bacon_rom_type_str (int index)
+bacon_rom_type_str (int index_type)
 {
-  switch (index) {
+  switch (index_type) {
   case BACON_ROM_NIGHTLY:
     return BACON_ROM_TYPE_NIGHTLY_STRING;
   case BACON_ROM_RC:
@@ -171,6 +171,21 @@ bacon_rom_type_str (int index)
     return BACON_ROM_TYPE_ALL_STRING;
   }
   return NULL;
+}
+
+int
+bacon_rom_total (const BaconRom *rom)
+{
+  int total;
+  const BaconRom *p;
+
+  total = 0;
+  for (p = rom; p; p = p->next) {
+    total++;
+    if (!p->next)
+      break;
+  }
+  return total;
 }
 
 BaconBoolean
